@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void score(int num_values , int errors , int *total , int *actual){
   
@@ -23,14 +24,16 @@ int check_values(int num_values , int *seq){
   return err;
 }
 
-void disp_values(int num_values , int *seq){
+void disp_values(unsigned int time , int num_values , int *seq){
  
   int index_val;
   
   for(index_val = 0 ; index_val < num_values; index_val++){
     printf("%d " , seq[index_val]);
   }
-  printf("\n");  
+  fflush(stdout);
+  sleep(time);
+  printf("\r                      \r");
 }
 
 void generate_values(int num_values , int *seq){
@@ -51,7 +54,7 @@ int main(){
   int num_seq;
   int num_val;
   
-  int sleep_time;
+  unsigned int sleep_time;
   int *total = 0;
   int sequence[9];
   
@@ -85,7 +88,7 @@ int main(){
 
     while(trials){
       printf("Sequencia #%d:\n" , index_seq + 1 );
-      disp_values(num_val, &sequence[0]);
+      disp_values(sleep_time , num_val, &sequence[0]);
       if( check_values(num_val , &sequence[0]) ){
         trials--;
         printf("Erou!\n");
