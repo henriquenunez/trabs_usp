@@ -7,6 +7,9 @@
 
 /*Defining constants for analysis*/
 
+#define POSITIVE 1
+#define NEGATIVE -1
+
 char *GOOD_WORDS[] = {
 	"bom", 
 	"maravilhoso", 
@@ -20,7 +23,7 @@ char *GOOD_WORDS[] = {
 	"boa", 
 	"maravilhosa", 
 	"otima",
-    '\0'
+    "STOP"
     };
 
 char *BAD_WORDS[] = {
@@ -36,16 +39,18 @@ char *BAD_WORDS[] = {
 	"lenta", 
 	"fragil", 
 	"desisti",
-    '\0'
+    "STOP"
     };
         
 char *INV_WORDS[] = {
     "nao",
     "jamais",
     "nunca",
-    '\0'
+    "STOP"
     };
 
+/*Structs for storing the product information and its related bag of words*/    
+    
 typedef struct _bag{
 	char* word;
 	int times;
@@ -56,15 +61,17 @@ typedef struct _bag{
 typedef struct _products{
 	char* name;
 	bag* review;
+    int meaning;
     int bad_words;
     int good_words;
     } products;
-    
+
 int check_in_bag(char* test_word , bag* this_bag , int bag_size);
 int check_type(char* test_word , char** type);
 products read_entry();
-bag* store_in_bag(char *review , int max_size);
-    
+bag* store_in_bag(char *review , int max_size , products prod);
+float review_type();
+
 int main(){
 	int nreviews;
 	int nquestions;
@@ -77,7 +84,7 @@ int main(){
         entry[index] = read_entry();
         entry = (products*) realloc (entry , (index+1) * sizeof(products));
 	}
-
+    
     return 0;
     }
 
@@ -105,45 +112,56 @@ products read_entry(){
     printf("%s" , this_product.name);
     
     rem_size = 400 - len + 1;
-    printf("\nremaining size is %ld" , rem_size);
-    store_in_bag(review , rem_size);
+    store_in_bag(review , rem_size , this_product);
     
     return this_product;
     }
 
-bag* store_in_bag(char *review , int max_size){ /*max size of remaining text*/
+bag* store_in_bag(char *review , int max_size , products prod){ /*max size of remaining text*/
     int bag_size = 1;
+    int iteration = 0;
+    int inv_aux;
     int check_return;
     char * word;
+        
     bag* words_in_review = (bag*) malloc (200 * sizeof(bag));
     
-    printf ("Splitting string \"%s\" into tokens:\n", review);
-    
     word = strtok ( review ," ");
-    while (word != NULL)
-    {
-        printf ("word: %s\n", word);
+    
+    while (word != NULL){
         
-        check_return = check_in_bag(word , words_in_review , bag_size - 1);
-        if (check_return == -1){
+        iteration++;
+        
+        if (check_type(word , INV_WORDS)){ /*checks if the analysis nneds to be inverted*/
+            inv_aux = iteration; /*Stores the iteration(position in review) for */
+            } 
+            else {
+                if(iteration <= inv_aux+4){
+                    printf("im sorry to interject you but...\n");
+                    prod.meaning = (check_type(word , GOOD_WORDS) - check_type(word , BAD_WORDS))*(-1);
+                    if (prod.meaning) printf("deu ruim na volta as aulas\n");
+                } 
+                else {
+                    prod.meaning = (check_type(word , GOOD_WORDS) - check_type(word , BAD_WORDS));
+                    }            
+                }
+        
+        check_return = check_in_bag(word , words_in_review , bag_size - 1); /*checks wether the word was already entered or not*/
+        
+        if (check_return == -1){ /*creates new bag entry, if the word was not found*/
+            
             words_in_review[bag_size-1].word = (char*) malloc (20*sizeof(char));
-            //words_in_review = (bag*) realloc (words_in_review , bag_size * sizeof(bag));
-            
             words_in_review[bag_size-1].word = word;
-            printf("in bag : %s \n" , words_in_review[bag_size-1].word);
-            bag_size++;
             
+            bag_size++;
             words_in_review[bag_size-1].word = NULL;
             words_in_review[bag_size-1].times = 1;
-            
-            printf("words number:%d\n" , bag_size);
                                
-        } else {
-            words_in_review[check_return].times++;
-            printf("word: %s already in bag! , first appeared in: %d , times:%d\n" , word , check_return , words_in_review[check_return].times);
-        }
+            } else {
+                words_in_review[check_return].times++;
+                }
         
-        word = strtok (NULL, " ");
+        word = strtok(NULL, " ");
     
     }
     
@@ -160,7 +178,18 @@ int check_in_bag(char* test_word , bag* this_bag , int bag_size){
 			return i;
 		}
 	}
-    printf("not in bag...\n");
     return -1;
     }    
     
+int check_type(char* test_word , char** type){
+    int i = 0;
+    while(strcmp(type[i] , "STOP") != 0){
+        printf("testing... %s\n" , type[i]);
+        if (strcmp(type[i] , test_word) == 0) {
+            printf("just found the type!!\n");
+            return 1;
+            }
+        i++;
+        }
+    return 0;
+}
