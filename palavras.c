@@ -54,21 +54,23 @@ char *INV_WORDS[] = {
 typedef struct _bag{
 	char* word;
 	int times;
-    int bad_meaning;
-    int good_meaning;
+    //int bad_meaning;
+    //int good_meaning;
     } bag;    
     
 typedef struct _products{
 	char* name;
 	bag* review;
+    char** bag_of_words;
+    int* n_bag_of_words;
     int bag_size;
     int meaning;
     } products;
 
-int check_in_bag(char* test_word , bag* this_bag , int bag_size);
+int check_in_bag(char* test_word , char** this_bag , int bag_size);
 int check_type(char* test_word , char** type);
 products read_entry();
-bag* store_in_bag(char *review , int max_size , products* prod);
+void store_in_bag(char *review , int max_size , products* prod);
 float review_type(char* prod , products* entries , int type , int num_entries);
 void free_entries(products* entries , int num_entries);
 void query(products* entries , int num_entries);
@@ -119,15 +121,20 @@ products read_entry(){
     sscanf(prod , "%s[^;];" , this_product.name);
     this_product.name = prod; /*use sscanf for removing whitespace*/
     
-    printf("prod:%s.###review:%s\n" , this_product.name , _review);
+    //printf("prod:%s.###review:%s\n" , this_product.name , _review);
     
     rem_size = 400 - len + 1;
     /*this_product.review = */store_in_bag(_review , rem_size , &this_product); //bag of words of this entries' review
-    printf("meaning is :%d\n" , this_product.meaning);
+    //printf("meaning is :%d\n" , this_product.meaning);
+    
+    for(int i = 0 ; i < this_product.bag_size ; i++)
+        printf(".%s.\n" , this_product.bag_of_words[i]);
+    
+    
     return this_product;
     }
 
-bag* store_in_bag(char *review , int max_size , products* prod){ /*max size of remaining text*/
+void store_in_bag(char *review , int max_size , products* prod){ /*max size of remaining text*/
     prod->meaning = 0;
     int bag_size = 1;
     int aux_meaning;
@@ -136,7 +143,10 @@ bag* store_in_bag(char *review , int max_size , products* prod){ /*max size of r
     int check_return;
     char* word;
     
-    bag* words_in_review = (bag*) calloc (200 , 200 * sizeof(bag));
+    char** words_in_review = (char**) calloc (200 , 200 * sizeof(char*));
+    int* n_words_in_review = (int*) calloc (200 , 200 * sizeof(int));
+    
+    //printf("size :%f\n" , (float)sizeof(words_in_review)/(float)sizeof(bag));
     
     word = strtok ( review ," ");
     while (word != NULL){
@@ -165,32 +175,37 @@ bag* store_in_bag(char *review , int max_size , products* prod){ /*max size of r
         
         if (check_return == -1){ /*creates new bag entry, if the word was not found*/
             
-            words_in_review[bag_size-1].word = (char*) malloc (20*sizeof(char));
-            words_in_review[bag_size-1].word = word;
-            
+            words_in_review[bag_size-1] = (char*) malloc (20*sizeof(char));
+            strcpy(words_in_review[bag_size-1] , word);
+            //printf(".%s.\n" , words_in_review[bag_size-1]);
+            n_words_in_review[bag_size-1] = 1;
             bag_size++;
-            words_in_review[bag_size-1].word = NULL;
-            words_in_review[bag_size-1].times = 1;
+            
+            //words_in_review[bag_size-1].word = NULL;
                                
             } else {
-                words_in_review[check_return].times++;
+                n_words_in_review[check_return]++;
+                //printf(".%d.\n" , n_words_in_review[check_return]);
                 }
         word = strtok(NULL, " ");
     }
     
-    words_in_review = (bag*) realloc (words_in_review , sizeof(words_in_review) / sizeof(bag));
-    prod->bag_size = bag_size;
-    prod->review = words_in_review;
+    //words_in_review = (bag*) realloc (words_in_review , sizeof(words_in_review) / sizeof(bag));
+    prod->bag_size = --bag_size;
+    //prod->review = words_in_review;
+    prod->n_bag_of_words = n_words_in_review;
+    prod->bag_of_words = words_in_review;
+    //printf("size2 :%f\n" , (float)sizeof(words_in_review)/(float)sizeof(bag*));
     //return words_in_review;
     }
     
-int check_in_bag(char* test_word , bag* this_bag , int bag_size){
+int check_in_bag(char* test_word , char** this_bag , int bag_size){
 	int i;
 	for (i = 0 ; i < bag_size ; i++){
-        if(this_bag[i].word == NULL) {
+        if(this_bag[i] == NULL) {
             break;
             }
-		if(strcmp(test_word , this_bag[i].word) == 0){
+		if(strcmp(test_word , this_bag[i]) == 0){
 			return i;
 		}
 	}
@@ -247,22 +262,23 @@ int count_words(char* prod , products* entries , char* search_word , int num_ent
     for (i = 0 ; i < num_entries ; i++){
         //printf("vai dar?:.%s.\n" , entries[i].name);
         if(strcmp(entries[i].name , prod) == 0){
-            printf("olha ai:%d" , entries[i].bag_size);
-            for (j = 0 ; j < entries[i].bag_size ; i++){
-                printf("delbem:.%s.\n" , entries[i].name);
-                printf("delbem?:.%d." ,entries[i].review[j].times);
-                if(strcmp(entries[i].review[j].word , search_word) == 0){
-                    times_appeared += entries[i].review[j].times;
-                    printf("%d\n" , entries[i].review[j].times);
+            //printf("olha ai:%d" , entries[i].bag_size);
+            for (j = 0 ; j < entries[i].bag_size ; j++){
+                //printf("delbem:.%s.\n" , entries[i].name);
+                //printf("delbem?:.%d." , entries[i].bag_size);
+                if(strcmp(entries[i].bag_of_words[j] , search_word) == 0){
+                    times_appeared += entries[i].n_bag_of_words[j];
+                    break;
                 } else {
-                    printf("deu mais ruim:.%s.:.%s. %d\n" , prod , entries[i].review[i].word , strcmp(entries[i].review[i].word , search_word));
+                    //printf("deu mais ruim:.%s.:.%s. %d\n" , prod , entries[i].bag_of_words[j] , strcmp(entries[i].bag_of_words[j] , search_word));
                 }
             }
         } else {
-            //printf("deu ruim:.%s. %d\n" ,prod , strcmp(entries[i].name , prod));
+                //printf("deu ruim ainda:.%s. %d\n" , entries[i].name , strcmp(entries[i].name , prod));
+            }
         }
+        printf("nvezes:%d\n" , times_appeared);
     }
-}
 
 void query(products* entries , int num_entries){
         char* input = NULL; /*(char*) malloc(400 * sizeof(char) ); /*input of max size*/
@@ -273,19 +289,19 @@ void query(products* entries , int num_entries){
         long int t = 0;
         
         getline(&input , &t , stdin);
-        printf("query:%s.\n" , input);
+        //printf("query:%s.\n" , input);
         
         command = strtok(input , " ");
-        printf("command:%s.\n" , command);
+        //printf("command:%s.\n" , command);
         
         if (strcmp(command , "palavra") == 0){
             command = strtok(NULL , " ");
-            printf("palavra:%s.\n" , command);
+            //printf("palavra:%s.\n" , command);
             query_type = true;
             /*check word*/
         } else {
             command = strtok(NULL , " ");
-            printf("quantos:%s.\n" , command);
+            //printf("quantos:%s.\n" , command);
             query_type = false;
         }
         
@@ -302,7 +318,7 @@ void query(products* entries , int num_entries){
             buffer = strtok(NULL , " \n");
         }
             
-        printf("query type: %d , name:%s.\n" , query_type , prod_name);    
+        //printf("query type: %d , name:%s.\n" , query_type , prod_name);    
             
         if(query_type){ /*palavra X*/
             count_words(prod_name , entries , command , num_entries);
