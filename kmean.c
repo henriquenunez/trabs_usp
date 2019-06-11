@@ -50,6 +50,7 @@ flower ref_2;
 	ref_2.pet_wid = 1.9;
 	
 	char groups[3] = {0};	
+	char sel;
 	flower buff;
 	FILE* dataset;
 	dataset = fopen("iris.data" , "r");
@@ -59,7 +60,8 @@ flower ref_2;
 			&buff.sep_wid,
 		       	&buff.pet_len,
 			&buff.pet_wid);
-		groups[belongs_to(buff , ref_0 , ref_1 , ref_2)]++;
+	sel = belongs_to(buff , ref_0 , ref_1 , ref_2);
+	groups[sel]++;
 	}
 	printf("Total do Grupo 0: %d\nTotal do Grupo 1: %d\nTotal do Grupo 2: %d\n" ,groups[0],groups[1],groups[2]);
 	return 0;
