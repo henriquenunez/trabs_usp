@@ -49,8 +49,8 @@ flower ref_2;
 	ref_2.pet_len = 5.1;
 	ref_2.pet_wid = 1.9;
 	
-	char groups[3] = {0};	
-	char sel;
+	int groups[3] = {0};	
+	int sel;
 	flower buff;
 	FILE* dataset;
 	dataset = fopen("iris.data" , "r");
