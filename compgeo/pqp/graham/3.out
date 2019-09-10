@@ -1,0 +1,180 @@
+n =  10 vertices read
+Swapping 8 with 0
+Points:
+vnum=  8, x=   3, y=  -4, delete=0
+vnum=  1, x=   2, y=   4, delete=0
+vnum=  2, x=  -2, y=   3, delete=0
+vnum=  3, x=  -3, y=   2, delete=0
+vnum=  4, x=  -3, y=   0, delete=0
+vnum=  5, x=  -3, y=  -2, delete=0
+vnum=  6, x=  -1, y=  -3, delete=0
+vnum=  7, x=   2, y=  -3, delete=0
+vnum=  0, x=   3, y=   2, delete=0
+vnum=  9, x=   3, y=  -2, delete=0
+AreaSign: area2=33
+AreaSign: area2=12
+AreaSign: area2=42
+AreaSign: area2=12
+AreaSign: area2=2
+AreaSign: area2=0
+AreaSign: area2=-2
+AreaSign: area2=-6
+AreaSign: area2=-12
+AreaSign: area2=-36
+AreaSign: area2=-4
+AreaSign: area2=-2
+AreaSign: area2=-6
+AreaSign: area2=7
+AreaSign: area2=2
+AreaSign: area2=0
+AreaSign: area2=24
+AreaSign: area2=12
+After sorting, ndelete = 2:
+Points:
+vnum=  8, x=   3, y=  -4, delete=0
+vnum=  9, x=   3, y=  -2, delete=1
+vnum=  0, x=   3, y=   2, delete=0
+vnum=  1, x=   2, y=   4, delete=0
+vnum=  2, x=  -2, y=   3, delete=0
+vnum=  7, x=   2, y=  -3, delete=1
+vnum=  3, x=  -3, y=   2, delete=0
+vnum=  4, x=  -3, y=   0, delete=0
+vnum=  5, x=  -3, y=  -2, delete=0
+vnum=  6, x=  -1, y=  -3, delete=0
+After Squash: n=8
+Points:
+vnum=  8, x=   3, y=  -4, delete=0
+vnum=  0, x=   3, y=   2, delete=0
+vnum=  1, x=   2, y=   4, delete=0
+vnum=  2, x=  -2, y=   3, delete=0
+vnum=  3, x=  -3, y=   2, delete=0
+vnum=  4, x=  -3, y=   0, delete=0
+vnum=  5, x=  -3, y=  -2, delete=0
+vnum=  6, x=  -1, y=  -3, delete=0
+After squashing:
+Stack at top of while loop, i=2, vnum=1:
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+AreaSign: area2=6
+Stack at bot of while loop, i=3, vnum=2:
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+
+Stack at top of while loop, i=3, vnum=2:
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+AreaSign: area2=9
+Stack at bot of while loop, i=4, vnum=3:
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+
+Stack at top of while loop, i=4, vnum=3:
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+AreaSign: area2=3
+Stack at bot of while loop, i=5, vnum=4:
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+
+Stack at top of while loop, i=5, vnum=4:
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+AreaSign: area2=2
+Stack at bot of while loop, i=6, vnum=5:
+vnum=4	x=-3	y=0
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+
+Stack at top of while loop, i=6, vnum=5:
+vnum=4	x=-3	y=0
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+AreaSign: area2=0
+Stack at bot of while loop, i=7, vnum=6:
+vnum=5	x=-3	y=-2
+vnum=4	x=-3	y=0
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+
+Stack at top of while loop, i=7, vnum=6:
+vnum=5	x=-3	y=-2
+vnum=4	x=-3	y=0
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+AreaSign: area2=4
+Stack at bot of while loop, i=8, vnum=5:
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=4	x=-3	y=0
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+
+Hull:
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=4	x=-3	y=0
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+%!PS
+%%Creator: graham.c (Joseph O'Rourke)
+%%BoundingBox: -3 -4 3 4
+%%EndComments
+.00 .00 setlinewidth
+75 76 translate
+newpath
+
+%Points:
+3	-4	1  0  360	arc	stroke
+3	2	1  0  360	arc	stroke
+2	4	1  0  360	arc	stroke
+-2	3	1  0  360	arc	stroke
+-3	2	1  0  360	arc	stroke
+-3	0	1  0  360	arc	stroke
+-3	-2	1  0  360	arc	stroke
+-1	-3	1  0  360	arc	stroke
+closepath
+
+%Hull:
+newpath
+-1	-3	moveto
+-1	-3	lineto
+-3	-2	lineto
+-3	0	lineto
+-3	2	lineto
+-2	3	lineto
+2	4	lineto
+3	2	lineto
+3	-4	lineto
+closepath stroke
+showpage
+%%EOF
