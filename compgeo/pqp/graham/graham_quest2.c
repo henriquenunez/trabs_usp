@@ -360,7 +360,7 @@ void   PrintPostscript( tStack t)
    printf("%%%%BoundingBox: %d %d %d %d\n", xmin, ymin, xmax, ymax);
    printf("%%%%EndComments\n");
    printf(".00 .00 setlinewidth\n");
-   printf("%d %d translate\n", -xmin+72, -ymin+72 );
+   //printf("%d %d translate\n", -xmin+72, -ymin+72 );
    /* The +72 shifts the figure one inch from the lower left corner */
 
    /* Draw the points as little circles. */

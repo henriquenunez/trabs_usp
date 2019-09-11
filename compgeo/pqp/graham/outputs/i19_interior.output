@@ -1,0 +1,522 @@
+n =  19 vertices read
+Points:
+vnum=  2, x=   0, y=   1, delete=0, interior=0
+vnum=  1, x=   3, y=   5, delete=0, interior=0
+vnum=  0, x=   3, y=   3, delete=0, interior=0
+vnum=  3, x=   2, y=   5, delete=0, interior=0
+vnum=  4, x=  -2, y=   2, delete=0, interior=0
+vnum=  5, x=  -3, y=   2, delete=0, interior=0
+vnum=  6, x=   6, y=   5, delete=0, interior=0
+vnum=  7, x=  -3, y=   4, delete=0, interior=0
+vnum=  8, x=  -5, y=   2, delete=0, interior=0
+vnum=  9, x=  -5, y=  -1, delete=0, interior=0
+vnum= 10, x=   1, y=  -2, delete=0, interior=0
+vnum= 11, x=  -3, y=  -2, delete=0, interior=0
+vnum= 12, x=   4, y=   2, delete=0, interior=0
+vnum= 13, x=   5, y=   1, delete=0, interior=0
+vnum= 14, x=  -5, y=   1, delete=0, interior=0
+vnum= 15, x=   3, y=  -2, delete=0, interior=0
+vnum= 16, x=   0, y=   5, delete=0, interior=0
+vnum= 17, x=   0, y=   0, delete=0, interior=0
+vnum= 18, x=   7, y=   4, delete=0, interior=0
+---------------------------------------------
+AreaSign: area2=-6
+AreaSign: area2=10
+AreaSign: area2=8
+AreaSign: area2=4
+AreaSign: area2=-18
+AreaSign: area2=15
+AreaSign: area2=12
+AreaSign: area2=30
+AreaSign: area2=-6
+AreaSign: area2=2
+AreaSign: area2=0
+AreaSign: area2=-12
+AreaSign: area2=21
+AreaSign: area2=18
+AreaSign: area2=-3
+AreaSign: area2=1
+AreaSign: area2=-12
+AreaSign: area2=-5
+AreaSign: area2=15
+AreaSign: area2=15
+AreaSign: area2=15
+AreaSign: area2=7
+AreaSign: area2=-0
+AreaSign: area2=-28
+AreaSign: area2=5
+AreaSign: area2=-3
+AreaSign: area2=30
+AreaSign: area2=-15
+AreaSign: area2=3
+AreaSign: area2=-1
+AreaSign: area2=6
+AreaSign: area2=-15
+AreaSign: area2=15
+AreaSign: area2=5
+AreaSign: area2=10
+AreaSign: area2=20
+AreaSign: area2=20
+AreaSign: area2=20
+AreaSign: area2=15
+AreaSign: area2=5
+AreaSign: area2=5
+AreaSign: area2=5
+AreaSign: area2=-10
+AreaSign: area2=9
+After sorting, ndelete = 2:
+Points:
+vnum=  2, x=   0, y=   1, delete=0, interior=0
+vnum=  0, x=   3, y=   3, delete=1, interior=0
+vnum=  6, x=   6, y=   5, delete=0, interior=0
+vnum=  1, x=   3, y=   5, delete=0, interior=0
+vnum=  3, x=   2, y=   5, delete=0, interior=0
+vnum=  7, x=  -3, y=   4, delete=0, interior=0
+vnum=  4, x=  -2, y=   2, delete=0, interior=0
+vnum=  5, x=  -3, y=   2, delete=0, interior=0
+vnum=  8, x=  -5, y=   2, delete=0, interior=0
+vnum= 14, x=  -5, y=   1, delete=0, interior=0
+vnum=  9, x=  -5, y=  -1, delete=0, interior=0
+vnum= 11, x=  -3, y=  -2, delete=0, interior=0
+vnum= 17, x=   0, y=   0, delete=1, interior=0
+vnum= 10, x=   1, y=  -2, delete=0, interior=0
+vnum= 15, x=   3, y=  -2, delete=0, interior=0
+vnum= 13, x=   5, y=   1, delete=0, interior=0
+vnum= 12, x=   4, y=   2, delete=0, interior=0
+vnum= 18, x=   7, y=   4, delete=0, interior=0
+vnum= 16, x=   0, y=   5, delete=0, interior=0
+---------------------------------------------
+After Squash: n=17
+Points:
+vnum=  2, x=   0, y=   1, delete=0, interior=0
+vnum=  6, x=   6, y=   5, delete=0, interior=0
+vnum=  1, x=   3, y=   5, delete=0, interior=0
+vnum=  3, x=   2, y=   5, delete=0, interior=0
+vnum=  7, x=  -3, y=   4, delete=0, interior=0
+vnum=  4, x=  -2, y=   2, delete=0, interior=0
+vnum=  5, x=  -3, y=   2, delete=0, interior=0
+vnum=  8, x=  -5, y=   2, delete=0, interior=0
+vnum= 14, x=  -5, y=   1, delete=0, interior=0
+vnum=  9, x=  -5, y=  -1, delete=0, interior=0
+vnum= 11, x=  -3, y=  -2, delete=0, interior=0
+vnum= 10, x=   1, y=  -2, delete=0, interior=0
+vnum= 15, x=   3, y=  -2, delete=0, interior=0
+vnum= 13, x=   5, y=   1, delete=0, interior=0
+vnum= 12, x=   4, y=   2, delete=0, interior=0
+vnum= 18, x=   7, y=   4, delete=0, interior=0
+vnum= 16, x=   0, y=   5, delete=0, interior=0
+After squashing:
+Stack at top of while loop, i=2, vnum=1:
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=12
+Stack at bot of while loop, i=3, vnum=3:
+vnum=1	x=3	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=3, vnum=3:
+vnum=1	x=3	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=0
+Stack at bot of while loop, i=3, vnum=3:
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=3, vnum=3:
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=16
+Stack at bot of while loop, i=4, vnum=7:
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=4, vnum=7:
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=4
+Stack at bot of while loop, i=5, vnum=4:
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=5, vnum=4:
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=11
+Stack at bot of while loop, i=6, vnum=5:
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=6, vnum=5:
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=-2
+Stack at bot of while loop, i=7, vnum=8:
+vnum=5	x=-3	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=7, vnum=8:
+vnum=5	x=-3	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=0
+Stack at bot of while loop, i=7, vnum=8:
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=7, vnum=8:
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=-6
+Stack at bot of while loop, i=8, vnum=14:
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=8, vnum=14:
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=3
+Stack at bot of while loop, i=9, vnum=9:
+vnum=14	x=-5	y=1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=9, vnum=9:
+vnum=14	x=-5	y=1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=0
+Stack at bot of while loop, i=9, vnum=9:
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=9, vnum=9:
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=9
+Stack at bot of while loop, i=10, vnum=11:
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=10, vnum=11:
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=6
+Stack at bot of while loop, i=11, vnum=10:
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=11, vnum=10:
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=4
+Stack at bot of while loop, i=12, vnum=15:
+vnum=10	x=1	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=12, vnum=15:
+vnum=10	x=1	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=0
+Stack at bot of while loop, i=12, vnum=15:
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=12, vnum=15:
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=6
+Stack at bot of while loop, i=13, vnum=13:
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=13, vnum=13:
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=18
+Stack at bot of while loop, i=14, vnum=12:
+vnum=13	x=5	y=1
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=14, vnum=12:
+vnum=13	x=5	y=1
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=5
+Stack at bot of while loop, i=15, vnum=18:
+vnum=12	x=4	y=2
+vnum=13	x=5	y=1
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=15, vnum=18:
+vnum=12	x=4	y=2
+vnum=13	x=5	y=1
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=-5
+Stack at bot of while loop, i=16, vnum=16:
+vnum=18	x=7	y=4
+vnum=12	x=4	y=2
+vnum=13	x=5	y=1
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Stack at top of while loop, i=16, vnum=16:
+vnum=18	x=7	y=4
+vnum=12	x=4	y=2
+vnum=13	x=5	y=1
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+AreaSign: area2=17
+Stack at bot of while loop, i=17, vnum=18:
+vnum=16	x=0	y=5
+vnum=18	x=7	y=4
+vnum=12	x=4	y=2
+vnum=13	x=5	y=1
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+
+Points:
+vnum=  2, x=   0, y=   1, delete=0, interior=0
+vnum=  6, x=   6, y=   5, delete=0, interior=0
+vnum=  1, x=   3, y=   5, delete=0, interior=0
+vnum=  3, x=   2, y=   5, delete=0, interior=0
+vnum=  7, x=  -3, y=   4, delete=0, interior=0
+vnum=  4, x=  -2, y=   2, delete=0, interior=0
+vnum=  5, x=  -3, y=   2, delete=0, interior=0
+vnum=  8, x=  -5, y=   2, delete=0, interior=0
+vnum= 14, x=  -5, y=   1, delete=0, interior=0
+vnum=  9, x=  -5, y=  -1, delete=0, interior=0
+vnum= 11, x=  -3, y=  -2, delete=0, interior=0
+vnum= 10, x=   1, y=  -2, delete=0, interior=0
+vnum= 15, x=   3, y=  -2, delete=0, interior=0
+vnum= 13, x=   5, y=   1, delete=0, interior=0
+vnum= 12, x=   4, y=   2, delete=0, interior=0
+vnum= 18, x=   7, y=   4, delete=0, interior=0
+vnum= 16, x=   0, y=   5, delete=0, interior=0
+Hull:
+vnum=16	x=0	y=5
+vnum=18	x=7	y=4
+vnum=12	x=4	y=2
+vnum=13	x=5	y=1
+vnum=15	x=3	y=-2
+vnum=11	x=-3	y=-2
+vnum=9	x=-5	y=-1
+vnum=8	x=-5	y=2
+vnum=4	x=-2	y=2
+vnum=7	x=-3	y=4
+vnum=3	x=2	y=5
+vnum=6	x=6	y=5
+vnum=2	x=0	y=1
+---------------------------------------------
+---------------------------------------------
+%!PS
+%%Creator: graham.c (Joseph O'Rourke)
+%%BoundingBox: -5 -2 7 5
+%%EndComments
+.00 .00 setlinewidth
+405 402 translate
+newpath
+
+%Points:
+0	1	1  0  360	arc	stroke
+6	5	1  0  360	arc	stroke
+3	5	1  0  360	arc	stroke
+2	5	1  0  360	arc	stroke
+-3	4	1  0  360	arc	stroke
+-2	2	1  0  360	arc	stroke
+-3	2	1  0  360	arc	stroke
+-5	2	1  0  360	arc	stroke
+-5	1	1  0  360	arc	stroke
+-5	-1	1  0  360	arc	stroke
+-3	-2	1  0  360	arc	stroke
+1	-2	1  0  360	arc	stroke
+3	-2	1  0  360	arc	stroke
+5	1	1  0  360	arc	stroke
+4	2	1  0  360	arc	stroke
+7	4	1  0  360	arc	stroke
+0	5	1  0  360	arc	stroke
+closepath
+
+%Hull:
+newpath
+0	5	moveto
+0	5	lineto
+7	4	lineto
+4	2	lineto
+5	1	lineto
+3	-2	lineto
+-3	-2	lineto
+-5	-1	lineto
+-5	2	lineto
+-2	2	lineto
+-3	4	lineto
+2	5	lineto
+6	5	lineto
+0	1	lineto
+closepath stroke
+showpage
+%%EOF

@@ -1,0 +1,235 @@
+n =  10 vertices read
+Swapping 1 with 0
+Points:
+vnum=  1, x=   2, y=   4, delete=0
+vnum=  0, x=   3, y=   2, delete=0
+vnum=  2, x=  -2, y=   3, delete=0
+vnum=  3, x=  -3, y=   2, delete=0
+vnum=  4, x=  -3, y=   0, delete=0
+vnum=  5, x=  -3, y=  -2, delete=0
+vnum=  6, x=  -1, y=  -3, delete=0
+vnum=  7, x=   2, y=  -3, delete=0
+vnum=  8, x=   3, y=  -4, delete=0
+vnum=  9, x=   3, y=  -2, delete=0
+AreaSign: area2=-9
+AreaSign: area2=10
+AreaSign: area2=3
+AreaSign: area2=-12
+AreaSign: area2=-14
+AreaSign: area2=17
+AreaSign: area2=2
+AreaSign: area2=7
+AreaSign: area2=35
+AreaSign: area2=21
+AreaSign: area2=19
+AreaSign: area2=20
+AreaSign: area2=10
+AreaSign: area2=-16
+AreaSign: area2=-13
+AreaSign: area2=-7
+AreaSign: area2=-6
+AreaSign: area2=-4
+After sorting, ndelete = 0:
+Points:
+vnum=  1, x=   2, y=   4, delete=0
+vnum=  2, x=  -2, y=   3, delete=0
+vnum=  3, x=  -3, y=   2, delete=0
+vnum=  4, x=  -3, y=   0, delete=0
+vnum=  5, x=  -3, y=  -2, delete=0
+vnum=  6, x=  -1, y=  -3, delete=0
+vnum=  7, x=   2, y=  -3, delete=0
+vnum=  8, x=   3, y=  -4, delete=0
+vnum=  9, x=   3, y=  -2, delete=0
+vnum=  0, x=   3, y=   2, delete=0
+Stack at top of while loop, i=2, vnum=3:
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=3
+Stack at bot of while loop, i=3, vnum=4:
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=3, vnum=4:
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=2
+Stack at bot of while loop, i=4, vnum=5:
+vnum=4	x=-3	y=0
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=4, vnum=5:
+vnum=4	x=-3	y=0
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=0
+Stack at bot of while loop, i=4, vnum=5:
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=4, vnum=5:
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=4
+Stack at bot of while loop, i=5, vnum=6:
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=5, vnum=6:
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=8
+Stack at bot of while loop, i=6, vnum=7:
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=6, vnum=7:
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=3
+Stack at bot of while loop, i=7, vnum=8:
+vnum=7	x=2	y=-3
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=7, vnum=8:
+vnum=7	x=2	y=-3
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=-3
+Stack at bot of while loop, i=7, vnum=8:
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=7, vnum=8:
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=2
+Stack at bot of while loop, i=8, vnum=9:
+vnum=8	x=3	y=-4
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=8, vnum=9:
+vnum=8	x=3	y=-4
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=8
+Stack at bot of while loop, i=9, vnum=0:
+vnum=9	x=3	y=-2
+vnum=8	x=3	y=-4
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=9, vnum=0:
+vnum=9	x=3	y=-2
+vnum=8	x=3	y=-4
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=0
+Stack at bot of while loop, i=9, vnum=0:
+vnum=8	x=3	y=-4
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Stack at top of while loop, i=9, vnum=0:
+vnum=8	x=3	y=-4
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+AreaSign: area2=24
+Stack at bot of while loop, i=10, vnum=0:
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+
+Hull:
+vnum=0	x=3	y=2
+vnum=8	x=3	y=-4
+vnum=6	x=-1	y=-3
+vnum=5	x=-3	y=-2
+vnum=3	x=-3	y=2
+vnum=2	x=-2	y=3
+vnum=1	x=2	y=4
+%!PS
+%%Creator: graham.c (Joseph O'Rourke)
+%%BoundingBox: -3 -4 3 4
+%%EndComments
+.00 .00 setlinewidth
+newpath
+
+%Points:
+2	4	1  0  360	arc	stroke
+-2	3	1  0  360	arc	stroke
+-3	2	1  0  360	arc	stroke
+-3	0	1  0  360	arc	stroke
+-3	-2	1  0  360	arc	stroke
+-1	-3	1  0  360	arc	stroke
+2	-3	1  0  360	arc	stroke
+3	-4	1  0  360	arc	stroke
+3	-2	1  0  360	arc	stroke
+3	2	1  0  360	arc	stroke
+closepath
+
+%Hull:
+newpath
+3	2	moveto
+3	2	lineto
+3	-4	lineto
+-1	-3	lineto
+-3	-2	lineto
+-3	2	lineto
+-2	3	lineto
+2	4	lineto
+closepath stroke
+showpage
+%%EOF

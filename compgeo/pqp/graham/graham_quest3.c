@@ -33,6 +33,7 @@ typedef enum { FALSE, TRUE }   bool;
 #define DIM 2               /* Dimension of points */
 typedef int tPointi[DIM];   /* Type integer point */
 
+#define INTERIOR_POINT 2 /*index of known interior point*/
 
 /*----------Point(s) Structure-------------*/
 typedef struct tPointStructure tsPoint;
@@ -47,13 +48,16 @@ struct tPointStructure {
 /* Global variables */
 #define PMAX    1000               /* Max # of points */
 typedef tsPoint tPointArray[PMAX];
+
 static tPointArray P;
+
 int n = 0;                         /* Actual # of points */
 int ndelete = 0;                   /* Number deleted */
 
 /*----------Stack Structure-------------*/
 typedef struct tStackCell tsStack; /* Used on in NEW() */
 typedef tsStack *tStack;
+
 struct tStackCell {
    tPoint   p;
    tStack   next;
@@ -73,17 +77,18 @@ void    FindLowest( void );
 void	Swap( int i, int j );
 
 int     AreaSign( tPointi a, tPointi b, tPointi c );
-bool    Left( tPointi a, tPointi b, tPointi c );
+int    Left( tPointi a, tPointi b, tPointi c );
 int     ReadPoints( void );
 void    PrintPoints( void );
 
+void insertInteriorPoint (void);
 
 main()
 {
    tStack   top;
 
    n = ReadPoints();
-   FindLowest();
+   insertInteriorPoint(); /*Reads index of a known interior point and makes calculations based on it*/
    PrintPoints();
 
    printf("---------------------------------------------\n");
@@ -236,6 +241,8 @@ tStack   Graham()
    int i;
    tPoint p1, p2;  /* Top two points on stack. */
 
+   int leftval;
+
    /* Initialize stack. */
    top = NULL;
    top = Push ( &P[0], top );
@@ -250,12 +257,14 @@ tStack   Graham()
       if( !top->next) printf("Error\n"),exit(EXIT_FAILURE);
       p1 = top->next->p;
       p2 = top->p;
+
       if ( Left( p1->v , p2->v, P[i].v ) ) {
          top = Push ( &P[i], top );
          i++;
       } else {
+         if(leftval < 0)
+            P[i].interior = 1;
          top = Pop( top );
-         P[i].interior = 1;
         }   
       printf("Stack at bot of while loop, i=%d, vnum=%d:\n", i, P[i].vnum);
       PrintStack( top );
@@ -296,6 +305,9 @@ void	Copy( int i, int j )
    P[j].delete = P[i].delete;
 }
 
+void insertInteriorPoint (void){
+   Swap(0,INTERIOR_POINT);
+}
 
 /*---------------------------------------------------------------------
 Returns twice the signed area of the triangle determined by a,b,c.
@@ -314,10 +326,10 @@ int     Area2( tPointi a, tPointi b, tPointi c )
 Returns true iff c is strictly to the left of the directed
 line through a to b.
 ---------------------------------------------------------------------*/
-bool   Left( tPointi a, tPointi b, tPointi c )
+int   Left( tPointi a, tPointi b, tPointi c )
 { 
    /*return  Area2( a, b, c ) > 0;*/
-   return  AreaSign( a, b, c ) > 0;
+   return  AreaSign( a, b, c );
 }
 
 /*---------------------------------------------------------------------
@@ -376,7 +388,7 @@ void   PrintPostscript( tStack t)
    printf("%%%%BoundingBox: %d %d %d %d\n", xmin, ymin, xmax, ymax);
    printf("%%%%EndComments\n");
    printf(".00 .00 setlinewidth\n");
-   //printf("%d %d translate\n", -xmin+72, -ymin+72 );
+   printf("%d %d translate\n", -xmin+400, -ymin+400 );
    /* The +72 shifts the figure one inch from the lower left corner */
 
    /* Draw the points as little circles. */
