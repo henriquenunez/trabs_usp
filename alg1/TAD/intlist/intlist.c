@@ -9,28 +9,28 @@ struct _list
     int compNum;
 };
 
-int retLen(integerList8 list)
+int retLen(LIST list)
 {
     return list->len;
 }
-int compNum(integerList8 list)
+int compNum(LIST list)
 {
     return list->compNum;
 }
 
-int dat_num(integerList8 list, int pos)
+int getNum(LIST list, int pos)
 {
     return list->content[pos];
 }
 
-void insElement(integerList* list, int d)
+void insElement(LIST list, int d)
 {
-    list->content = (int*) realloc (list->content, (list->len + 1) * sizeof(int));
-    list->content[list->len] = d;
-    list->len++;
+        list->content = (int*) realloc (list->content, (list->len + 1) * sizeof(int));
+        list->content[list->len] = d;
+        list->len++;
 }
 
-int whetherInList(integerList* list, int num)
+int whetherInList(LIST list, int num)
 {
     if (list->content == NULL) return 0;
     for (int i = 0; i < list->len; i++)
@@ -44,20 +44,20 @@ int whetherInList(integerList* list, int num)
     return 0;
 }
 
-void printList(integerList* list)
+void printList(LIST list)
 {
     for (int i = 0; i < list->len; i++)
     {
-        fprintf(stderr, "%d\t", list->content[i]);
         fprintf(stdout, "%d\t", list->content[i]);
+        //fprintf(stderr, "%d\t", list->content[i]);
     }
-    fprintf(stderr, "\n");
     fprintf(stdout, "\n");
+    //fprintf(stderr, "\n");
 }
 
-integerList8 newList()
+LIST newList()
 {
-    integerList* a_list = (integerList8) malloc(sizeof(integerList));
+    LIST a_list = (LIST) malloc(sizeof(integerList));
     a_list->compNum = 0;
     a_list->content = NULL;
     a_list->len;

@@ -3,14 +3,14 @@
 
 typedef struct _list integerList;
 
-typedef integerList* integerList8;
+typedef integerList* LIST; //pointer to list datatype
 
-integerList8 newList();
-void insElement(integerList8 list, int d);
-int whetherInList(integerList8 list, int num);
-void printList(integerList8 list);
-int retLen(integerList8 list);
-int compNum(integerList8 list);
-int dat_num(integerList8 list, int pos);
+LIST newList(); //create list
+void insElement(LIST list, int d); //insert element
+int whetherInList(LIST list, int num); //checks if exists in list
+void printList(LIST list); //prints list
+int retLen(LIST list); //acquires length
+int compNum(LIST list); //acquires number of comparisons
+int getNum(LIST list, int pos); //acquires the element itself
 
 #endif
