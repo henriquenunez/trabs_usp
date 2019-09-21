@@ -1,5 +1,5 @@
-#include <stdio.h>
+#include <iostream>
+#include <algorithm>
 
-int main(){
+typedef std::vector<std::tuple<>>
 
-}
