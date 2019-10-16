@@ -18,6 +18,8 @@ struct _list
 	NODE* last;
 };
 
+/*Runs through list deallocating the node and their contents with
+  its ADT specific function*/
 int deAlloc(LIST* aList, int (*clearfunc)(void*))
 {
 	NODE* temp = aList->first;
@@ -30,20 +32,9 @@ int deAlloc(LIST* aList, int (*clearfunc)(void*))
 	free(aList);
 	return SUCCESS;
 }
-/*
-int deAlloc(LIST* aList)
-{
-	NODE* temp = aList->first;
-	do
-	{
-		//pointer to func clearcont(temp->cont)
-		temp = temp->next;
-		free(temp->prev);
-	}while(temp!=aList->first);
-	free(aList);
-	return SUCCESS;
-}
-*/
+
+/*Runs through list checking whether the key is the
+  same or not*/
 NODE* searchByKey(LIST* aList, int key)
 {
 	NODE* temp = aList->first;
@@ -59,20 +50,6 @@ NODE* searchByKey(LIST* aList, int key)
 	return NULL;
 }
 
-int removeByKey(LIST* aList, int key)
-{
-	NODE* temp = searchByKey(aList, key);
-	if (temp == NULL) return ERROR;
-	temp->prev->next = temp->next;
-	temp->next->prev = temp->prev;
-	temp->prev = NULL;
-	temp->next = NULL;
-	//weird func temp->cont
-	free(temp);
-	aList->size = aList->size - 1;
-	return SUCCESS;
-}
-
 int removeContent(LIST* aList, int key, int (*removeFunc)(void*))
 {
 	NODE* temp = searchByKey(aList, key);
@@ -81,30 +58,33 @@ int removeContent(LIST* aList, int key, int (*removeFunc)(void*))
 	removeFunc(temp->content);
 	temp->prev->next = temp->next;
 	temp->next->prev = temp->prev;
+	
+	aList->size = aList->size - 1;
+	if (temp == aList->first)
+	{
+		aList->first = temp->next;
+	}
+	if (temp == aList->last)
+	{
+		aList->last = temp->prev;
+	}
+	
 	temp->prev = NULL;
 	temp->next = NULL;
 	
-	aList->size = aList->size - 1;
 	free(temp);	
 	return SUCCESS;
 }
 
-void* pointerToContents(NODE* aNode)
-{
-	return aNode->content;
-}
-
 int insertFirst(LIST* aList, NODE* new)
 {
-	//NODE* new = newNode(key);
-	
 	if(new == NULL) return ERROR;
 
 	aList->first = new;
 	aList->last = new;
 	new->next = new;
 	new->prev = new;
-
+	aList->size = aList->size + 1;
 	return SUCCESS;
 }
 
@@ -117,29 +97,16 @@ int insertAtNode(LIST* aList, NODE* prev, NODE* new)
 
 	if(prev == NULL)
 	{
-		//printf("prev is null\n");
 		insertFirst(aList, new);
-		//printf(" new->next %p\n", new->next);
-		//printf(" new->prev %p\n\n\n", new->prev);
 		return SUCCESS;
 	}
-//TODO treat "last" case
 
-/*
-	printf("prev->next %p\n", prev->next);
-	printf("prev->prev %p\n\n", prev->prev);
-*/
 	new->next = prev->next;
 	new->prev = prev;
 
 	new->next->prev = new;
 	new->prev->next = new;
-/*
-	printf("prev->next %p\n", prev->next);
-	printf("prev->prev %p\n", prev->prev);
-	printf(" new->next %p\n", new->next);
-	printf(" new->prev %p\n\n\n", new->prev);
-*/
+
 	if (new->next == aList->first)
 	{
 		aList->last = new;
@@ -153,7 +120,6 @@ int insertAtEnd(LIST* aList, NODE* new)
 	int retCode;
 	retCode = insertAtNode(aList, aList->last, new);
 	aList->last = new;
-	aList->size = aList->size + 1;
 	return retCode;
 }
 
@@ -180,22 +146,7 @@ int setContent(NODE* aNode, void* content)
 	return SUCCESS;
 }
 
-void printList(LIST* aList)
-{
-	NODE* temp = aList->first;
-	if(temp == NULL)
-	{
-		printf("error\n");
-		return;
-	}
-	do
-	{
-		printf("element key: %d\n", temp->key);
-		temp = temp->next;
-	}while(temp != aList->first);
-	printf("\n");
-}
-
+/*iters through list, calling customFunc at every node*/
 void iterList(LIST* aList, int (*customFunc)(void*))
 {
 	NODE* temp = aList->first;
@@ -206,30 +157,14 @@ void iterList(LIST* aList, int (*customFunc)(void*))
 	}
 	do
 	{
-		printf("calling da thing\n");
 		printf("ID: %d ", temp->key);
 		(*customFunc)(temp->content);
 		temp = temp->next;
 	}while(temp != aList->first);
 }
-/*
-void iterListDeAlloc(LIST* aList, int (*customFunc)(void*, int))
-{
-	NODE* temp = aList->first;
-	if(temp == NULL)
-	{
-		printf("error:no items\n");
-		return;
-	}
-	do
-	{
-		printf("calling da thing\n");
-		printf("ID: %d ", temp->key);
-		(*customFunc)(temp->content, temp->key);
-		temp = temp->next;
-	}while(temp != aList->first);
-}
-*/
+
+/*iters through list, using customFunc return value
+  to calculate the mean of all nodes content values*/
 void* iterListGetVals(LIST* aList, void* (*customFunc)(void*))
 {
 	float* accumulator = (float*) malloc (sizeof(float));
@@ -243,14 +178,10 @@ void* iterListGetVals(LIST* aList, void* (*customFunc)(void*))
 		return NULL;
 	}
 	do
-	{
-		printf("calling da thing\n");
-		
+	{	
 		ptr = (*customFunc)(temp->content);
 		(*accumulator) += *((float*)(ptr));
 		free(ptr);
-		printf("valbynow: %f ", *accumulator);
-		
 		temp = temp->next;
 	}while(temp != aList->first);
 

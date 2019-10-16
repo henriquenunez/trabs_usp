@@ -8,14 +8,14 @@ int main()
 	bcc = newTable();
 
 	createEntry(bcc, 10, 2,  1,  2);
-	createEntry(bcc, 11, 2,  1,  2);
-	createEntry(bcc, 12, 6666666,  1,  2);
-	createEntry(bcc, 13, 3, 10,  2);
-	createEntry(bcc, 14, 3, 10, 10);
+	createEntry(bcc, 11, 4,  1,  2);
+	createEntry(bcc, 12, 8,  1,  2);
+	createEntry(bcc, 13, 16, 10,  2);
+	createEntry(bcc, 14, 32, 10, 10);
 	
 	printTable(bcc);
 
-	deleteEntry(bcc, 12);
+	deleteEntry(bcc, 10);
 
 	printf("\n");
 
