@@ -8,4 +8,6 @@ void* stack_pop(STACK*);
 int stack_push(STACK*, void*);
 int stack_purge(STACK*);
 
+//TODO implement iter through stack
+
 #endif

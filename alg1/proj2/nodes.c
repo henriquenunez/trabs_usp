@@ -20,6 +20,7 @@ NODE* node_create()
 	return new;
 }
 
+
 int node_set(NODE* this_node, void* cont, NODE* next)
 {
 	this_node->content = cont;
@@ -28,13 +29,15 @@ int node_set(NODE* this_node, void* cont, NODE* next)
 	return OK;
 }
 
+
 void* node_retrieve(NODE* this_node, char op)
 {
-	if (op = 0)
+	if (op == 0)
 		return this_node->content;
 	else
 		return this_node->nxt;
 }
+
 
 int node_free(NODE* this_node)
 {

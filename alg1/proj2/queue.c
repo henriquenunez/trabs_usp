@@ -1,4 +1,6 @@
 #include <stdlib.h>
+
+#include "nodes.h"
 #include "queue.h"
 #include "defines.h"
 
@@ -15,7 +17,7 @@ struct _queue
 {
 	NODE* first;
 	NODE* last;
-}
+};
 
 
 QUEUE* queue_create()
@@ -25,10 +27,10 @@ QUEUE* queue_create()
 	return new;
 }
 
-
+/*Creates element at the end of the queue, with the given content*/
 int queue_append(QUEUE* this_queue, void* content)
 {
-	NODE* new_node = node_create()
+	NODE* new_node = node_create();
 	node_set(this_queue->last, this_queue->last->content, new_node);
 	node_set(new_node, content, NULL);
 	this_queue->last = new_node;
@@ -36,7 +38,25 @@ int queue_append(QUEUE* this_queue, void* content)
 	return 0;
 }
 
-int queue_call()
+/*Returns content of the first element*/
+void* queue_call(QUEUE* this_queue)
 {
-	
+	NODE* temp;
+	void* content;
+
+	temp = this_queue->first;
+	content = node_retrieve(temp, 0);
+	this_queue->first = (NODE*)node_retrieve(temp, 1);
+	free(temp);
+
+	return content;
+}
+
+/*Frees every element of the list, the frees the list itself*/
+int queue_purge(QUEUE* this_queue)
+{
+	while(node_free(queue_call(this_queue)) != NULL_PTR_ERR);
+	free(this_queue);
+
+	return OK;
 }

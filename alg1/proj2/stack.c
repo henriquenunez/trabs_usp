@@ -1,4 +1,6 @@
 #include <stdlib.h>
+
+#include "nodes.h"
 #include "defines.h"
 #include "stack.h"
 
@@ -21,7 +23,7 @@ int stack_push(STACK* this_stack, void* cont)
 {
 	NODE* new_node = node_create();
 	
-	if (stack_top != NULL)
+	if (this_stack->stack_top != NULL)
 		node_set(new_node, cont, this_stack->stack_top);
 	
 	this_stack->stack_top = new_node;
@@ -35,9 +37,9 @@ void* stack_pop(STACK* this_stack)
 	if (this_stack == NULL || this_stack->stack_top == NULL)
 		return NULL;
 	
-	void* content = node_retrieve(this_stack->stack_top, 0);
 	void* temp = this_stack->stack_top;
-	this_stack->stack_top = node_retrieve(this_stack->stack_top, 1);
+	void* content = node_retrieve(temp, 0);
+	this_stack->stack_top = (NODE*)node_retrieve(temp, 1);
 	node_free(temp);
 
 	return content;
@@ -46,10 +48,10 @@ void* stack_pop(STACK* this_stack)
 
 int stack_purge(STACK* this_stack)
 {
-	if (this_stack == NULL) return NULL_PTR_ERROR;
+	if (this_stack == NULL) return NULL_PTR_ERR;
 
 	while(stack_pop(this_stack) != NULL);
 	free(this_stack);
 
-	return 0;
+	return OK;
 }

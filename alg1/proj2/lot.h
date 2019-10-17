@@ -3,5 +3,11 @@
 
 //rules and everyting
 
-int check_in();
-int check_out();
+typedef struct _parking_lot  PARKING_LOT;
+
+PARKING_LOT* lot_create();
+int lot_purge(PARKING_LOT*);
+int register_car(PARKING_LOT*, int, int, int);
+char* car_list();
+
+#endif
