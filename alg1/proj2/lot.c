@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "defines.h"
 #include "lot.h"
@@ -11,7 +12,6 @@ typedef struct _car
 	int timeArrival;
 	int stayPeriod;
 } CAR;
-
 
 struct _parking_lot
 {
@@ -26,7 +26,6 @@ struct _parking_lot
 };
 
 int check_availability(PARKING_LOT*);
-
 
 PARKING_LOT* lot_create()
 {
@@ -91,9 +90,28 @@ int register_car(PARKING_LOT* this_lot, int plate, int arrival, int stay)
 
 char* car_list(PARKING_LOT* this_lot)
 {
-	//alloc the *exact space* for making a string out of the printed cars
+	//allocate the *exact space* for making a string out of the printed cars
+	/*printing format
+	LOT PLATE PRICE
+	X   XXXX  XXXXX
+	Lot:X Plate: XXXX Price: XXXX.XX\n => 31 characters 
+	*/
+	CAR* temp_car;
+	char* print_list = (char*) 
+			calloc(31*(this_lot->P_cars + this_lot->F_cars),
+		       	sizeof(char));
 
-	//sprintf("%4d %d %2.2f", ); format output for cars
+	for ( temp_car = (CAR*) queue_iter(this_lot->F) ; temp_car != NULL ; temp_car = (CAR*) queue_iter(this_lot->F))
+	{
+		printf("F %d %d %d\n", temp_car->plate, temp_car->timeArrival, temp_car->stayPeriod);
+	}
+
+	for ( temp_car = (CAR*) stack_iter(this_lot->P) ; temp_car != NULL ; temp_car = (CAR*) stack_iter(this_lot->P))
+	{
+		printf("P %d %d %d\n", temp_car->plate, temp_car->timeArrival, temp_car->stayPeriod);
+	}
+	
+	return print_list;
 }
 
 int lot_purge(PARKING_LOT* this_lot)

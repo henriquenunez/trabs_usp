@@ -3,11 +3,11 @@
 
 //rules and everyting
 
-typedef struct _parking_lot  PARKING_LOT;
+typedef struct _parking_lot PARKING_LOT;
 
 PARKING_LOT* lot_create();
 int lot_purge(PARKING_LOT*);
 int register_car(PARKING_LOT*, int, int, int);
-char* car_list();
+char* car_list(PARKING_LOT*);
 
 #endif
