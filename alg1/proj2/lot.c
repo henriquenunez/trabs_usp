@@ -103,12 +103,12 @@ char* car_list(PARKING_LOT* this_lot)
 
 	for ( temp_car = (CAR*) queue_iter(this_lot->F) ; temp_car != NULL ; temp_car = (CAR*) queue_iter(this_lot->F))
 	{
-		printf("F %d %d %d\n", temp_car->plate, temp_car->timeArrival, temp_car->stayPeriod);
+		printf("Q %d %d %d\n", temp_car->plate, temp_car->timeArrival, temp_car->stayPeriod);
 	}
 
 	for ( temp_car = (CAR*) stack_iter(this_lot->P) ; temp_car != NULL ; temp_car = (CAR*) stack_iter(this_lot->P))
 	{
-		printf("P %d %d %d\n", temp_car->plate, temp_car->timeArrival, temp_car->stayPeriod);
+		printf("S %d %d %d\n", temp_car->plate, temp_car->timeArrival, temp_car->stayPeriod);
 	}
 	
 	return print_list;

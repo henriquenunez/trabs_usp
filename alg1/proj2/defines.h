@@ -8,5 +8,6 @@
 #define MAX_CARS_P 5
 #define MAX_CARS_F 10
 
+typedef unsigned char short_number_t;
 
 #endif

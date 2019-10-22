@@ -12,6 +12,10 @@ dirs:
 
 build: nodes.o stack.o queue.o lot.o main.o
 
+tests: build
+	gcc -g -o kiwi test_queue.c *.o
+	gcc -g -o pilhachu test_stack.c *.o
+
 nodes.o:
 	${CC} ${CFLAGS} -g -c nodes.c -o ${blddir}/nodes.o
 
@@ -33,4 +37,4 @@ run:
 	${blddir}/parkingLot
 
 clean:
-	rm -rf *.o parkingLot
+	rm -rf *.o parkingLot pilhachu kiwi

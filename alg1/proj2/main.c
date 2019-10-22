@@ -23,7 +23,8 @@ int main()
 
 	do
 	{
-		scanf("%c", &op);
+		scanf(" %c ", &op);
+		//printf("received %d\n", op);
 		switch(op)
 		{
 			case '1':
@@ -36,7 +37,7 @@ int main()
 				printf("%s", car_list(a_lot));
 				break;
 			case '4':
-				lot_purge(a_lot);
+				//lot_purge(a_lot);
 				return 0;
 				break;
 		}

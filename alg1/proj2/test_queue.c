@@ -25,7 +25,7 @@ int main()
 	for( var = queue_call(my_queue); var != NULL; var = queue_call(my_queue))
 	{
 		printf("%s\n", var);
-		var = queue_call(my_queue);
+		//var = queue_call(my_queue);
 	}
 
 	return 0;
