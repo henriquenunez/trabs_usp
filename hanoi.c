@@ -38,9 +38,9 @@ void printTowersWithoutADT(int n, int* towA, int* towR, int* towE){
 }
 
 void moveDisks(int n, int* from, int* to, int* using, TOWERS* aSet){
-	char dummy;
-	scanf("%c", &dummy);
-	clear(n);
+//	char dummy;
+//	scanf("%c", &dummy);
+//	clear(n);
 	if (n == 1){
 		to[0] = from[0];
 		from[0] = 0;
@@ -51,7 +51,7 @@ void moveDisks(int n, int* from, int* to, int* using, TOWERS* aSet){
 		from[n-1] = 0;
 		moveDisks(n-1, using, to, from, aSet);
 	}
-	printTowers(n, aSet);
+//	printTowers(n, aSet);
 //	(*printTowers)(ndele, aSet);
 }
 
