@@ -1,3 +1,5 @@
 # trabs_usp
 
-Pastinha doidinha pra eu deixar minhas coisinhas, #TOP SHOW #TMJ
+Repositório para os trabalhos ao longo da faculdade.
+
+
