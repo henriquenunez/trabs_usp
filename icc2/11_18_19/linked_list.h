@@ -9,5 +9,5 @@ int list_exists(LIST*, int);
 void* list_retrieve(LIST*, int);
 int list_purge(LIST*);
 
-#undef
+#endif
 

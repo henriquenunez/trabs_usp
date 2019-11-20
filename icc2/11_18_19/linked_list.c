@@ -1,24 +1,39 @@
 #include <stdlib.h>
 #include "linked_list.h"
 
+/*DEFINES*/
+
+#define SUCCESS 0;
+#define NON_EXCISTE -1;
+#define FAILED -2;
+#define EXISTS -3;
+
 typedef struct _node
 {
 	void* content;
 	int key;
-	NODE* next;
+	struct _node *next;
 }NODE;
 
 struct _list
 {
 	NODE* first;
 	NODE* last;
+	void (*free_func)(void*);
 };
+
+/*PROTOTYPES*/
+
+NODE* node_create();
+NODE* node_free(NODE*, void (*free_func)(void*));
+int node_set(NODE*, int, void*);
 
 /*FUNCTIONS*/
 
-LIST* list_create()
+LIST* list_create(void(*free_func)(void*))
 {
 	LIST* new_list = (LIST*) calloc (1, sizeof(LIST));
+	new_list->free_func = free_func;
 	return new_list;
 }
 
@@ -72,8 +87,12 @@ void* list_retrieve(LIST* this_list, int key)
 
 int list_purge(LIST* this_list)
 {
-	NODE* temp = this_list->;
-
+	NODE* temp = this_list->first;
+	while(this_list->first!=NULL)
+	{
+		temp = node_free(temp, this_list->free_func);
+	}
+	free(this_list);
 }
 
 /*IMPLEMENTATION DETAILS*/
@@ -94,4 +113,10 @@ int node_set(NODE* this_node, int key, void* content)
 	return SUCCESS;
 }
 
-
+NODE* node_free(NODE* this_node , void (*free_func)(void*))
+{
+	NODE* ret_node = this_node->next;
+	free_func(this_node->content);
+	free(this_node);
+	return ret_node;
+}
