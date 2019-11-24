@@ -1,0 +1,102 @@
+/*BINARY SEARCH AND INTERPOLATION SEARCH*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "mergesort.h"
+
+#define mid(a,b) ((a + b)/2)
+
+#define MAX 50
+#define _span(a,b) b - a + 1
+#define _interpol(val,min,max,size) (((val-min)/(max-min))*(size - 1))
+#define _rand_interval(a,b) rand() % (_span(a,b)) + a
+
+/*Span A->B*/
+int* countsort(int* in_vec, int size, int a, int b)
+{
+	int* count_vec = (int*) calloc (_span(a,b), sizeof(int));
+
+	for (int i = 0 ; i < size ; i++)
+		count_vec[in_vec[i]]++;
+
+	return count_vec;
+}
+
+int* genvec(int size, int a, int b)
+{
+	int* new_vec = (int*) malloc (size * sizeof(int));
+	for (int i = 0 ; i < size ; i++)
+		new_vec[i] = _rand_interval(a,b);
+
+	return new_vec;
+}
+
+void printvec(int* vec, int size)
+{
+	int counter = 0;
+	for (int i = 0 ; i < size ; i++)
+	{
+		printf("%d ", vec[i]);
+		counter += vec[i];
+	}
+	printf("\n", counter);
+}
+
+//binary search from A to B
+int* binary_search(int* vec, int a, int b, int val, int* iter_num)
+{
+	*(iter_num)++;
+	printf("mid is %d\n", mid(a,b));
+	if (vec[mid(a,b)] == val)
+		return vec+mid(a,b);
+	if (a > b) return NULL;
+	else if (vec[mid(a,b)] > val) return binary_search(vec, val, mid(a,b) + 1, b, iter_num);
+	else return binary_search(vec, val, a, mid(a,b) - 1, iter_num);
+}
+
+//interpolation search
+int* interpolation_search(int* vec, int a, int b, int val, int max, int min, int* iter_num)
+{
+	#define MIDPOINT int(_interpol(val, min, max, _span(a,b)))
+	*(iter_num)++;
+	printf("mid is %d\n", MIDPOINT);
+	if (vec[MIDPOINT] == val)
+		return vec+MIDPOINT;
+	if (a > b) return NULL;
+	else if (vec[MIDPOINT] > val) return interpolation_search(vec, MIDPOINT + 1, b, val, max, min, iter_num);
+	else return interpolation_search(vec, a, MIDPOINT - 1, val, max, min, iter_num);
+	#undef MIDPOINT
+}
+
+
+int main()
+{
+	int *init_vec, size, a, b, *found_pos, val_we_want, iterations;
+	printf("Insert size:\n");
+	scanf("%d", &size);
+	printf("Insert a:\n");
+	scanf("%d", &a);
+	printf("Insert b:\n");
+	scanf("%d", &b);
+	printf("Insert wanted val:\n");
+	scanf("%d", &val_we_want);
+	init_vec = genvec(size, a, b);
+	printvec(init_vec, size);
+	mergeSort(init_vec, size);	
+	printvec(init_vec, size);
+	//Vector sorted
+
+	//Binary search
+	iterations = 0;
+	found_pos = binary_search(init_vec, 0, size-1, val_we_want, &iterations);
+	printf("B found at: %p, iterations: %d\n", found_pos, iterations);
+
+	//Interpolation sort
+	iterations = 0;
+	found_pos = interpolation_search(init_vec, 0, size-1, a, b, val_we_want, &iterations);
+	printf("I found at: %p, iterations: %d\n", found_pos, iterations);
+
+
+
+}
+

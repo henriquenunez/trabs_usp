@@ -1,0 +1,52 @@
+#include "stack.h"
+
+typedef struct _node
+{
+	char content;
+	NODE* next;
+}NODE;
+
+struct _stack
+{
+	NODE* stack_top;
+	NODE* stack_bottom;
+	int content;
+}
+
+NODE* new_node(char content)
+{
+	NODE* new = (NODE*) malloc (sizeof(NODE));
+	new->content = content;
+	new->next = NULL;
+	return new;
+}
+
+STACK* stack_create()
+{
+	STACK* new = (STACK*) malloc (sizeof(STACK));
+}
+
+void stack_push(STACK* this_stack, char content)
+{
+	NODE* temp = new_node(content);
+	temp->next = this_stack->stack_top;
+	this_stack->stack_top = temp->next;
+}
+
+char* stack_pop(STACK* this_stack)
+{
+	if (this_stack->stack_top == NULL) return NULL;
+	NODE* temp = this_stack->stack_top;
+	char content = temp->content;
+	this_stack->stack_top = temp->next;
+
+	free(temp);
+	return content;
+}
+
+void stack_free(STACK* this_stack)
+{
+	while (stack_pop(this_stack) != NULL);
+	free (this_stack);
+}
+

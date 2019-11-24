@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "stack.h"
+
+
+int check(char* to_be_chk)
+{
+	STACK* a_stack;
+	int till;
+	int the_flag = 0;
+
+	a_stack = 
+	if (to_be_chk % 2 == 0) the_flag = 1;
+	for (int i = 0 ; i <= strlen(to_be_chk)/2 ; i++)
+
+}
+
+char* parse_input(char* input_string)
+{
+	int position = 0;
+	int ret_pos = 0;
+	char* ret_string = (char*) malloc (sizeof(char) * strlen(input_string));
+	while(position <= strlen(input_string))
+	{
+		printf("%c\n", input_string[position]);
+		if (input_string[position] <= 90 && 
+			input_string[position] >= 65)
+		{
+			ret_string[ret_pos++] = input_string[position++];
+		}
+		else if (input_string[position] <= 122 && 
+			input_string[position] >= 97)
+		{
+			ret_string[ret_pos++] = input_string[position++]-32;
+		}else position++;
+	}
+	ret_string[ret_pos] = 0;
+
+	printf("%s:%s\n", input_string, ret_string);
+
+	return ret_string;
+}
+
+int main()
+{
+	#define MAX 100
+	char in[MAX];
+	char* parsed;
+	fgets(in, MAX, stdin);
+	parsed = parse_input(in);
+	printf("%s", parsed);
+	free(parsed);
+	return 0;
+}
