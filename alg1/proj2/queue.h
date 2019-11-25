@@ -8,7 +8,7 @@ int queue_append(QUEUE*, void*);
 void* queue_iter(QUEUE*);
 void* queue_call(QUEUE*);
 int queue_purge(QUEUE*);
-
-//TODO implement iter through queue
+int queue_get_num(QUEUE*);
+void queue_reset_iter(QUEUE*);
 
 #endif

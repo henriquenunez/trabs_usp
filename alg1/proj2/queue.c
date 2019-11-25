@@ -5,14 +5,6 @@
 #include "queue.h"
 #include "defines.h"
 
-/*
-typedef struct _node
-{
-	void* content;
-	struct _node* nxt;	
-
-} NODE;
-*/
 
 struct _queue
 {
@@ -77,10 +69,17 @@ void* queue_call(QUEUE* this_queue)
 	temp = this_queue->first;
 	content = node_retrieve(temp, 0);
 	this_queue->first = (NODE*)node_retrieve(temp, 1);
-	free(temp);
+	node_free(temp);
 	this_queue->amount--;
 
 	return content;
+}
+
+
+void queue_reset_iter(QUEUE* this_queue)
+{
+	this_queue->flag_iter = 0;
+	this_queue->iter = this_queue->first;
 }
 
 /*Iters through queue based on last position*/
@@ -108,6 +107,12 @@ void* queue_iter(QUEUE* this_queue)
 			node_retrieve(this_queue->iter, 1);
 	
 	return cont;
+}
+
+/**/
+int queue_get_num(QUEUE* this_queue)
+{
+	return (int)this_queue->amount;
 }
 
 /*Frees every element of the list, the frees the list itself*/

@@ -17,6 +17,7 @@ NODE* node_get_left(NODE*);
 NODE* node_get_right(NODE*);
 NODE* tree_node_create(void*);
 
+void tree_node_free(NODE*);
 void* node_return_content(NODE*);
 
 #endif

@@ -6,23 +6,29 @@
 #include "stack.h"
 #include "queue.h"
 
+/*TODO:
+comment the project
+sprintf instead of printf
+*/
+
 typedef struct _car
 {
 	int plate;
 	int timeArrival;
-	int stayPeriod;
+	int timeDeparture;
+	float price;
+	int discount;
 } CAR;
 
 struct _parking_lot
 {
 	STACK* P;
-	unsigned int P_cars;
-	unsigned int P_first_hour;
+	unsigned int P_hour;
 
 	QUEUE* F;
-	unsigned int F_cars;
-	unsigned int F_last_hour;
-	
+	unsigned int F_hour;
+
+	unsigned int lastArrive;	
 };
 
 int check_availability(PARKING_LOT*);
@@ -31,9 +37,9 @@ PARKING_LOT* lot_create()
 {
 	PARKING_LOT* new_lot = (PARKING_LOT*) malloc (sizeof(PARKING_LOT));
 	new_lot->P = stack_create();
-	new_lot->P_cars = 0;
 	new_lot->F = queue_create();
-	new_lot->F_cars = 0;
+
+	new_lot->lastArrive = 8;	//the parking opens at 8
 
 	return new_lot;
 }
@@ -41,48 +47,46 @@ PARKING_LOT* lot_create()
 
 int register_car(PARKING_LOT* this_lot, int plate, int arrival, int stay)
 {
+	if(check_availability(this_lot, plate, arrival, stay) == NOT_AVAILABLE)
+		return NOT_AVAILABLE;	
+
 	CAR* new_car = (CAR*) malloc (sizeof(CAR));
-	CAR* holder;
 
 	new_car->plate = plate;
 	new_car->timeArrival = arrival;
-	new_car->stayPeriod = stay;
+	new_car->timeDeparture = arrival + stay;
+	new_car->price = stay*3;
+	new_car->discount = 0;
 
-	if (this_lot->P_cars == 0)
+	if (stack_get_num(this_lot->P) == 0)
 	{
 		//park on F
+		this_lot->P_hour = new_car->timeDeparture;
+		this_lot->lastArrive = arrival;
 		return stack_push(this_lot->P, new_car);;
 	}
-	else if (this_lot->F_cars == 0)
+	else if (queue_get_num(this_lot->F) == 0)
 	{
 		//park on P
+		this_lot->F_hour = new_car->timeDeparture;
+		this_lot->lastArrive = arrival;
 		return queue_append(this_lot->F, new_car);;
 	}
 	else
 	{
-		if ( (holder = (CAR*)queue_call(this_lot->F)) != NULL)
+		if (new_car->timeDeparture >= this_lot->F_hour)
 		{
-			//reinsert on queue
-			queue_append(this_lot->F, holder);
-			if ( (holder->timeArrival + holder->stayPeriod) >= this_lot->F_last_hour)
-			{
-				this_lot->F_last_hour = arrival + stay;
-				return queue_append(this_lot->F, new_car);
-			}
+			this_lot->F_hour = new_car->timeDeparture;
+			return queue_append(this_lot->F, new_car);
 		}
 
-		if ( (holder = (CAR*)stack_pop(this_lot->P)) != NULL)
+		if (new_car->timeDeparture <= this_lot->P_hour)
 		{
-			//reinsert on stack
-			stack_push(this_lot->P, holder);
-			if ( (holder->timeArrival + holder->stayPeriod) <= this_lot->P_first_hour)
-			{
-				this_lot->P_first_hour = arrival + stay;
-				return stack_push(this_lot->P, new_car);
-			}
+			this_lot->P_hour = new_car->timeDeparture;
+			return stack_push(this_lot->P, new_car);
 		}
 	} 
-	/*Couldn't find vacancy*/
+	printf("Couldn't find vacancy\n");
 	free(new_car);
 
 	return NOT_AVAILABLE;
@@ -122,3 +126,40 @@ int lot_purge(PARKING_LOT* this_lot)
 
 	return OK;
 }
+
+char* draw_discount(PARKING_LOT* this_lot)
+{
+	int i;
+	int sortedNum;
+	CAR* prizeCar;
+	char* print_string;
+
+	stack_reset_iter(this_lot->P);
+	queue_reset_iter(this_lot->F);
+
+	sortedNum = rand() % 100;	
+
+	if (sortedNum % 2)
+	{
+		sortedNum = rand() % stack_get_num(this_lot->P) + 1;
+		while(sortedNum--)
+		{
+			prizeCar = stack_iter(this_lot->P);
+		}
+	}
+	else
+	{
+		sortedNum = rand() % queue_get_num(this_lot->F) + 1;
+		while(sortedNum--)
+		{
+			prizeCar = queue_iter(this_lot->F);
+		}
+	}
+	if (prizeCar == NULL) printf("deu merda\n");
+
+	prizeCar->discount = 1;
+	printf("Got discount: %d", prizeCar->plate);
+
+	return print_string;
+}
+

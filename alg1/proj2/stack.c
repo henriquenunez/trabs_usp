@@ -28,7 +28,7 @@ STACK* stack_create()
 	return new;
 }
 
-
+/*Pushes element into stack*/
 int stack_push(STACK* this_stack, void* cont)
 {
 	NODE* new_node = node_create();
@@ -47,7 +47,7 @@ int stack_push(STACK* this_stack, void* cont)
 	return 0;
 }
 
-
+/*Pops element into stack*/
 void* stack_pop(STACK* this_stack)
 {
 	if (this_stack == NULL || this_stack->stack_top == NULL)
@@ -62,6 +62,12 @@ void* stack_pop(STACK* this_stack)
 	return content;
 }
 
+/*resets iterator into first position*/
+void stack_reset_iter(STACK* this_stack)
+{
+	this_stack->flag_iter = 1;
+	this_stack->iter = this_stack->stack_top;
+}
 
 /*Iters through stack based on last position*/
 void* stack_iter(STACK* this_stack)
@@ -88,6 +94,11 @@ void* stack_iter(STACK* this_stack)
 			node_retrieve(this_stack->iter, 1);
 	
 	return cont;
+}
+
+int stack_get_num(STACK* this_stack)
+{
+	return (int)this_stack->amount;
 }
 
 int stack_purge(STACK* this_stack)

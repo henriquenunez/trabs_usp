@@ -84,4 +84,10 @@ NODE* node_get_right(NODE* this_node)
 	return this_node->R_child;
 }
 
+void tree_node_free(NODE* this_node)
+{
+	free(this_node->content);
+	free(this_node);
+}
+
 /*IMPLEMENTATION DETAILS*/

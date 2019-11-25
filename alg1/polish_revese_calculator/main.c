@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "calculator.h"
 
 #include <math.h>
@@ -17,4 +18,7 @@ int main()
 		printf("O resultado da operação é %.2f.\n", result);
 	else
 		printf("Não foi possível realizar a operação.\n");
+
+	free(buffer);
+	return 0;
 }

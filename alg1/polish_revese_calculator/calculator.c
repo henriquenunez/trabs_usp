@@ -19,6 +19,7 @@ void removechar(char*, char);
 
 float make_things_work(char* yeah)
 {
+	float handler;
 	char* buffer = (char*) calloc (40, sizeof(char)); //char for printing
 	strcpy(buffer, "=");
 	int *code = (int*) malloc (sizeof(int));
@@ -31,7 +32,11 @@ float make_things_work(char* yeah)
 	//a_tree = tree_create(a_node);
 	//recursive_print(a_node, buffer);
 	//printf("%.2f\n", recursive_operations(a_node, code));
-	return recursive_operations(a_node, code);
+	stack_purge(the_stack);
+	free(buffer);
+	free(code);
+	handler = recursive_operations(a_node, code);
+	return handler; 
 }
 
 /*IMPLEMENTATION DETAILS*/
@@ -155,6 +160,8 @@ void recursive_print(NODE* root, char* format)
 
 float recursive_operations(NODE* root, int* err_code)
 {
+	float handler;
+
 	if (root == NULL) return 0;
 	if (node_return_content(root) == NULL) return 0;
 
@@ -163,20 +170,30 @@ float recursive_operations(NODE* root, int* err_code)
 	switch(is_operation(node_return_content(root)))
 	{
 		case DIVISION:
-			return recursive_operations(node_get_left(root), err_code) / 
+			handler = recursive_operations(node_get_left(root), err_code) / 
 				recursive_operations(node_get_right(root), err_code);
+			tree_node_free(root);
+			return handler; 
 		case MULTIPLI:
-			return recursive_operations(node_get_left(root), err_code) * 
+			handler = recursive_operations(node_get_left(root), err_code) * 
 				recursive_operations(node_get_right(root), err_code);
+			tree_node_free(root);
+			return handler; 
 		case ADDITION:
-			return recursive_operations(node_get_left(root), err_code) + 
+			handler = recursive_operations(node_get_left(root), err_code) + 
 				recursive_operations(node_get_right(root), err_code);
+			tree_node_free(root);
+			return handler; 
 		case SUBTRACT:
-			return recursive_operations(node_get_left(root), err_code) - 
+			handler = recursive_operations(node_get_left(root), err_code) - 
 				recursive_operations(node_get_right(root), err_code);
+			tree_node_free(root);
+			return handler; 
 		default:
 			//printf("%f", atof(node_return_content(root)));
-			return atof(node_return_content(root));
+			handler = atof(node_return_content(root));
+			tree_node_free(root);		
+			return handler;
 	}
 }
 
