@@ -1,0 +1,16 @@
+import Exercises.EntradaTeclado;
+import java.io.IOException;
+
+public class ex2{
+
+	public static void main(String[] args) throws IOException{
+
+		int n = EntradaTeclado.leInt();
+		for (int i = 1 ; i <= n ; i++){
+			for (int j = 1 ; j <= n - i ; j++){
+				System.out.print("*");
+			}
+			System.out.print("\n");
+		}
+	}
+}
