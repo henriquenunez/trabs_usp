@@ -5,7 +5,15 @@ public class ex3{
 
 	public static void main(String[] args) throws IOException{
 
-		int n = EntradaTeclado.leInt();
+		while (true)
+		try{
+			System.out.println("Insira o número de linhas:");
+			int n = EntradaTeclado.leInt();
+			break;
+		} catch (Exception e) {
+			System.out.println("O número de linhas deve ser inteiro");
+		}
+
 		for (int i = 0 ; i <= n ; i++){
 			for (int j = 0 ; j <= n ; j++){
 				if (j < i){
