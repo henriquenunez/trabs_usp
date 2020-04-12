@@ -96,6 +96,8 @@ public class Placar {
 			case 10:
 				adicQuin(dados);
 				break;
+			default:
+				throw new PlacarException("Posição inválida no placar!");
 
 		}
 	}
