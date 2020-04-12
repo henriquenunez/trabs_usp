@@ -35,5 +35,3 @@ public class Random{
 
 }
 
-//Random numerinho = new Random();
-
