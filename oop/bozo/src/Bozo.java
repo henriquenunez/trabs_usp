@@ -86,6 +86,6 @@ InterruptedException {
 
 	static String welcome = "Bem vindo ao jogo Bozó\n\n© 2020 Hiram. uma organização sem fins lucrativos\n\n\n";
 	static String beginTurn = "\n\nPressione ENTER para começar >>>> ";
-	static String askReRoll = "Insira os dados que deseja rolar novamente (Se não quiser re-rolagem, pressione apenas Return) >>>> ";
+	static String askReRoll = "Insira os dados que deseja rolar novamente, separados por espaço (Se não quiser re-rolagem, pressione apenas Return) >>>> ";
 	static String insertScore = "Agora, coloque na posição desejada do placar (0 para descartar a rodada) >>>> ";
 }
