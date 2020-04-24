@@ -1,9 +1,8 @@
-all: build
+all: 
+	gcc -o programaTrab *.c
 
-build:
-	gcc -g file.o .....
 run:
-	../bin/trab
+	./programaTrab
 
 zip: clean
 	zip ../src.zip *
