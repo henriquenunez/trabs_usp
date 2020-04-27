@@ -1,14 +1,25 @@
-#ifndef SUS_BIN
-#define SUS_BIN
+#ifndef BIN_FILE_H
+#define BIN_FILE_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "file.h"
+#include "errno.h"
 
-typedef struct _nascimento nascimento;
+typedef struct _bin_file BIN_FILE;
+typedef enum _bin_error bin_err_t;
 
-FILE_NODE *loadBinFile(char *file_name);
-nascimento* createNascimento(int id, int idadeMae, char data[10], char sexo, char estadoMae[2], char estadoBebe[2], char* cidadeMae, char* cidadeBebe);
+BIN_FILE* openBinFile(const char* filename, size_t register_size);
+bin_err_t closeBinFile(BIN_FILE*);
 
+/*Insert a generic register
+
+appendRegisterBinFile parameters:
+-insert_func: a function that receives a
+
+*/
+bin_err_t appendRegisterBinFile(BIN_FILE*,
+				void*(*insert_func)(void* data),
+				void* ins_data);
 #endif
+

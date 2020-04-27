@@ -1,37 +1,18 @@
 #include "bin.h"
+#include <string.h>
 
-/*****************************************************************
- * Funções relativos ao tipo de dado que será armazenado
- * O tipo de dado é nascimento e está guardado numa struct
- * Esse tipo é público e será usado para facilitar a administração 
- * dos dados a serem guardados no arquivo
- * ***************************************************************/
+#define HEADER_SIZE 128
 
-struct _nascimento{
-    int id;
-    int idadeMae;
-    char data[10];
-    char sexo;
-    char estadoMae[2];
-    char estadoBebe[2];
-    char* cidadeMae;
-    char* cidadeBebe;
+struct _bin_file {
+    FILE* fp;
+//    size_t header_size
+    size_t register_size;
 };
 
-//Cria um objeto do tipo nascimento.
-nascimento* createNascimento(int id, int idadeMae, char data[10], char sexo, char estadoMae[2], char estadoBebe[2], char* cidadeMae, char* cidadeBebe){
-    nascimento *n = (nascimento*) malloc(sizeof(nascimento));
-    n->id = id;
-    n->idadeMae = idadeMae;
-    strcpy(n->data, data);
-    n->sexo = sexo;
-    strcpy(n->estadoMae, estadoMae);
-    strcpy(n->estadoBebe, estadoBebe);
-    strcpy(n->cidadeMae, cidadeMae);
-    strcpy(n->cidadeBebe, cidadeBebe);
-    return n;
+enum _bin_error {
+    END_OF_FILE,
+    WRITE_ERROR
 }
-
 /**********************************************************************
  * Funções relativas ao header.
  * Como o header é uma 'ferramenta administrativa' do banco, estas funções
@@ -40,25 +21,17 @@ nascimento* createNascimento(int id, int idadeMae, char data[10], char sexo, cha
  * ********************************************************************/
 
 //Cria o header inicial quando não existe arquivo
-void writeHeader(FILE_NODE *fn){
-    //Status
-    writeStringFile(fn, "1");
-    //RRNproxRegistro
-    writeIntFile(fn, 0);
-    //numeroRegistrosInseridos
-    writeIntFile(fn, 0);
-    //numeroRegistrosRemovidos
-    writeIntFile(fn, 0);
-    //numeroRegistrosAtualizados
-    writeIntFile(fn, 0);
-    //111 bytes de lixo '$'
-    for(int i = 0 ; i < 111 ; i++){
-        writeStringFile(fn, "$");
-    }
+void __write_header_bin__write_header(FILE_NODE *fn) {
+    char header_buffer[128];
+
+    header_buffer[0] = '1';
+    memset(header_buffer + 1, 16, 0);
+    memset(header_buffer + 17, HEADER_SIZE - 17, '$'); //Fills with garbage
+    //fwrite(header_buffer, 128, this_file);
 }
 
 //Get o status do header
-char getStatus(FILE_NODE *fn){
+char __get_status_bin(FILE_NODE *fn) {
     //Salva a posição original do ponteiro
     int originalPlace = whereFile(fn);
     //Get o valor do status
@@ -70,7 +43,7 @@ char getStatus(FILE_NODE *fn){
 }
 
 //Troca o status do header
-void toggleStatus(FILE_NODE *fn){
+void __toggle_status_bin(FILE_NODE *fn) {
     //Salva a posição original do ponteiro
     int originalPlace = whereFile(fn);
     //Get o valor do status
@@ -78,9 +51,9 @@ void toggleStatus(FILE_NODE *fn){
     char status = readStringFile(fn, 1);
     //Retorna e troca o vlor do status
     seekFile(fn, -1);
-    if(status == '1'){
+    if(status == '1') {
         writeStringFile(fn, "0");
-    }else{
+    } else {
         writeStringFile(fn, "1");
     }
     //Devolve o ponteiro para a posição original
@@ -88,7 +61,7 @@ void toggleStatus(FILE_NODE *fn){
 }
 
 //Get o RRN do próximo registro
-int getRRNproxRegistro(FILE_NODE *fn){
+int __get_rrn_next_register_bin(FILE_NODE *fn) {
     //Salva a posição original do ponteiro
     int originalPlace = whereFile(fn);
     //Get o RRNproxRegistro
@@ -101,7 +74,7 @@ int getRRNproxRegistro(FILE_NODE *fn){
 }
 
 //Update o RRN do próximo registro
-void updateRRNproxRegistro(FILE_NODE *fn){
+void __update_rrn_next_register_bin(FILE_NODE *fn) {
     //Salva a posição original do ponteiro
     int originalPlace = whereFile(fn);
     //Get o RRNproxRegistro
@@ -116,7 +89,7 @@ void updateRRNproxRegistro(FILE_NODE *fn){
 }
 
 //Aumenta o contador numeroRegistrosInseridos
-void updateNumeroRegistrosInseridos(FILE_NODE *fn){
+void __update_num_registers_bin(FILE_NODE *fn) {
     //Salva a posição original do ponteiro
     int originalPlace = whereFile(fn);
     //Get o RRNproxRegistro
@@ -130,25 +103,48 @@ void updateNumeroRegistrosInseridos(FILE_NODE *fn){
     seekFromStartFile(fn, originalPlace);
 }
 
+/*Open and close binary file*/
+BIN_FILE* openBinFile(const char* filename, size_t register_size) {
+    BIN_FILE* ret_file;
+
+    ret_file = (BIN_FILE*) malloc(sizeof(BIN_FILE));
+
+    ret_file->fp = fopen();
+    ret_file->register_size = register_size;
+
+    __write_header_bin();
+
+    return ret_file;
+}
+
+bin_err_t closeBinFile(BIN_FILE* this_file) {
+    fclose(this_file->fp);
+    free(this_file);
+
+    return OK;
+}
+
+
+
 /***********************************************
  * Funções relativas ao banco de dados
  * Essas são as funções de acesso público
  * ********************************************/
-
+/*
 //Carrega o arquivo ou cria, se não existe
-FILE_NODE *loadBinFile(char *file_name){
+FILE_NODE *loadBinFile(char *file_name) {
     FILE_NODE *fn = openFile(file_name, "w+b");
     //Verifica se arquivo existe e retorna o ponteiro do arquivo se sim.
-    if(fn){
+    if(fn) {
         return fn;
-    }else{
+    } else {
         //Caso contrário, cria o arquivo, escreve o header e retorna o arquivo aberto em w+b
         fn = openFile(file_name, "wb");
-        if(fn){
-            writeHeader(fn);
+        if(fn) {
+            __write_header_bin(fn);
             closeFile(fn);
             return(fn);
-        }else{
+        } else {
             //Tratamento de erro
             printf("[!] Error tentando abrir arquivo [!]\n");
             return NULL;
@@ -157,29 +153,20 @@ FILE_NODE *loadBinFile(char *file_name){
 }
 
 //Escreve um nascimento n no arquivo marcado por fn
-void writeBinFile(FILE_NODE *fn, nascimento *n){
+void writeBinFile(FILE_NODE *fn, nascimento *n) {
     //Muda o status do header para inconsistente
-    toggleStatus(fn);
+    __toggle_status_bin(fn);
     //Get o RRN prox registro
-    int RRNproxRegistro = getRRNproxRegistro(fn);
+    int RRNproxRegistro = __get_rrn_next_register_bin(fn);
     //Escreve o nascimento n em fn na posição RRNproxRegistro
     seekFromStartFile(fn, (RRNproxRegistro*128)+128);//Navega-se + 128 para pular o header
-    writeIntFile(fn, strlen(n->cidadeMae));
-    writeIntFile(fn, strlen(n->cidadeBebe));
-    writeStringFile(fn, n->cidadeMae);
-    writeStringFile(fn, n->cidadeBebe);
-    //Coloca lixo depois dos campos de tamanho variável
-    for(int i = 0 ; i < 97-(strlen(n->cidadeMae) + strlen(n->cidadeBebe)) ; i++){
-        writeStringFile(fn, "$");
-    }
-    writeIntFile(fn, n->id);
-    writeIntFile(fn, n->idadeMae);
-    writeStringFile(fn, n->estadoMae);
-    writeStringFile(fn, n->estadoBebe);
+
     //Atualiza o valor do rrn
-    updateRRNproxRegistro(fn);
+    __update_rrn_next_register_bin(fn);
     //Aumenta o contador do numero de registros inseridos
-    updateNumeroRegistrosInseridos(fn);
+    __update_num_registers_bin(fn);
     //Devolve o status do header para consistente
-    toggleStatus(fn);
+    __toggle_status_bin(fn);
 }
+*/
+
