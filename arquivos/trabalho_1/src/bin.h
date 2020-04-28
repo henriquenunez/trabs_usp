@@ -7,7 +7,14 @@
 #include "errno.h"
 
 typedef struct _bin_file BIN_FILE;
+
 typedef enum _bin_error bin_err_t;
+enum _bin_error {
+    OK,
+    END_OF_FILE,
+    WRITE_ERROR
+};
+
 
 BIN_FILE* openBinFile(const char* filename, size_t register_size);
 bin_err_t closeBinFile(BIN_FILE*);

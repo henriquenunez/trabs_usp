@@ -7,12 +7,9 @@ struct _bin_file {
     FILE* fp;
 //    size_t header_size
     size_t register_size;
+    void* header;
 };
 
-enum _bin_error {
-    END_OF_FILE,
-    WRITE_ERROR
-}
 /**********************************************************************
  * Funções relativas ao header.
  * Como o header é uma 'ferramenta administrativa' do banco, estas funções
@@ -21,87 +18,60 @@ enum _bin_error {
  * ********************************************************************/
 
 //Cria o header inicial quando não existe arquivo
-void __write_header_bin__write_header(FILE_NODE *fn) {
-    char header_buffer[128];
+#define __get_status_bin(bfile) ( ((char*)bfile->header)[0] )
+#define __get_rrn_next_register_bin(bfile) ( *((int*)(bfile->header+1)) )
+#define __get_num_registers_bin(bfile)	   ( *((int*)(bfile->header+5)) )
+
+
+void __update_header_bin(BIN_FILE* this_file) {
+    rewind(this_file->fp);
+    fwrite(this_file->header, HEADER_SIZE, 1, this_file->fp);
+}
+
+void __refresh_header_bin(BIN_FILE* this_file) {
+    rewind(this_file->fp);
+    fread(this_file->header, HEADER_SIZE, 1, this_file->fp);
+}
+
+void __init_header_bin(BIN_FILE* this_file) {
+    char header_buffer[HEADER_SIZE];
 
     header_buffer[0] = '1';
     memset(header_buffer + 1, 16, 0);
-    memset(header_buffer + 17, HEADER_SIZE - 17, '$'); //Fills with garbage
-    //fwrite(header_buffer, 128, this_file);
-}
-
-//Get o status do header
-char __get_status_bin(FILE_NODE *fn) {
-    //Salva a posição original do ponteiro
-    int originalPlace = whereFile(fn);
-    //Get o valor do status
-    seekFromStartFile(fn, 0);
-    char status = readStringFile(fn, 1);
-    //Devolve o ponteiro para a posição original
-    seekFromStartFile(fn, originalPlace);
-    return status;
+    memset(header_buffer + 17, '$', HEADER_SIZE - 17); //Fills with garbage
+    memcpy(this_file->header, header_buffer, HEADER_SIZE);
+    __update_header_bin(this_file);
+    printf("INIT RRN is: %d\n", __get_rrn_next_register_bin(this_file));
 }
 
 //Troca o status do header
-void __toggle_status_bin(FILE_NODE *fn) {
-    //Salva a posição original do ponteiro
-    int originalPlace = whereFile(fn);
-    //Get o valor do status
-    seekFromStartFile(fn, 0);
-    char status = readStringFile(fn, 1);
-    //Retorna e troca o vlor do status
-    seekFile(fn, -1);
+void __toggle_status_bin(BIN_FILE* this_file) {
+
+    char status = __get_status_bin(this_file);
+
     if(status == '1') {
-        writeStringFile(fn, "0");
+        ((char*)this_file->header)[0] = '0';
     } else {
-        writeStringFile(fn, "1");
+        ((char*)this_file->header)[0] = '1';
     }
-    //Devolve o ponteiro para a posição original
-    seekFromStartFile(fn, originalPlace);
 }
-
-//Get o RRN do próximo registro
-int __get_rrn_next_register_bin(FILE_NODE *fn) {
-    //Salva a posição original do ponteiro
-    int originalPlace = whereFile(fn);
-    //Get o RRNproxRegistro
-    seekFromStartFile(fn, 1);
-    int rrn = readIntFile(fn, 1);
-    //Devolve o ponteiro para a posição original
-    seekFromStartFile(fn, originalPlace);
-    //Retorna RRNproxRegistro
-    return rrn;
-}
-
-//Update o RRN do próximo registro
-void __update_rrn_next_register_bin(FILE_NODE *fn) {
-    //Salva a posição original do ponteiro
-    int originalPlace = whereFile(fn);
-    //Get o RRNproxRegistro
-    seekFromStartFile(fn, 1);
-    int rrn = readIntFile(fn, 1);
-    //Atualiza o RRNproxRegistro
-    rrn++;
-    seekFile(fn, -1);
-    writeIntFile(fn, rrn);
-    //Devolve o ponteiro para a posição original
-    seekFromStartFile(fn, originalPlace);
+//Increases next register RRN
+void __increase_rrn_next_register_bin(BIN_FILE* this_file) {
+    int nrrn = __get_rrn_next_register_bin(this_file);
+    nrrn++;
+    memcpy(this_file->header + 1, &nrrn, sizeof(int));
+    //printf("rrn tried to put %d>>%d\n", nrrn, *((int*)(this_file->header + 1)));
 }
 
 //Aumenta o contador numeroRegistrosInseridos
-void __update_num_registers_bin(FILE_NODE *fn) {
-    //Salva a posição original do ponteiro
-    int originalPlace = whereFile(fn);
-    //Get o RRNproxRegistro
-    seekFromStartFile(fn, 5);
-    int nri = readIntFile(fn, 1);
-    //Atualiza o RRNproxRegistro
+void __increase_num_registers_bin(BIN_FILE* this_file) {
+    int nri = __get_num_registers_bin(this_file);
     nri++;
-    seekFile(fn, -1);
-    writeIntFile(fn, nri);
-    //Devolve o ponteiro para a posição original
-    seekFromStartFile(fn, originalPlace);
+    memcpy(this_file->header + 5, &nri, sizeof(int));
+    //printf("nri tried to put %d>>%d\n", nri, *((int*)(this_file->header + 5)));
 }
+
+/*EXPOSED FUNCTIONS*/
 
 /*Open and close binary file*/
 BIN_FILE* openBinFile(const char* filename, size_t register_size) {
@@ -109,64 +79,77 @@ BIN_FILE* openBinFile(const char* filename, size_t register_size) {
 
     ret_file = (BIN_FILE*) malloc(sizeof(BIN_FILE));
 
-    ret_file->fp = fopen();
-    ret_file->register_size = register_size;
+    //Tries to create file for update.
+    ret_file->fp = fopen(filename, "w+bx");
+    ret_file->header = malloc(HEADER_SIZE);
 
-    __write_header_bin();
+    //In case of file existing, try to open on read/update
+    if(ret_file->fp == NULL) {
+	ret_file->fp = fopen(filename, "r+b");
+	//printf("File exists!\n");
+    } else {
+	//File does not exist in first place. Initializes header.
+	 __init_header_bin(ret_file);
+	//printf("File did not exist!\n");
+    }
+
+    //In case error, deallocate resources and leave
+    if(ret_file->fp == NULL) {
+	closeBinFile(ret_file);
+	return NULL;
+    }
+
+    //Puts header into working buffer
+    __refresh_header_bin(ret_file);
+    ret_file->register_size = register_size;
 
     return ret_file;
 }
 
+//Frees allocated heap memory and closes file
 bin_err_t closeBinFile(BIN_FILE* this_file) {
     fclose(this_file->fp);
+    free(this_file->header);
     free(this_file);
 
     return OK;
 }
 
+//Appends register to binary file
+bin_err_t appendRegisterBinFile(
+			BIN_FILE* this_file,
+			void*(*insert_func)(void* data),
+			void* ins_data) {
+    void* data_to_be_written;
+    int next_reg_rrn;
 
+    //Gets next position to be written
+    next_reg_rrn = __get_rrn_next_register_bin(this_file);
 
-/***********************************************
- * Funções relativas ao banco de dados
- * Essas são as funções de acesso público
- * ********************************************/
-/*
-//Carrega o arquivo ou cria, se não existe
-FILE_NODE *loadBinFile(char *file_name) {
-    FILE_NODE *fn = openFile(file_name, "w+b");
-    //Verifica se arquivo existe e retorna o ponteiro do arquivo se sim.
-    if(fn) {
-        return fn;
-    } else {
-        //Caso contrário, cria o arquivo, escreve o header e retorna o arquivo aberto em w+b
-        fn = openFile(file_name, "wb");
-        if(fn) {
-            __write_header_bin(fn);
-            closeFile(fn);
-            return(fn);
-        } else {
-            //Tratamento de erro
-            printf("[!] Error tentando abrir arquivo [!]\n");
-            return NULL;
-        }
-    }
+    //Logically toggles header and immediately updates header in file
+    __toggle_status_bin(this_file);
+    __update_header_bin(this_file);
+
+    //TODO error checking
+    data_to_be_written = insert_func(ins_data);
+    fseek(  this_file->fp,
+	    HEADER_SIZE + next_reg_rrn * this_file->register_size,
+	    SEEK_SET);
+    //printf("SEEK is: %d ", ftell(this_file->fp));
+    //printf("Offset is: %d\n", next_reg_rrn*this_file->register_size);
+    fwrite(data_to_be_written, this_file->register_size, 1, this_file->fp);
+
+    //Updating header and writing it
+    __increase_num_registers_bin(this_file);
+    __increase_rrn_next_register_bin(this_file);
+    __toggle_status_bin(this_file);
+    __update_header_bin(this_file);
+
+    //Refreshing written header, just to be sure
+    __refresh_header_bin(this_file);
+
+    free(data_to_be_written);
+
+    return OK;
 }
-
-//Escreve um nascimento n no arquivo marcado por fn
-void writeBinFile(FILE_NODE *fn, nascimento *n) {
-    //Muda o status do header para inconsistente
-    __toggle_status_bin(fn);
-    //Get o RRN prox registro
-    int RRNproxRegistro = __get_rrn_next_register_bin(fn);
-    //Escreve o nascimento n em fn na posição RRNproxRegistro
-    seekFromStartFile(fn, (RRNproxRegistro*128)+128);//Navega-se + 128 para pular o header
-
-    //Atualiza o valor do rrn
-    __update_rrn_next_register_bin(fn);
-    //Aumenta o contador do numero de registros inseridos
-    __update_num_registers_bin(fn);
-    //Devolve o status do header para consistente
-    __toggle_status_bin(fn);
-}
-*/
 

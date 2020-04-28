@@ -67,7 +67,7 @@ typedef enum _field_type {
 CSV_FILE* openCsvFile(const char* filename) {
     CSV_FILE* ret_pointer = (CSV_FILE*) malloc(sizeof(CSV_FILE));
 
-    ret_pointer->fp = fopen(filename, "r");
+    ret_pointer->fp = fopen(filename, "rb");
     ret_pointer->read_state = BEGIN;
     ret_pointer->max_field_size = 0;
     ret_pointer->read_buffer = NULL;
