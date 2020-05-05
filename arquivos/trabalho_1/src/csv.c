@@ -5,6 +5,7 @@
 #include "csv.h"
 
 #define MAX(a, b) ((a > b) ? a : b)
+#define READ_BLOCK 4096 //4KB
 
 const char alphabet[] = {
 'a','A',
@@ -73,6 +74,11 @@ CSV_FILE* openCsvFile(const char* filename) {
     ret_pointer->read_buffer = NULL;
 
     return ret_pointer;
+}
+
+void skipHeaderCsvFile(CSV_FILE* this_file) {
+    fseek(this_file->fp, 0, SEEK_SET); //Goto beginning
+    while(fgetc(this_file->fp) != '\n');
 }
 
 csv_err_t __read_next_field(CSV_FILE* this_file, field_t type, void* cont) {
@@ -175,7 +181,51 @@ char* getNextString(CSV_FILE* this_file) {
 
     __read_next_field(this_file, STRING, &ret_val);
 
+    if (strlen(ret_val) == 0) return NULL;
+
     return ret_val;
+}
+
+size_t countLinesCsvFile(CSV_FILE* this_file) {
+    size_t line_count;
+    char temp;
+
+    line_count = 0;
+    fseek(this_file->fp, 0, SEEK_SET); //Goto beginning
+
+    temp = fgetc(this_file->fp);
+    while (!feof(this_file->fp)) {
+	temp = fgetc(this_file->fp);
+	if (temp == '\n') line_count++;
+    }
+
+    return line_count;
+
+/* Tentei usar essa estratégia, mas não funcionou bem. Gostaria de discutir
+ * porque ela estaria errada.
+    void* memblk;
+    void* curr_newline;
+
+    memblk = calloc(1, READ_BLOCK); //allocates space for counting
+
+    if (memblk == NULL) {
+	printf("ABORT\n");
+	return 0;
+    }
+
+    line_count = 0;
+
+    while (!feof(this_file->fp)) {
+	fread(memblk, READ_BLOCK, 1, this_file->fp);
+
+	for (int i = 0 ; i < READ_BLOCK ; i++) {
+	    if (((char*)memblk)[i] == '\n') line_count++;
+	}
+    }
+
+    free(memblk);
+*/
+
 }
 
 void closeCsvFile(CSV_FILE* this_file) {

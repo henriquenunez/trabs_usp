@@ -7,6 +7,7 @@ struct _bin_file {
     FILE* fp;
 //    size_t header_size
     size_t register_size;
+    size_t current_rrn_index;
     void* header;
 };
 
@@ -22,7 +23,6 @@ struct _bin_file {
 #define __get_rrn_next_register_bin(bfile) ( *((int*)(bfile->header+1)) )
 #define __get_num_registers_bin(bfile)	   ( *((int*)(bfile->header+5)) )
 
-
 void __update_header_bin(BIN_FILE* this_file) {
     rewind(this_file->fp);
     fwrite(this_file->header, HEADER_SIZE, 1, this_file->fp);
@@ -37,11 +37,11 @@ void __init_header_bin(BIN_FILE* this_file) {
     char header_buffer[HEADER_SIZE];
 
     header_buffer[0] = '1';
-    memset(header_buffer + 1, 16, 0);
-    memset(header_buffer + 17, '$', HEADER_SIZE - 17); //Fills with garbage
+    memset(header_buffer + 1, 0x0, 16);
+    memset(header_buffer + 17, 0x24, HEADER_SIZE - 17); //Fills with garbage
     memcpy(this_file->header, header_buffer, HEADER_SIZE);
     __update_header_bin(this_file);
-    printf("INIT RRN is: %d\n", __get_rrn_next_register_bin(this_file));
+    //printf("INIT RRN is: %d\n", __get_rrn_next_register_bin(this_file));
 }
 
 //Troca o status do header
@@ -55,6 +55,7 @@ void __toggle_status_bin(BIN_FILE* this_file) {
         ((char*)this_file->header)[0] = '1';
     }
 }
+
 //Increases next register RRN
 void __increase_rrn_next_register_bin(BIN_FILE* this_file) {
     int nrrn = __get_rrn_next_register_bin(this_file);
@@ -71,6 +72,18 @@ void __increase_num_registers_bin(BIN_FILE* this_file) {
     //printf("nri tried to put %d>>%d\n", nri, *((int*)(this_file->header + 5)));
 }
 
+//Retorna o registro baseado no rrn
+void __recover_register_bin(BIN_FILE* this_file, void** ret) {
+    fseek(  this_file->fp,
+	    HEADER_SIZE+this_file->current_rrn_index*this_file->register_size,
+	    SEEK_SET);
+
+    fread(  *ret, this_file->register_size, 1, this_file->fp);
+}
+
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
 /*EXPOSED FUNCTIONS*/
 
 /*Open and close binary file*/
@@ -102,6 +115,7 @@ BIN_FILE* openBinFile(const char* filename, size_t register_size) {
     //Puts header into working buffer
     __refresh_header_bin(ret_file);
     ret_file->register_size = register_size;
+    ret_file->current_rrn_index = 0;
 
     return ret_file;
 }
@@ -135,6 +149,7 @@ bin_err_t appendRegisterBinFile(
     fseek(  this_file->fp,
 	    HEADER_SIZE + next_reg_rrn * this_file->register_size,
 	    SEEK_SET);
+
     //printf("SEEK is: %d ", ftell(this_file->fp));
     //printf("Offset is: %d\n", next_reg_rrn*this_file->register_size);
     fwrite(data_to_be_written, this_file->register_size, 1, this_file->fp);
@@ -150,6 +165,30 @@ bin_err_t appendRegisterBinFile(
 
     free(data_to_be_written);
 
+    //printf("number of registers: %d\n", __get_num_registers_bin(this_file));
+
     return OK;
 }
 
+bin_err_t getRegistersBinFile(BIN_FILE* this_file, void** ret) {
+
+    if (*ret != NULL) free(*ret);
+
+    //Tests whether there are no more registers to fetch, and resets index
+    if (this_file->current_rrn_index >= __get_num_registers_bin(this_file) ) {
+	*ret = NULL;
+	this_file->current_rrn_index = 0;
+	return END_OF_FILE;
+    }
+
+    *ret = malloc(this_file->register_size);
+
+    __recover_register_bin(this_file, ret);
+    this_file->current_rrn_index++;
+
+    return OK;
+}
+
+size_t getNumRegistersBinFile(BIN_FILE* this_file) {
+    return __get_num_registers_bin(this_file);
+}

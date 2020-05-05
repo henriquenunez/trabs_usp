@@ -17,25 +17,25 @@ int main(void){
         //Verifica qual foi a funcionalidade chamada
         switch (func){
         //Lê arquivo CSV e transforma em binário
-        case 1:
-            scanf(" %ms %ms", &arq_csv, &arq_bin);
-            printf("Lendo arquivo CSV %s e armazenando em %s\n", arq_csv, arq_bin);
-            break;
+            case 1:
+                scanf(" %ms %ms", &arq_csv, &arq_bin);
+                printf("Lendo arquivo CSV %s e armazenando em %s\n", arq_csv, arq_bin);
+                break;
 
-        //Lê binário e imprime algumas informações para todas as entradas
-        case 2:
-            scanf(" %ms", &arq_bin);
-            printf("Imprimindo informações do arquivo armazenado em %s\n", arq_bin);
-            break;
-        
-        default:
-            sair_do_programa = TRUE;
-            break;
-        }
-        if(sair_do_programa){
-            free(arq_csv);
-            free(arq_bin);
-            break;
-        }
+            //Lê binário e imprime algumas informações para todas as entradas
+            case 2:
+                scanf(" %ms", &arq_bin);
+                printf("Imprimindo informações do arquivo armazenado em %s\n", arq_bin);
+                break;
+
+            default:
+                sair_do_programa = TRUE;
+                break;
+            }
+            if(sair_do_programa){
+                free(arq_csv);
+                free(arq_bin);
+                break;
+            }
     }
 }

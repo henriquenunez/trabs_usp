@@ -28,5 +28,10 @@ appendRegisterBinFile parameters:
 bin_err_t appendRegisterBinFile(BIN_FILE*,
 				void*(*insert_func)(void* data),
 				void* ins_data);
+
+bin_err_t getRegistersBinFile(BIN_FILE*, void** ret);
+
+size_t getNumRegistersBinFile(BIN_FILE*);
+
 #endif
 
