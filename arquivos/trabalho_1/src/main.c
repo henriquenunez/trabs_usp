@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "newborns.h"
+#include "binarioNaTela.c"
 
 #define TRUE 1
 #define FALSE 0
@@ -27,7 +28,11 @@ int main(void){
                 bb = NBCreateInstance(arq_bin);
                 //Lê o arquivo csv e escreve no binário
                 NBImportCSV(bb, arq_csv);
+                NBDeleteInstance(bb);
+                printf("Binário na tela: ");
+                binarioNaTela(arq_bin);
                 free(arq_csv);
+                free(arq_bin);
                 break;
 
             //Lê binário e imprime algumas informações para todas as entradas
@@ -38,14 +43,15 @@ int main(void){
                 bb = NBCreateInstance(arq_bin);
                 //Imprime os newborns
                 NBPrintAllNewborns(bb);
+                NBDeleteInstance(bb);
+                free(arq_bin);
                 break;
 
             default:
                 sair_do_programa = TRUE;
                 break;
         }
-        free(arq_bin);
-        NBDeleteInstance(bb);
+        
         if(sair_do_programa){
             break;
         }
