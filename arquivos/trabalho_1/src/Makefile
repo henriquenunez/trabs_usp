@@ -4,8 +4,8 @@ BIN_DIR = ./bin
 
 all: build
 
-build: build_dir
-	gcc ${CFLAGS} main.c -o ${BIN_DIR}/trab ${LDFLAGS}
+build: build_dir csv.o bin.o newborns.o
+	gcc ${CFLAGS} ./bin/csv.o ./bin/bin.o ./bin/newborns.o main.c -o ${BIN_DIR}/trab ${LDFLAGS}
 
 csv.o: build_dir
 	gcc ${CFLAGS} -c csv.c -o ${BIN_DIR}/csv.o ${LDFLAGS}
@@ -41,7 +41,7 @@ zip: clean
 	zip ../src.zip *
 
 build_dir:
-	mkdir ${BIN_DIR}
+	mkdir ${BIN_DIR} || true
 
 clean:
 	rm -rf ${BIN_DIR}
