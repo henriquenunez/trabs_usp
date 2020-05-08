@@ -5,16 +5,16 @@ BIN_DIR = ./bin
 all: build
 
 build: build_dir csv.o bin.o newborns.o
-	gcc ${CFLAGS} ./bin/csv.o ./bin/bin.o ./bin/newborns.o main.c -o ${BIN_DIR}/trab ${LDFLAGS}
+	gcc ${CFLAGS} ./bin/csv.o ./bin/bin.o ./bin/newborns.o main.c -o ${BIN_DIR}/trab
 
 csv.o: build_dir
-	gcc ${CFLAGS} -c csv.c -o ${BIN_DIR}/csv.o ${LDFLAGS}
+	gcc ${CFLAGS} -c csv.c -o ${BIN_DIR}/csv.o
 
 bin.o: build_dir
-	gcc ${CFLAGS} -c bin.c -o ${BIN_DIR}/bin.o ${LDFLAGS}
+	gcc ${CFLAGS} -c bin.c -o ${BIN_DIR}/bin.o
 
 newborns.o: build_dir
-	gcc ${CFLAGS} -c newborns.c -o ${BIN_DIR}/newborns.o ${LDFLAGS}
+	gcc ${CFLAGS} -c newborns.c -o ${BIN_DIR}/newborns.o
 
 build_tests: clean csv.o bin.o newborns.o
 	gcc ${CFLAGS} testcsvreader.c ${BIN_DIR}/csv.o -o ${BIN_DIR}/testcsvreader ${LDFLAGS}
