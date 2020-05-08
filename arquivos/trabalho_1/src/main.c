@@ -39,6 +39,13 @@ int main(void){
             case 2:
                 scanf(" %ms", &arq_bin);
                 // printf("Imprimindo informações do arquivo armazenado em %s\n", arq_bin);
+                // Verifica se existe o arquivo
+                FILE* fp = fopen(arq_bin, "rb");
+                if(fp == NULL){
+                    printf("Falha no processamento do arquivo.\n");
+                    break;
+                }
+                fclose(fp);
                 //Lê o arquivo binário
                 bb = NBCreateInstance(arq_bin);
                 //Imprime os newborns
