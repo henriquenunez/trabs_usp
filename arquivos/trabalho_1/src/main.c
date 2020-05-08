@@ -29,7 +29,7 @@ int main(void){
                 //Lê o arquivo csv e escreve no binário
                 NBImportCSV(bb, arq_csv);
                 NBDeleteInstance(bb);
-                printf("Binário na tela: ");
+                // printf("Binário na tela: ");
                 binarioNaTela(arq_bin);
                 free(arq_csv);
                 free(arq_bin);
@@ -46,7 +46,8 @@ int main(void){
                 NBDeleteInstance(bb);
                 free(arq_bin);
                 break;
-
+            
+            // Qualquer outra entrada implicará na saída do programa
             default:
                 sair_do_programa = TRUE;
                 break;

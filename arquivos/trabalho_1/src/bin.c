@@ -5,7 +5,6 @@
 
 struct _bin_file {
     FILE* fp;
-//    size_t header_size
     size_t register_size;
     size_t current_rrn_index;
     void* header;
@@ -18,7 +17,6 @@ struct _bin_file {
  * feitas de maneira inadequada.
  * ********************************************************************/
 
-//Cria o header inicial quando não existe arquivo
 #define __get_status_bin(bfile) ( ((char*)bfile->header)[0] )
 #define __get_rrn_next_register_bin(bfile) ( *((int*)(bfile->header+1)) )
 #define __get_num_registers_bin(bfile)	   ( *((int*)(bfile->header+5)) )
@@ -33,6 +31,7 @@ void __refresh_header_bin(BIN_FILE* this_file) {
     fread(this_file->header, HEADER_SIZE, 1, this_file->fp);
 }
 
+//Creates header when file doesn't exist
 void __init_header_bin(BIN_FILE* this_file) {
     char header_buffer[HEADER_SIZE];
 
@@ -44,7 +43,7 @@ void __init_header_bin(BIN_FILE* this_file) {
     //printf("INIT RRN is: %d\n", __get_rrn_next_register_bin(this_file));
 }
 
-//Troca o status do header
+//Toggles header status
 void __toggle_status_bin(BIN_FILE* this_file) {
 
     char status = __get_status_bin(this_file);
@@ -64,7 +63,7 @@ void __increase_rrn_next_register_bin(BIN_FILE* this_file) {
     //printf("rrn tried to put %d>>%d\n", nrrn, *((int*)(this_file->header + 1)));
 }
 
-//Aumenta o contador numeroRegistrosInseridos
+// Increases the number of inserted registers
 void __increase_num_registers_bin(BIN_FILE* this_file) {
     int nri = __get_num_registers_bin(this_file);
     nri++;
@@ -72,7 +71,7 @@ void __increase_num_registers_bin(BIN_FILE* this_file) {
     //printf("nri tried to put %d>>%d\n", nri, *((int*)(this_file->header + 5)));
 }
 
-//Retorna o registro baseado no rrn
+//Returns entry based on rrn
 void __recover_register_bin(BIN_FILE* this_file, void** ret) {
     fseek(  this_file->fp,
 	    HEADER_SIZE+this_file->current_rrn_index*this_file->register_size,
@@ -86,7 +85,7 @@ void __recover_register_bin(BIN_FILE* this_file, void** ret) {
 /******************************************************************************/
 /*EXPOSED FUNCTIONS*/
 
-/*Open and close binary file*/
+// Opens file
 BIN_FILE* openBinFile(const char* filename, size_t register_size) {
     BIN_FILE* ret_file;
 
@@ -129,7 +128,7 @@ bin_err_t closeBinFile(BIN_FILE* this_file) {
     return OK;
 }
 
-//Appends register to binary file
+//Appends entry to binary file
 bin_err_t appendRegisterBinFile(
 			BIN_FILE* this_file,
 			void*(*insert_func)(void* data),
@@ -170,6 +169,7 @@ bin_err_t appendRegisterBinFile(
     return OK;
 }
 
+// Saves an entry to ret and returns status
 bin_err_t getRegistersBinFile(BIN_FILE* this_file, void** ret) {
 
     if (*ret != NULL) free(*ret);
@@ -189,6 +189,7 @@ bin_err_t getRegistersBinFile(BIN_FILE* this_file, void** ret) {
     return OK;
 }
 
+// Getter mask for number of entries in file
 size_t getNumRegistersBinFile(BIN_FILE* this_file) {
     return __get_num_registers_bin(this_file);
 }

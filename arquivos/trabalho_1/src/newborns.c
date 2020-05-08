@@ -48,7 +48,7 @@ struct _nascimento{
     char cidadeBebe[98];
 };
 
-//Constrói struct nascimento.
+//Builds struct nascimento.
 nascimento* createNascimento(	int   id,
 				int   idadeMae,
 				char* data,
@@ -72,6 +72,7 @@ nascimento* createNascimento(	int   id,
     return n;
 }
 
+// Reads .csv entry and turns it into a nascimento instance
 nascimento* readCsvEntry(CSV_FILE *cf) {
     int id = -1;
     int idadeMae = -1;
@@ -127,6 +128,7 @@ nascimento* readCsvEntry(CSV_FILE *cf) {
 			    cidadeBebe);
 }
 
+// Builds a byte array with the data to be stored in .bin file
 void* __build_bin_data_nb(void *n_data) {
     void *buffer = malloc(128);
     int offset = 0;
@@ -217,6 +219,7 @@ void* __build_bin_data_nb(void *n_data) {
     return buffer;
 }
 
+// Inserts baby as new entry to .bin file
 void __insert_baby_nb(BIN_FILE* bf, nascimento* n) {
     appendRegisterBinFile(bf, &__build_bin_data_nb, n);
 }
@@ -302,6 +305,7 @@ nascimento* __parse_bin_data_nb(void *data){
 			    cidadeBebe);
 }
 
+// Specification for printing the data on one entry
 void printNewborn(nascimento *n){
     char *sex;
 
@@ -321,6 +325,7 @@ void printNewborn(nascimento *n){
 
 /*EXPOSED FUNCTIONS*/
 
+// Opens .bin file with newborns to read
 NEWBORNS* NBCreateInstance(const char* gen_filename) {
     NEWBORNS* ret_instance;
     ret_instance = (NEWBORNS*) malloc(sizeof(NEWBORNS));
@@ -339,6 +344,7 @@ NEWBORNS* NBCreateInstance(const char* gen_filename) {
     return ret_instance;
 }
 
+// Gets all entries from .csv file and appends it on .bin file
 nb_err_t NBImportCSV(NEWBORNS* these_babies , const char* filename){
     CSV_FILE *cf;
     nascimento *n;
@@ -362,6 +368,7 @@ nb_err_t NBImportCSV(NEWBORNS* these_babies , const char* filename){
     closeCsvFile(cf);
 }
 
+// Prints all entries in .bin newborns file in the pattern defined
 nb_err_t NBPrintAllNewborns(NEWBORNS* these_babies){
     size_t nregs;	//Number of registers retrieved from file
     nascimento *n;	//Temporary structure
@@ -384,6 +391,7 @@ nb_err_t NBPrintAllNewborns(NEWBORNS* these_babies){
     if (ptr != NULL) free(ptr);
 }
 
+// Closes and frees the .bin file used
 void NBDeleteInstance(NEWBORNS* these_babies) {
     if (these_babies->bf != NULL) closeBinFile(these_babies->bf);
     free(these_babies);

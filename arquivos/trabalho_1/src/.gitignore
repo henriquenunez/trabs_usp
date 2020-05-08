@@ -2,3 +2,5 @@
 programaTrab
 *.bin
 bin/
+*.out
+sla

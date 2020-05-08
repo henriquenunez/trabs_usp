@@ -65,6 +65,7 @@ typedef enum _field_type {
     STRING
 } field_t;
 
+// Opens csv file
 CSV_FILE* openCsvFile(const char* filename) {
     CSV_FILE* ret_pointer = (CSV_FILE*) malloc(sizeof(CSV_FILE));
 
@@ -76,11 +77,13 @@ CSV_FILE* openCsvFile(const char* filename) {
     return ret_pointer;
 }
 
+//Skips the header in order to get only the data
 void skipHeaderCsvFile(CSV_FILE* this_file) {
     fseek(this_file->fp, 0, SEEK_SET); //Goto beginning
     while(fgetc(this_file->fp) != '\n');
 }
 
+// Reads next field in an entry
 csv_err_t __read_next_field(CSV_FILE* this_file, field_t type, void* cont) {
 
     size_t start_pos = ftell(this_file->fp);
@@ -159,6 +162,7 @@ csv_err_t __read_next_field(CSV_FILE* this_file, field_t type, void* cont) {
     #undef DELTA_FIELD
 }
 
+// Get specifically an int from entry
 int getNextInt(CSV_FILE* this_file) {
     int ret_val;
 
@@ -168,6 +172,7 @@ int getNextInt(CSV_FILE* this_file) {
     return ret_val;
 }
 
+// Get specifically a float from entry
 float getNextFloat(CSV_FILE* this_file) {
     float ret_val;
 
@@ -176,6 +181,7 @@ float getNextFloat(CSV_FILE* this_file) {
     return ret_val;
 }
 
+// Get specifically a string from entry
 char* getNextString(CSV_FILE* this_file) {
     char* ret_val;
 
@@ -186,6 +192,7 @@ char* getNextString(CSV_FILE* this_file) {
     return ret_val;
 }
 
+// Counts the number of entries in csv file
 size_t countLinesCsvFile(CSV_FILE* this_file) {
     size_t line_count;
     char temp;
@@ -228,6 +235,7 @@ size_t countLinesCsvFile(CSV_FILE* this_file) {
 
 }
 
+// Closes csv file
 void closeCsvFile(CSV_FILE* this_file) {
     fclose(this_file->fp);
     free(this_file->read_buffer);
