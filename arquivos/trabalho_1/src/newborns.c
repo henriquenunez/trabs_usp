@@ -9,8 +9,8 @@
 #define REG_SIZE 128 //128B per register
 #define VAR_FIELDS_MAX_LEN 97
 
-const int garbage_s = 12; //12B for garbage
-const char garbage[] = {'\0','$','$','$','$','$','$','$','$','$','$','$'};
+//const int garbage_s = 12; //12B for garbage
+//const char garbage[] = {'\0','$','$','$','$','$','$','$','$','$','$','$'};
 
 BIN_FILE *loadBinFile(char *file_name);
 
@@ -85,12 +85,12 @@ nascimento* readCsvEntry(CSV_FILE *cf) {
     char *temp;
 
     temp = getNextString(cf);
-    printf("GOT{%s}\n", temp);
+    //printf("GOT{%s}\n", temp);
     if (temp != NULL)
         strcpy(cidadeMae, temp);
 
     temp = getNextString(cf);
-    printf("GOT{%s}\n", temp);
+    //printf("GOT{%s}\n", temp);
     if (temp != NULL)
         strcpy(cidadeBebe, temp);
 
@@ -99,22 +99,22 @@ nascimento* readCsvEntry(CSV_FILE *cf) {
     idadeMae = getNextInt(cf);
 
     temp = getNextString(cf);
-    printf("GOT{%s}\n", temp);
+    //printf("GOT{%s}\n", temp);
     if (temp != NULL)
         strcpy(data, temp);
 
     temp = getNextString(cf);
-    printf("GOT{%s}\n", temp);
+    //printf("GOT{%s}\n", temp);
     if (temp != NULL)
         sexo = temp[0];
 
     temp = getNextString(cf);
-    printf("GOT{%s}\n", temp);
+    //printf("GOT{%s}\n", temp);
     if (temp != NULL)
         strcpy(estadoMae, temp);
 
     temp = getNextString(cf);
-    printf("GOT{%s}\n", temp);
+    //printf("GOT{%s}\n", temp);
     if (temp != NULL)
         strcpy(estadoBebe, temp);
 
@@ -186,24 +186,41 @@ void* __build_bin_data_nb(void *n_data) {
     offset += sizeof(int);
     // printf("offset: %d\n", offset);
 
-    *((int*) BUFFOFF) = NAS->idadeMae;
+    if (NAS->idadeMae > 0)
+        *((int*) BUFFOFF) = NAS->idadeMae;
+    else
+        *((int*) BUFFOFF) = -1;
     offset += sizeof(int);
     // printf("offset: %d\n", offset);
 
     /*Date string*/
-    memcpy(BUFFOFF, NAS->data, 10);
+    if (strlen(NAS->data)) {
+	memcpy(BUFFOFF, NAS->data, 10);
+    } else {
+	memcpy(BUFFOFF, "\0$$$$$$$$$", 10);
+    }
     offset += 10;
     // printf("offset: %d\n", offset);
-
-    *((char*) BUFFOFF) = NAS->sexo;
+    if (NAS->sexo)
+        *((char*) BUFFOFF) = NAS->sexo;
+    else
+        *((char*) BUFFOFF) = '0';
     offset += 1;
     // printf("offset: %d\n", offset);
 
-    memcpy(BUFFOFF, NAS->estadoMae, 2);
+    if (strlen(NAS->estadoMae)) {
+	memcpy(BUFFOFF, NAS->estadoMae, 2);
+    } else {
+	memcpy(BUFFOFF, "\0$", 2);
+    }
     offset += 2;
     // printf("offset: %d\n", offset);
 
-    memcpy(BUFFOFF, NAS->estadoBebe, 2);
+    if (strlen(NAS->estadoBebe)) {
+	memcpy(BUFFOFF, NAS->estadoBebe, 2);
+    } else {
+	memcpy(BUFFOFF, "\0$", 2);
+    }
     offset += 2;
 
     // printf("offset: %d\n", offset);
@@ -347,6 +364,7 @@ nb_err_t NBImportCSV(NEWBORNS* these_babies , const char* filename){
 
     skipHeaderCsvFile(cf);
 
+    if (csv_entries > 0)
     while(--csv_entries){ //Count one less because of header
 	// printf("\tentry n: %d\n", temp - csv_entries);
 	n = readCsvEntry(cf);

@@ -80,7 +80,7 @@ CSV_FILE* openCsvFile(const char* filename) {
 //Skips the header in order to get only the data
 void skipHeaderCsvFile(CSV_FILE* this_file) {
     fseek(this_file->fp, 0, SEEK_SET); //Goto beginning
-    while(fgetc(this_file->fp) != '\n');
+    while(fgetc(this_file->fp) != '\n' && !feof(this_file->fp));
 }
 
 // Reads next field in an entry
@@ -203,6 +203,7 @@ size_t countLinesCsvFile(CSV_FILE* this_file) {
     temp = fgetc(this_file->fp);
     while (!feof(this_file->fp)) {
 	temp = fgetc(this_file->fp);
+	//putc(temp, stderr);
 	if (temp == '\n') line_count++;
     }
 

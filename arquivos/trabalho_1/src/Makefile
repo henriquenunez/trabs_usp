@@ -25,11 +25,9 @@ test_csv: build_tests
 	${BIN_DIR}/testcsvreader
 
 test_bin: build_tests
-	rm test_bin.bin || true
 	${BIN_DIR}/testbin
 
 test_newborns: build_tests
-	rm gen_file.bin || true
 	${BIN_DIR}/testnb
 
 tests: test_csv test_bin test_newborns
@@ -44,4 +42,5 @@ build_dir:
 	mkdir ${BIN_DIR} || true
 
 clean:
+	rm *.bin || true
 	rm -rf ${BIN_DIR}
