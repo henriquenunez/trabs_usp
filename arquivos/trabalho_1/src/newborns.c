@@ -316,8 +316,9 @@ void printNewborn(nascimento *n){
     }else{
         sex = "IGNORADO";
     }
-    printf("Nasceu em %s, em %s, um bebe do sexo %s\n",
+    printf("Nasceu em %s/%s, em %s, um bebe do sexo %s.\n",
 					strlen(n->cidadeBebe)? n->cidadeBebe : "-",
+                    strlen(n->estadoBebe)? n->estadoBebe : "-",
 					strlen(n->data)? n->data: "-",
 					sex);
 
