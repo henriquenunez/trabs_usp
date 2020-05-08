@@ -1,20 +1,20 @@
 CFLAGS = -g
-LDFLAGS = -fsanitize=address
+LDFLAGS = #-fsanitize=address
 BIN_DIR = ./bin
 
-all: build
+all: clean build
 
 build: build_dir csv.o bin.o newborns.o
-	gcc ${CFLAGS} ./bin/csv.o ./bin/bin.o ./bin/newborns.o main.c -o ${BIN_DIR}/trab
+	gcc ${CFLAGS} ./bin/csv.o ./bin/bin.o ./bin/newborns.o main.c -o ${BIN_DIR}/trab ${LDFLAGS}
 
 csv.o: build_dir
-	gcc ${CFLAGS} -c csv.c -o ${BIN_DIR}/csv.o
+	gcc ${CFLAGS} -c csv.c -o ${BIN_DIR}/csv.o ${LDFLAGS}
 
 bin.o: build_dir
-	gcc ${CFLAGS} -c bin.c -o ${BIN_DIR}/bin.o
+	gcc ${CFLAGS} -c bin.c -o ${BIN_DIR}/bin.o ${LDFLAGS}
 
 newborns.o: build_dir
-	gcc ${CFLAGS} -c newborns.c -o ${BIN_DIR}/newborns.o
+	gcc ${CFLAGS} -c newborns.c -o ${BIN_DIR}/newborns.o ${LDFLAGS}
 
 build_tests: clean csv.o bin.o newborns.o
 	gcc ${CFLAGS} testcsvreader.c ${BIN_DIR}/csv.o -o ${BIN_DIR}/testcsvreader ${LDFLAGS}

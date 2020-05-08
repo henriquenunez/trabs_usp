@@ -113,6 +113,12 @@ BIN_FILE* openBinFile(const char* filename, size_t register_size) {
 
     //Puts header into working buffer
     __refresh_header_bin(ret_file);
+
+    if (__get_status_bin(ret_file) != '1') {
+	closeBinFile(ret_file);
+	return NULL;
+    }
+
     ret_file->register_size = register_size;
     ret_file->current_rrn_index = 0;
 
