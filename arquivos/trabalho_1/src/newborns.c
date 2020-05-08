@@ -224,7 +224,7 @@ void __insert_baby_nb(BIN_FILE* bf, nascimento* n) {
     appendRegisterBinFile(bf, &__build_bin_data_nb, n);
 }
 
-//Properly buils struct from binary data
+//Properly builds struct from binary data
 nascimento* __parse_bin_data_nb(void *data){
     int id = -1;
     int idadeMae = -1;
