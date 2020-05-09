@@ -34,6 +34,7 @@ tests: test_csv test_bin test_newborns
 
 run:
 	${BIN_DIR}/trab
+	ls ../*
 
 zip: clean
 	zip ../src.zip *

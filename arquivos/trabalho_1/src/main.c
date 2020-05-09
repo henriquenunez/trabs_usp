@@ -1,3 +1,8 @@
+/************************************************************************************
+ * Henrique Hiram Libutti Núñez - 11275300
+ * Rafael Tavares Oliveira - 11219071
+ * *********************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "newborns.h"
@@ -43,11 +48,19 @@ int main(void){
             //Lê binário e imprime algumas informações para todas as entradas
             case 2:
                 scanf(" %ms", &arq_bin);
+
+                // Verifica se existe o arquivo
+                FILE *fp = fopen(arq_bin, "rb");
+                if(fp == NULL){
+                    printf("Falha no processamento do arquivo.\n");
+                    break;
+                }
+                fclose(fp);
                  //Lê o arquivo binário
                 bb = NBCreateInstance(arq_bin);
 
 		// printf("Imprimindo informações do arquivo armazenado em %s\n", arq_bin);
-                // Verifica se existe o arquivo
+                // Verifica erro no arquivo
                 if(bb == NULL){
                     printf("Falha no processamento do arquivo.\n");
                     break;
