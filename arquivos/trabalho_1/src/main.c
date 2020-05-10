@@ -1,14 +1,22 @@
+/************************************************************************************
+ * Henrique Hiram Libutti Núñez - 11275300
+ * Rafael Tavares Oliveira - 11219071
+ * *********************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
+#include "newborns.h"
+#include "binarioNaTela.c"
 
 #define TRUE 1
 #define FALSE 0
 
 //Função main deste programa funcionará apenas como o menu para lidar com a entrada do usuário
 int main(void){
-    while(TRUE){
-        //Variável para manutenção do menu
-        int sair_do_programa = FALSE;
+	FILE *fp;
+
+	//Instancia um newborns
+        NEWBORNS *bb;
         //Lẽ a entrda do usuário para a funcionalidade
         int func = 0;
         scanf("%d", &func);
@@ -17,25 +25,54 @@ int main(void){
         //Verifica qual foi a funcionalidade chamada
         switch (func){
         //Lê arquivo CSV e transforma em binário
-        case 1:
-            scanf(" %ms %ms", &arq_csv, &arq_bin);
-            printf("Lendo arquivo CSV %s e armazenando em %s\n", arq_csv, arq_bin);
-            break;
+            case 1:
+                scanf(" %ms %ms", &arq_csv, &arq_bin);
+                // printf("Lendo arquivo CSV %s e armazenando em %s\n", arq_csv, arq_bin);
+                // apaga o binário por problemas na plataforma.
+                remove(arq_bin);
 
-        //Lê binário e imprime algumas informações para todas as entradas
-        case 2:
-            scanf(" %ms", &arq_bin);
-            printf("Imprimindo informações do arquivo armazenado em %s\n", arq_bin);
-            break;
-        
-        default:
-            sair_do_programa = TRUE;
-            break;
+                bb = NBCreateInstance(arq_bin);
+                if(bb == NULL){
+                    printf("Falha no processamento do arquivo.\n");
+                    break;
+                }
+
+               //Lê o arquivo csv e escreve no binário
+                NBImportCSV(bb, arq_csv);
+                NBDeleteInstance(bb);
+                // printf("Binário na tela: ");
+                binarioNaTela(arq_bin);
+                free(arq_csv);
+                free(arq_bin);
+                break;
+
+            //Lê binário e imprime algumas informações para todas as entradas
+            case 2:
+                scanf(" %ms", &arq_bin);
+		//printf("{%s}", arq_bin);
+                // Verifica se existe o arquivo
+                fp = fopen(arq_bin, "rb");
+                if(fp == NULL){
+                    printf("Falha no processamento do arquivo.\n");
+                    break;
+                }
+                fclose(fp);
+                 //Lê o arquivo binário
+                bb = NBCreateInstance(arq_bin);
+
+		// printf("Imprimindo informações do arquivo armazenado em %s\n", arq_bin);
+                // Verifica erro no arquivo
+                if(bb == NULL){
+                    printf("Falha no processamento do arquivo.\n");
+                    break;
+                }
+
+               //Imprime os newborns
+                NBPrintAllNewborns(bb);
+		fflush(0);
+                NBDeleteInstance(bb);
+                free(arq_bin);
+                break;
         }
-        if(sair_do_programa){
-            free(arq_csv);
-            free(arq_bin);
-            break;
-        }
-    }
 }
+

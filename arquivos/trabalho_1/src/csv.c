@@ -5,6 +5,7 @@
 #include "csv.h"
 
 #define MAX(a, b) ((a > b) ? a : b)
+#define READ_BLOCK 4096 //4KB
 
 const char alphabet[] = {
 'a','A',
@@ -64,10 +65,11 @@ typedef enum _field_type {
     STRING
 } field_t;
 
+// Opens csv file
 CSV_FILE* openCsvFile(const char* filename) {
     CSV_FILE* ret_pointer = (CSV_FILE*) malloc(sizeof(CSV_FILE));
 
-    ret_pointer->fp = fopen(filename, "r");
+    ret_pointer->fp = fopen(filename, "rb");
     ret_pointer->read_state = BEGIN;
     ret_pointer->max_field_size = 0;
     ret_pointer->read_buffer = NULL;
@@ -75,6 +77,13 @@ CSV_FILE* openCsvFile(const char* filename) {
     return ret_pointer;
 }
 
+//Skips the header in order to get only the data
+void skipHeaderCsvFile(CSV_FILE* this_file) {
+    fseek(this_file->fp, 0, SEEK_SET); //Goto beginning
+    while(fgetc(this_file->fp) != '\n' && !feof(this_file->fp));
+}
+
+// Reads next field in an entry
 csv_err_t __read_next_field(CSV_FILE* this_file, field_t type, void* cont) {
 
     size_t start_pos = ftell(this_file->fp);
@@ -153,6 +162,7 @@ csv_err_t __read_next_field(CSV_FILE* this_file, field_t type, void* cont) {
     #undef DELTA_FIELD
 }
 
+// Get specifically an int from entry
 int getNextInt(CSV_FILE* this_file) {
     int ret_val;
 
@@ -162,6 +172,7 @@ int getNextInt(CSV_FILE* this_file) {
     return ret_val;
 }
 
+// Get specifically a float from entry
 float getNextFloat(CSV_FILE* this_file) {
     float ret_val;
 
@@ -170,14 +181,62 @@ float getNextFloat(CSV_FILE* this_file) {
     return ret_val;
 }
 
+// Get specifically a string from entry
 char* getNextString(CSV_FILE* this_file) {
     char* ret_val;
 
     __read_next_field(this_file, STRING, &ret_val);
 
+    if (strlen(ret_val) == 0) return NULL;
+
     return ret_val;
 }
 
+// Counts the number of entries in csv file
+size_t countLinesCsvFile(CSV_FILE* this_file) {
+    size_t line_count;
+    char temp;
+
+    line_count = 0;
+    fseek(this_file->fp, 0, SEEK_SET); //Goto beginning
+
+    temp = fgetc(this_file->fp);
+    while (!feof(this_file->fp)) {
+	temp = fgetc(this_file->fp);
+	//putc(temp, stderr);
+	if (temp == '\n') line_count++;
+    }
+
+    return line_count;
+
+/* Tentei usar essa estratégia, mas não funcionou bem. Gostaria de discutir
+ * porque ela estaria errada.
+    void* memblk;
+    void* curr_newline;
+
+    memblk = calloc(1, READ_BLOCK); //allocates space for counting
+
+    if (memblk == NULL) {
+	printf("ABORT\n");
+	return 0;
+    }
+
+    line_count = 0;
+
+    while (!feof(this_file->fp)) {
+	fread(memblk, READ_BLOCK, 1, this_file->fp);
+
+	for (int i = 0 ; i < READ_BLOCK ; i++) {
+	    if (((char*)memblk)[i] == '\n') line_count++;
+	}
+    }
+
+    free(memblk);
+*/
+
+}
+
+// Closes csv file
 void closeCsvFile(CSV_FILE* this_file) {
     fclose(this_file->fp);
     free(this_file->read_buffer);
