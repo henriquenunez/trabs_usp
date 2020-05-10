@@ -1,13 +1,13 @@
 #include "bin.h"
 #include <string.h>
 
-#define HEADER_SIZE 128
+#define HEADER_SIZE 128 //In this implementation, header has 128B
 
 struct _bin_file {
-    FILE* fp;
-    size_t register_size;
-    size_t current_rrn_index;
-    void* header;
+    FILE* fp;			//Pointer to actual file
+    size_t register_size;	//Register size, defined at instantiation
+    size_t current_rrn_index;	//Variable for making accesses easier
+    void* header;		//Header buffer, for easier manipulation.
 };
 
 /**********************************************************************
@@ -17,15 +17,18 @@ struct _bin_file {
  * feitas de maneira inadequada.
  * ********************************************************************/
 
+//Macroes that access elements of header buffer, in BIN_FILE struct
 #define __get_status_bin(bfile) ( ((char*)bfile->header)[0] )
 #define __get_rrn_next_register_bin(bfile) ( *((int*)(bfile->header+1)) )
 #define __get_num_registers_bin(bfile)	   ( *((int*)(bfile->header+5)) )
 
+//Writes header buffer into file
 void __update_header_bin(BIN_FILE* this_file) {
     rewind(this_file->fp);
     fwrite(this_file->header, HEADER_SIZE, 1, this_file->fp);
 }
 
+//Reads header from file into buffer
 void __refresh_header_bin(BIN_FILE* this_file) {
     rewind(this_file->fp);
     fread(this_file->header, HEADER_SIZE, 1, this_file->fp);
@@ -89,8 +92,10 @@ void __recover_register_bin(BIN_FILE* this_file, void** ret) {
 BIN_FILE* openBinFile(const char* filename, size_t register_size) {
     BIN_FILE* ret_file;
 
+    //Allocates space for struct
     ret_file = (BIN_FILE*) malloc(sizeof(BIN_FILE));
 
+    //Allocates space for header buffer
     ret_file->header = malloc(HEADER_SIZE);
 
     //Tries to create file for update.
@@ -101,9 +106,6 @@ BIN_FILE* openBinFile(const char* filename, size_t register_size) {
 	ret_file->fp = fopen(filename, "w+bx");
 	//printf("File did not exist!\n");
 	 __init_header_bin(ret_file);
-    } else {
-	//File does not exist in first place. Initializes header.
-	//printf("File exists!\n");
     }
 
     //In case of error, deallocate resources and leave
@@ -112,15 +114,19 @@ BIN_FILE* openBinFile(const char* filename, size_t register_size) {
 	return NULL;
     }
 
-    //Puts header into working buffer
+    //Puts header from file into buffer
     __refresh_header_bin(ret_file);
 
+    //Check file consistency
     if (__get_status_bin(ret_file) != '1') {
 	closeBinFile(ret_file);
 	return NULL;
     }
 
+    //Defines register size
     ret_file->register_size = register_size;
+
+    //Zero on RRN, so we can iter on registers from the beginning
     ret_file->current_rrn_index = 0;
 
     return ret_file;
@@ -176,10 +182,11 @@ bin_err_t appendRegisterBinFile(
     return OK;
 }
 
-// Saves an entry to ret and returns status
+//Saves an entry to ret buffer and returns status
 bin_err_t getRegistersBinFile(BIN_FILE* this_file, void** ret) {
 
     if (*ret != NULL) free(*ret);
+    //TODO handle memory management when last register is read.
 
     //Tests whether there are no more registers to fetch, and resets index
     if (this_file->current_rrn_index >= __get_num_registers_bin(this_file) ) {

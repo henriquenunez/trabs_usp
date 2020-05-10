@@ -72,7 +72,7 @@ nascimento* createNascimento(	int   id,
     return n;
 }
 
-// Reads .csv entry and turns it into a nascimento instance
+// Reads csv entry and turns it into a nascimento instance
 nascimento* readCsvEntry(CSV_FILE *cf) {
     int id = -1;
     int idadeMae = -1;
@@ -392,7 +392,8 @@ nb_err_t NBPrintAllNewborns(NEWBORNS* these_babies){
 	    break;
 	//printf("PTR: %p\n", ptr);
         printNewborn(n);
-	free(n);
+	free(n);    //TODO should be changed to getRegistersBinFile, when funct
+		    //is ready
     }
 
     if (ptr != NULL) free(ptr);
