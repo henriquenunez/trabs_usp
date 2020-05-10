@@ -14,7 +14,9 @@
 //Função main deste programa funcionará apenas como o menu para lidar com a entrada do usuário
 int main(void){
     //while(TRUE){
-        //Instancia um newborns
+	FILE *fp;
+
+	//Instancia um newborns
         NEWBORNS *bb;
         //Variável para manutenção do menu
         int sair_do_programa = FALSE;
@@ -29,7 +31,9 @@ int main(void){
             case 1:
                 scanf(" %ms %ms", &arq_csv, &arq_bin);
                 // printf("Lendo arquivo CSV %s e armazenando em %s\n", arq_csv, arq_bin);
-                //cria um arquivo binário
+                // apaga o binário por problemas na plataforma.
+                remove(arq_bin);
+
                 bb = NBCreateInstance(arq_bin);
                 if(bb == NULL){
                     printf("Falha no processamento do arquivo.\n");
@@ -48,9 +52,9 @@ int main(void){
             //Lê binário e imprime algumas informações para todas as entradas
             case 2:
                 scanf(" %ms", &arq_bin);
-
+		//printf("{%s}", arq_bin);
                 // Verifica se existe o arquivo
-                FILE *fp = fopen(arq_bin, "rb");
+                fp = fopen(arq_bin, "rb");
                 if(fp == NULL){
                     printf("Falha no processamento do arquivo.\n");
                     break;
@@ -68,6 +72,7 @@ int main(void){
 
                //Imprime os newborns
                 NBPrintAllNewborns(bb);
+		fflush(0);
                 NBDeleteInstance(bb);
                 free(arq_bin);
                 break;

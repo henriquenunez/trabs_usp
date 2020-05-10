@@ -34,14 +34,14 @@ tests: test_csv test_bin test_newborns
 
 run:
 	${BIN_DIR}/trab
-	ls ../*
+	rm *.bin || true
 
 zip: clean
+	rm *.bin || true
 	zip ../src.zip *
 
 build_dir:
 	mkdir ${BIN_DIR} || true
 
 clean:
-	rm *.bin || true
 	rm -rf ${BIN_DIR}
