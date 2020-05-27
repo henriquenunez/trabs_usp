@@ -231,9 +231,19 @@ size_t getNumRegistersBinFile(BIN_FILE* this_file) {
 }
 
 // Removes register of the given RRN.
-bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn)
-{
-    //TODO check if rrn is WITHIN file, leq than last rrn.
-
-    //fill accordingly, with asterisk and -1
+bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn){
+    __toggle_status_bin(this_file);
+    //Check if rrn is WITHIN file, leq than last rrn.
+    size_t max = getNumRegistersBinFile(this_file);
+    if(max > rrn){
+        return END_OF_FILE;
+    }
+    //fill accordingly, with -1
+    this_file->current_rrn_index = rrn;
+    fseek(  this_file->fp,
+	        __byte_offset_curr_rrn_index_bin(this_file),
+		SEEK_SET);
+    int const deleted_flag = -1;
+    fwrite(&deleted_flag, sizeof(int), 1, this_file->fp);
+    __toggle_status_bin(this_file);
 }

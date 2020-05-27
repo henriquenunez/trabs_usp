@@ -20,6 +20,7 @@ build_tests: clean csv.o bin.o newborns.o
 	gcc ${CFLAGS} testcsvreader.c ${BIN_DIR}/csv.o -o ${BIN_DIR}/testcsvreader ${LDFLAGS}
 	gcc ${CFLAGS} testbin.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testbin ${LDFLAGS}
 	gcc ${CFLAGS} testnb.c ${BIN_DIR}/newborns.o ${BIN_DIR}/csv.o ${BIN_DIR}/bin.o -o ${BIN_DIR}/testnb ${LDFLAGS}
+	gcc ${CFLAGS} testdelete.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testdelete ${LDFLAGS}
 
 test_csv: build_tests
 	${BIN_DIR}/testcsvreader
@@ -29,6 +30,10 @@ test_bin: build_tests
 
 test_newborns: build_tests
 	${BIN_DIR}/testnb
+
+test_deletion: build_tests
+	cp small_test_bin.bin ${BIN_DIR}/delete.bin
+	${BIN_DIR}/testdelete
 
 tests: test_csv test_bin test_newborns
 
