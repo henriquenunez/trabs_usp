@@ -3,7 +3,7 @@
 
 #include "bin.h"
 
-#define REG_SIZE 40
+#define REG_SIZE 128
 #define BUFF_LEN 20
 
 
@@ -11,7 +11,7 @@ void printAcquiredData(void* this_data) {
     char temp_buffer[BUFF_LEN + 10] = {0};
 
     memcpy(temp_buffer, this_data, BUFF_LEN);
-    printf("%s", temp_buffer);
+    printf(temp_buffer);
 }
 
 int main() {
@@ -19,8 +19,10 @@ int main() {
     void* hello = NULL;
 
     this_bin_file = openBinFile("delete.bin", REG_SIZE);
+    printf(this_bin_file);
+    printf("\n");
 
-    removeRegistersBinFile(this_bin_file, 2);
+    removeRegistersBinFile(this_bin_file, 1);
 
     closeBinFile(this_bin_file);
 
@@ -29,7 +31,7 @@ int main() {
     int times = 3;
 
     this_bin_file = openBinFile("delete.bin", REG_SIZE);
-    printf("Numero de regs: %d\n", getNumRegistersBinFile(this_bin_file));
+    printf("Numero de regs: %ld\n", getNumRegistersBinFile(this_bin_file));
     while (times--) {
         printf("%d\n", times);
         bin_err_t status = getRegistersBinFile(this_bin_file, &hello);

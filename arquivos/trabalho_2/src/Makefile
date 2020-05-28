@@ -32,8 +32,11 @@ test_newborns: build_tests
 	${BIN_DIR}/testnb
 
 test_deletion: build_tests
-	cp small_test_bin.bin ${BIN_DIR}/delete.bin
+	cp small_test.bin delete.bin
+	hexdump -C delete.bin > before.txt
 	${BIN_DIR}/testdelete
+	hexdump -C delete.bin > after.txt
+	diff before.txt after.txt
 
 tests: test_csv test_bin test_newborns
 

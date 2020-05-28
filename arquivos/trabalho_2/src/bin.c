@@ -66,17 +66,17 @@ void __toggle_status_bin(BIN_FILE* this_file) {
 }
 
 //Increases next register RRN
-void __increase_rrn_next_register_bin(BIN_FILE* this_file) {
+void __change_rrn_next_register_bin(BIN_FILE* this_file, int step) {
     int nrrn = __get_rrn_next_register_bin(this_file);
-    nrrn++;
+    nrrn+=step;
     memcpy(this_file->header + 1, &nrrn, sizeof(int));
     //printf("rrn tried to put %d>>%d\n", nrrn, *((int*)(this_file->header + 1)));
 }
 
 // Increases the number of inserted registers
-void __increase_num_registers_bin(BIN_FILE* this_file) {
+void __change_num_registers_bin(BIN_FILE* this_file, int step) {
     int nri = __get_num_registers_bin(this_file);
-    nri++;
+    nri+=step;
     memcpy(this_file->header + 5, &nri, sizeof(int));
     //printf("nri tried to put %d>>%d\n", nri, *((int*)(this_file->header + 5)));
 }
@@ -194,8 +194,8 @@ bin_err_t appendRegisterBinFile(
     fwrite(data_to_be_written, this_file->register_size, 1, this_file->fp);
 
     //Updating header on memory
-    __increase_num_registers_bin(this_file);
-    __increase_rrn_next_register_bin(this_file);
+    __change_num_registers_bin(this_file, 1);
+    __change_rrn_next_register_bin(this_file, 1);
 
     free(data_to_be_written);
 
@@ -232,18 +232,21 @@ size_t getNumRegistersBinFile(BIN_FILE* this_file) {
 
 // Removes register of the given RRN.
 bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn){
-    __toggle_status_bin(this_file);
+    
     //Check if rrn is WITHIN file, leq than last rrn.
-    size_t max = getNumRegistersBinFile(this_file);
-    if(max > rrn){
+    if(rrn > getNumRegistersBinFile(this_file)){
         return END_OF_FILE;
     }
     //fill accordingly, with -1
     this_file->current_rrn_index = rrn;
+    printf("offset: %d\n", __byte_offset_curr_rrn_index_bin(this_file));
     fseek(  this_file->fp,
 	        __byte_offset_curr_rrn_index_bin(this_file),
 		SEEK_SET);
-    int const deleted_flag = -1;
-    fwrite(&deleted_flag, sizeof(int), 1, this_file->fp);
-    __toggle_status_bin(this_file);
+    
+    putw(-1,  this_file->fp);
+
+    // Update header
+    __change_num_registers_bin(this_file, -1);
+
 }
