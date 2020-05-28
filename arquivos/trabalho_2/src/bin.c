@@ -222,12 +222,27 @@ bin_err_t getRegistersBinFile(BIN_FILE* this_file, void** ret) {
     __recover_register_bin(this_file, ret);
     this_file->current_rrn_index++;
 
+    int firstNum;
+    memcpy(&firstNum, *ret, sizeof(int));
+    // Checks if first number is -1, returning if entry is deleted or not
+    if(firstNum == -1) return NO_ENTRY;
+
     return OK;
 }
 
 // Getter mask for number of entries in file
 size_t getNumRegistersBinFile(BIN_FILE* this_file) {
     return __get_num_registers_bin(this_file);
+}
+
+bin_err_t searchRegisterBinFile(BIN_FILE* this_file, size_t rrn, void** ret){
+
+    // Sets RRN in binary file
+    this_file->current_rrn_index = rrn;
+
+    // Gets entry in RRN
+    return getRegistersBinFile(this_file, ret);
+
 }
 
 // Removes register of the given RRN.

@@ -12,7 +12,8 @@ typedef enum _bin_error bin_err_t;
 enum _bin_error {
     OK,
     END_OF_FILE,
-    WRITE_ERROR
+    WRITE_ERROR,
+    NO_ENTRY
 };
 
 //Self-descripting functions.
@@ -39,17 +40,9 @@ parameters:
 */
 bin_err_t getRegistersBinFile(BIN_FILE*, void** ret);
 
-/* getRegisterByRRNBinFile
-
-parameters:
-
-*/
-bin_err_t getRegisterByRRNBinFile(BIN_FILE*, size_t rrn, void** ret);
-
-/* removeRegistersBinFile parameters
-- rrn: relative register number of the register to be removed.
-*/
 bin_err_t removeRegistersBinFile(BIN_FILE*, size_t rrn);
+
+bin_err_t searchRegisterBinFile(BIN_FILE* this_file, size_t rrn, void** buff);
 
 #endif
 

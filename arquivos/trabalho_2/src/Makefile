@@ -21,6 +21,7 @@ build_tests: clean csv.o bin.o newborns.o
 	gcc ${CFLAGS} testbin.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testbin ${LDFLAGS}
 	gcc ${CFLAGS} testnb.c ${BIN_DIR}/newborns.o ${BIN_DIR}/csv.o ${BIN_DIR}/bin.o -o ${BIN_DIR}/testnb ${LDFLAGS}
 	gcc ${CFLAGS} testdelete.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testdelete ${LDFLAGS}
+	gcc ${CFLAGS} testsearch.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testsearch ${LDFLAGS}
 
 test_csv: build_tests
 	${BIN_DIR}/testcsvreader
@@ -37,6 +38,12 @@ test_deletion: build_tests
 	${BIN_DIR}/testdelete
 	hexdump -C delete.bin > after.txt
 	diff before.txt after.txt
+
+test_search: build_tests
+	cp small_test.bin search.bin
+	${BIN_DIR}/testsearch
+	hexdump -C response.bin
+	rm response.bin
 
 tests: test_csv test_bin test_newborns
 

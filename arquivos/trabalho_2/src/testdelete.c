@@ -6,23 +6,18 @@
 #define REG_SIZE 128
 #define BUFF_LEN 20
 
-
-void printAcquiredData(void* this_data) {
-    char temp_buffer[BUFF_LEN + 10] = {0};
-
-    memcpy(temp_buffer, this_data, BUFF_LEN);
-    printf(temp_buffer);
-}
-
 int main() {
     BIN_FILE* this_bin_file;
     void* hello = NULL;
 
     this_bin_file = openBinFile("delete.bin", REG_SIZE);
-    printf(this_bin_file);
-    printf("\n");
 
-    removeRegistersBinFile(this_bin_file, 1);
+    bin_err_t response =  removeRegistersBinFile(this_bin_file, 1);
+
+    if(response != OK){
+        printf("response not ok\n");
+        return 1;
+    }
 
     closeBinFile(this_bin_file);
 
@@ -37,7 +32,6 @@ int main() {
         bin_err_t status = getRegistersBinFile(this_bin_file, &hello);
         printf("status: %d\n", status);
         if (status != OK) {printf("Not OK\n"); continue;};
-        printAcquiredData(hello);
     }
 
     free(hello);
