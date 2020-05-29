@@ -25,9 +25,10 @@ size_t getNumRegistersBinFile(BIN_FILE*);
 - insert_func: a function that receives a struct pointed by ins_data
 - ins_data: pointer to struct that can be cast into known struct type
 */
-bin_err_t appendRegisterBinFile(BIN_FILE*,
+bin_err_t insertRegisterBinFile(BIN_FILE*,
 				void*(*insert_func)(void* data),
-				void* ins_data);
+				void* ins_data,
+				int rrn);
 
 /* getRegistersBinFile:
 Subsequent calls to this function will iterate through the binary file.

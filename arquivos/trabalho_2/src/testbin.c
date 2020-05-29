@@ -42,9 +42,10 @@ int main() {
 
     while (times--) {
 	sprintf(DATA_TO_WRITE.buffer, "TIMES:%10d\n", times);
-	appendRegisterBinFile(	this_bin_file,
+	insertRegisterBinFile(	this_bin_file,
 				&getDataForWriting,
-				&DATA_TO_WRITE);
+				&DATA_TO_WRITE,
+				-1);
     }
 
     closeBinFile(this_bin_file);

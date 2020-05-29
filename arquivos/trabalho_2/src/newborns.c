@@ -231,8 +231,8 @@ void* __build_bin_data_nb(void *n_data) {
 }
 
 // Inserts baby as new entry to .bin file
-void __insert_baby_nb(BIN_FILE* bf, nascimento* n) {
-    appendRegisterBinFile(bf, &__build_bin_data_nb, n);
+void __insert_baby_nb(BIN_FILE* bf, nascimento* n,  int rrn) {
+    insertRegisterBinFile(bf, &__build_bin_data_nb, n, rrn);
 }
 
 //Properly builds struct from binary data
@@ -368,7 +368,7 @@ nb_err_t NBImportCSV(NEWBORNS* these_babies , const char* filename){
     while(--csv_entries){ //Count one less because of header
 	// printf("\tentry n: %d\n", temp - csv_entries);
 	n = readCsvEntry(cf);
-	__insert_baby_nb(these_babies->bf, n);
+	__insert_baby_nb(these_babies->bf, n, -1);
         free(n);
     }
 

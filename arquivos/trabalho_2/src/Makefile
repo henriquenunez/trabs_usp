@@ -22,6 +22,7 @@ build_tests: clean csv.o bin.o newborns.o
 	gcc ${CFLAGS} testnb.c ${BIN_DIR}/newborns.o ${BIN_DIR}/csv.o ${BIN_DIR}/bin.o -o ${BIN_DIR}/testnb ${LDFLAGS}
 	gcc ${CFLAGS} testdelete.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testdelete ${LDFLAGS}
 	gcc ${CFLAGS} testsearch.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testsearch ${LDFLAGS}
+	gcc ${CFLAGS} testInsert.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testInsert ${LDFLAGS}
 
 test_csv: build_tests
 	${BIN_DIR}/testcsvreader
@@ -44,6 +45,12 @@ test_search: build_tests
 	${BIN_DIR}/testsearch
 	hexdump -C response.bin
 	rm response.bin
+
+test_insert: build_tests
+	cp small_test.bin insert.bin
+	${BIN_DIR}/testInsert
+	hexdump -C insert.bin
+	#rm insert.bin
 
 tests: test_csv test_bin test_newborns
 

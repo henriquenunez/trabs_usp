@@ -21,6 +21,8 @@ struct _bin_file {
 #define __get_status_bin(bfile) ( ((char*)bfile->header)[0] )
 #define __get_rrn_next_register_bin(bfile) ( *((int*)(bfile->header+1)) )
 #define __get_num_registers_bin(bfile)	   ( *((int*)(bfile->header+5)) )
+#define __get_num_deleted_registers_bin(bfile)	   ( *((int*)(bfile->header+9)) )
+#define __get_num_updated_registers_bin(bfile)	   ( *((int*)(bfile->header+13)) )
 
 //Helper macros
 #define __byte_offset_next_rrn_bin(bfile)\
@@ -78,6 +80,22 @@ void __change_num_registers_bin(BIN_FILE* this_file, int step) {
     int nri = __get_num_registers_bin(this_file);
     nri+=step;
     memcpy(this_file->header + 5, &nri, sizeof(int));
+    //printf("nri tried to put %d>>%d\n", nri, *((int*)(this_file->header + 5)));
+}
+
+// Increases the number of deleted registers
+void __change_num_deleted_registers_bin(BIN_FILE* this_file, int step) {
+    int nri = __get_num_deleted_registers_bin(this_file);
+    nri+=step;
+    memcpy(this_file->header + 9, &nri, sizeof(int));
+    //printf("nri tried to put %d>>%d\n", nri, *((int*)(this_file->header + 5)));
+}
+
+// Increases the number of updated registers
+void __change_num_updated_registers_bin(BIN_FILE* this_file, int step) {
+    int nri = __get_num_updated_registers_bin(this_file);
+    nri+=step;
+    memcpy(this_file->header + 13, &nri, sizeof(int));
     //printf("nri tried to put %d>>%d\n", nri, *((int*)(this_file->header + 5)));
 }
 
@@ -159,11 +177,12 @@ bin_err_t closeBinFile(BIN_FILE* this_file) {
     return OK;
 }
 
-//Appends entry to binary file
-bin_err_t appendRegisterBinFile(
+// Insert entry to binary file. Setting rrn value to -1 appends entry to end.
+bin_err_t insertRegisterBinFile(
 			BIN_FILE* this_file,
 			void*(*insert_func)(void* data),
-			void* ins_data) {
+			void* ins_data,
+			int rrn) {
     void* data_to_be_written;
 
     //TODO error checking
@@ -171,15 +190,35 @@ bin_err_t appendRegisterBinFile(
     if (data_to_be_written == NULL)
 	return WRITE_ERROR;
 
-    /*Checking if current cursor position is the position where we
-	want to write
-    */
-    if(ftell(this_file->fp) != __byte_offset_next_rrn_bin(this_file))
-    {
-	fseek(  this_file->fp,
-	        __byte_offset_next_rrn_bin(this_file),
-		SEEK_SET);
-    } 
+		// Check if append or insert (append == -1)
+    if(rrn == -1){
+
+			// Navigate to correct position
+				if(ftell(this_file->fp) != __byte_offset_next_rrn_bin(this_file))
+			{
+		fseek(  this_file->fp,
+						__byte_offset_next_rrn_bin(this_file),
+			SEEK_SET);
+			// printf("@ EOF\n");
+			// Update header info
+			__change_num_registers_bin(this_file, 1);
+			__change_rrn_next_register_bin(this_file, 1);
+			} 
+		}else{
+
+			// Sets correct rrn
+			this_file->current_rrn_index = rrn;
+
+			// Navigate to correct position
+			if(ftell(this_file->fp) != __byte_offset_curr_rrn_index_bin(this_file)){
+				fseek(  this_file->fp,
+					__byte_offset_curr_rrn_index_bin(this_file),
+				SEEK_SET);
+				// printf("@ %d\n", rrn);
+				// Update header info
+				__change_num_updated_registers_bin(this_file, 1);
+			} 
+		}
 
     //printf("RAM SEEK is: %d\n", __byte_offset_next_rrn_bin(this_file));
     //printf("FP  SEEK is: %d\n\n",  ftell(this_file->fp));
@@ -193,9 +232,9 @@ bin_err_t appendRegisterBinFile(
     //printf("Offset is: %d\n", next_reg_rrn*this_file->register_size);
     fwrite(data_to_be_written, this_file->register_size, 1, this_file->fp);
 
-    //Updating header on memory
-    __change_num_registers_bin(this_file, 1);
-    __change_rrn_next_register_bin(this_file, 1);
+    // //Updating header on memory
+    // __change_num_registers_bin(this_file, 1);
+    // __change_rrn_next_register_bin(this_file, 1);
 
     free(data_to_be_written);
 
@@ -263,5 +302,6 @@ bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn){
 
     // Update header
     __change_num_registers_bin(this_file, -1);
+		__change_num_deleted_registers_bin(this_file, 1);
 
 }
