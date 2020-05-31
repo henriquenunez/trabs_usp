@@ -187,11 +187,13 @@ bin_err_t insertRegisterBinFile(
 
     //TODO error checking
     data_to_be_written = insert_func(ins_data);
+
     if (data_to_be_written == NULL)
 	return WRITE_ERROR;
-
+		// printf("rrn: %d\n", rrn);
 		// Check if append or insert (append == -1)
     if(rrn == -1){
+				// printf("offset: %d\n", __byte_offset_next_rrn_bin(this_file));
 
 			// Navigate to correct position
 				if(ftell(this_file->fp) != __byte_offset_next_rrn_bin(this_file))
@@ -201,9 +203,9 @@ bin_err_t insertRegisterBinFile(
 			SEEK_SET);
 			// printf("@ EOF\n");
 			// Update header info
+			} 
 			__change_num_registers_bin(this_file, 1);
 			__change_rrn_next_register_bin(this_file, 1);
-			} 
 		}else{
 
 			// Sets correct rrn
@@ -216,8 +218,8 @@ bin_err_t insertRegisterBinFile(
 				SEEK_SET);
 				// printf("@ %d\n", rrn);
 				// Update header info
-				__change_num_updated_registers_bin(this_file, 1);
 			} 
+				__change_num_updated_registers_bin(this_file, 1);
 		}
 
     //printf("RAM SEEK is: %d\n", __byte_offset_next_rrn_bin(this_file));

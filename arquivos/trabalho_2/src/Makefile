@@ -32,6 +32,8 @@ test_bin: build_tests
 
 test_newborns: build_tests
 	${BIN_DIR}/testnb
+	hexdump -C gen_file.bin
+	rm gen_file.bin
 
 test_deletion: build_tests
 	cp small_test.bin delete.bin

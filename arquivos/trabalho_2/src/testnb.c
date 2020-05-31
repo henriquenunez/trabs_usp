@@ -6,7 +6,7 @@ int main() {
     NEWBORNS* bb;
 
     bb = NBCreateInstance("gen_file.bin");
-    NBImportCSV(bb, "arquivoEntrada.csv");
+    NBImportCSV(bb, "little.csv");
     NBPrintAllNewborns(bb);
     NBDeleteInstance(bb);
 
