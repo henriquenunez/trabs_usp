@@ -13,7 +13,8 @@ enum _bin_error {
     OK,
     END_OF_FILE,
     WRITE_ERROR,
-    NO_ENTRY
+    NO_ENTRY,
+    REMOVED_ENTRY
 };
 
 //Self-descripting functions.
@@ -21,14 +22,25 @@ BIN_FILE* openBinFile(const char* filename, size_t register_size);
 bin_err_t closeBinFile(BIN_FILE*);
 size_t getNumRegistersBinFile(BIN_FILE*);
 
-/*appendRegisterBinFile parameters:
+/*insertRegisterBinFile parameters:
 - insert_func: a function that receives a struct pointed by ins_data
 - ins_data: pointer to struct that can be cast into known struct type
+- rrn: relative register number for the data to be inserted in.
 */
 bin_err_t insertRegisterBinFile(BIN_FILE*,
 				void*(*insert_func)(void* data),
 				void* ins_data,
 				int rrn);
+
+
+/*appendRegisterBinFile parameters:
+- insert_func: a function that receives a struct pointed by ins_data
+- ins_data: pointer to struct that can be cast into known struct type
+*/
+bin_err_t appendRegisterBinFile(
+            BIN_FILE* ,
+            void*(*insert_func)(void* data),
+            void* ins_data);
 
 /* getRegistersBinFile:
 Subsequent calls to this function will iterate through the binary file.

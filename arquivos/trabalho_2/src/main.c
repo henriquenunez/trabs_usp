@@ -78,150 +78,148 @@ int main(void)
 		free(arq_bin);
 		break;
 
-	case 3:
-
-		scanf(" %ms", &arq_bin);
-
-		// Verifica se existe o arquivo
-		fp = fopen(arq_bin, "rb");
-		if (fp == NULL)
-		{
-			printf("Falha no processamento do arquivo.\n");
-			break;
-		}
-		fclose(fp);
-
-		// Abre arquivo binário
-		bb = NBCreateInstance(arq_bin);
-		if(bb == NULL){
-			printf("Falha no processamento do arquivo.\n");
-		}
-
-		/* 
-			Put here logic for function
-		 */
-
-		fflush(0);
-		NBDeleteInstance(arq_bin);
-		free(arq_bin);
-		break;
-	
-	case 4:
-		scanf(" %ms", arq_bin);
-
-		// Verifica se existe arquivo
-		fp = fopen(arq_bin, "rb");
-		if(fp == NULL){
-			printf("Falha no processamento do arquivo.\n");
-			break;
-		}
-		fclose(fp);
-
-		// Abre arquivo binário
-		bb = NBCreateInstance(arq_bin);
-		if(bb == NULL){
-			printf("Falha no processamento do arquivo.\n");
-		}
-
-		int rrn = 0;
-		scanf("%d", &rrn);
-
-		/* 
-			Put here logic for function
-		 */
-
-		fflush(0);
-		NBDeleteInstance(arq_bin);
-		free(arq_bin);
-		break;
-
-	case 5:
-		scanf(" %ms", arq_bin);
-
-		// Verifica se existe arquivo
-		fp = fopen(arq_bin, "rb");
-		if(fp == NULL){
-			printf("Falha no processamento do arquivo.\n");
-			break;
-		}
-		fclose(fp);
-
-		// Abre arquivo binário
-		bb = NBCreateInstance(arq_bin);
-		if(bb == NULL){
-			printf("Falha no processamento do arquivo.\n");
-		}
-
-		int times = 0;
-		scanf("%d", &times);
-		for(int i = 0 ; i < times ; i++){
-		/* 
-			Put here logic for function
-		 */
-		}
-		fflush(0);
-		NBDeleteInstance(arq_bin);
-		free(arq_bin);
-		break;
-
-	case 6:
-		scanf(" %ms", arq_bin);
-
-		// Verifica se existe arquivo
-		fp = fopen(arq_bin, "rb");
-		if(fp == NULL){
-			printf("Falha no processamento do arquivo.\n");
-			break;
-		}
-		fclose(fp);
-
-		// Abre arquivo binário
-		bb = NBCreateInstance(arq_bin);
-		if(bb == NULL){
-			printf("Falha no processamento do arquivo.\n");
-		}
-
-		int times = 0;
-		scanf("%d", &times);
-		for(int i = 0 ; i < times ; i++){
-		/* 
-			Put here logic for function
-		 */
-		}
-		fflush(0);
-		NBDeleteInstance(arq_bin);
-		free(arq_bin);
-		break;
-
-	case 7:
-		scanf(" %ms", arq_bin);
-
-		// Verifica se existe arquivo
-		fp = fopen(arq_bin, "rb");
-		if(fp == NULL){
-			printf("Falha no processamento do arquivo.\n");
-			break;
-		}
-		fclose(fp);
-
-		// Abre arquivo binário
-		bb = NBCreateInstance(arq_bin);
-		if(bb == NULL){
-			printf("Falha no processamento do arquivo.\n");
-		}
-
-		int times = 0;
-		scanf("%d", &times);
-		for(int i = 0 ; i < times ; i++){
-			int rrn = 0;
-			scanf("%d", &rrn);
-		/* 
-			Put here logic for function
-		 */
-		}
-		fflush(0);
-		NBDeleteInstance(arq_bin);
-		free(arq_bin);
-		break;
+//	case 3:
+//
+//		scanf(" %ms", &arq_bin);
+//
+//		// Verifica se existe o arquivo
+//		fp = fopen(arq_bin, "rb");
+//		if (fp == NULL)
+//		{
+//			printf("Falha no processamento do arquivo.\n");
+//			break;
+//		}
+//		fclose(fp);
+//
+//		// Abre arquivo binário
+//		bb = NBCreateInstance(arq_bin);
+//		if(bb == NULL){
+//			printf("Falha no processamento do arquivo.\n");
+//		}
+//
+//		/* 
+//			Put here logic for function
+//		 */
+//
+//		fflush(0);
+//		NBDeleteInstance(arq_bin);
+//		free(arq_bin);
+//		break;
+//	
+//	case 4:
+//		scanf(" %ms", arq_bin);
+//
+//		// Verifica se existe arquivo
+//		fp = fopen(arq_bin, "rb");
+//		if(fp == NULL){
+//			printf("Falha no processamento do arquivo.\n");
+//			break;
+//		}
+//		fclose(fp);
+//
+//		// Abre arquivo binário
+//		bb = NBCreateInstance(arq_bin);
+//		if(bb == NULL){
+//			printf("Falha no processamento do arquivo.\n");
+//		}
+//
+//		int rrn = 0;
+//		scanf("%d", &rrn);
+//
+//		/* 
+//			Put here logic for function
+//		 */
+//
+//		fflush(0);
+//		NBDeleteInstance(arq_bin);
+//		free(arq_bin);
+//		break;
+//
+//	case 5:
+//		scanf(" %ms", arq_bin);
+//
+//		// Verifica se existe arquivo
+//		fp = fopen(arq_bin, "rb");
+//		if(fp == NULL){
+//			printf("Falha no processamento do arquivo.\n");
+//			break;
+//		}
+//		fclose(fp);
+//
+//		// Abre arquivo binário
+//		bb = NBCreateInstance(arq_bin);
+//		if(bb == NULL){
+//			printf("Falha no processamento do arquivo.\n");
+//		}
+//
+//		int times = 0;
+//		scanf("%d", &times);
+//		for(int i = 0 ; i < times ; i++){
+//		/* 
+//			Put here logic for function
+//		 */
+//		}
+//		fflush(0);
+//		NBDeleteInstance(arq_bin);
+//		free(arq_bin);
+//		break;
+//
+//	case 6:
+//		scanf(" %ms", arq_bin);
+//
+//		// Verifica se existe arquivo
+//		fp = fopen(arq_bin, "rb");
+//		if(fp == NULL){
+//			printf("Falha no processamento do arquivo.\n");
+//			break;
+//		}
+//		fclose(fp);
+//
+//		// Abre arquivo binário
+//		bb = NBCreateInstance(arq_bin);
+//		if(bb == NULL){
+//			printf("Falha no processamento do arquivo.\n");
+//		}
+//
+//		int times = 0;
+//		scanf("%d", &times);
+//		for(int i = 0 ; i < times ; i++){
+//		/* 
+//			Put here logic for function
+//		 */
+//		}
+//		fflush(0);
+//		NBDeleteInstance(arq_bin);
+//		free(arq_bin);
+//		break;
+//
+//	case 7:
+//		scanf(" %ms", arq_bin);
+//
+//		// Verifica se existe arquivo
+//		fp = fopen(arq_bin, "rb");
+//		if(fp == NULL){
+//			printf("Falha no processamento do arquivo.\n");
+//			break;
+//		}
+//		fclose(fp);
+//
+//		// Abre arquivo binário
+//		bb = NBCreateInstance(arq_bin);
+//		if(bb == NULL){
+//			printf("Falha no processamento do arquivo.\n");
+//		}
+//
+//		int times = 0;
+//		scanf("%d", &times);
+//		for(int i = 0 ; i < times ; i++){
+//			int rrn = 0;
+//			scanf("%d", &rrn);
+//			//Put here logic for function
+//		}
+//		fflush(0);
+//		NBDeleteInstance(arq_bin);
+//		free(arq_bin);
+//		break;
 	}
 }

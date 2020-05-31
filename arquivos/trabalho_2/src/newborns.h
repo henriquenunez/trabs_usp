@@ -1,11 +1,14 @@
 #ifndef NEWBORNS_H
 #define NEWBORNS_H
 
+#include "data_structures.h"
+
 typedef struct _newborns NEWBORNS;
 typedef enum _nb_error nb_err_t;
 
 enum _nb_error {
-	NB_OK
+	NB_OK,
+	NOT_FOUND
 };
 
 /*Instanciation functions*/
@@ -16,8 +19,11 @@ void  NBDeleteInstance(NEWBORNS*);
 nb_err_t NBImportCSV(NEWBORNS*, const char* csv_filename );
 nb_err_t NBPrintAllNewborns(NEWBORNS*);
 
+/*Insert new register*/
+//nb_err_t NBInsertNewbornAtEnd(NEWBORNS*, );
+
 /*Searching*/
-nb_err_t NBSearchMatchingFields(NEWBORNS*, char *args[]);
+nb_err_t NBSearchMatchingFields(NEWBORNS*, STRING_PAIR_VECTOR);
 
 nb_err_t NBSearchByRegisterNumber(NEWBORNS*, int reg_number);
 

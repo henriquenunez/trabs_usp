@@ -1,6 +1,7 @@
 CFLAGS = -g
 LDFLAGS = -fsanitize=address
 BIN_DIR = ./bin
+TEST_DIR = ./tests
 
 all: clean build
 
@@ -31,6 +32,7 @@ test_bin: build_tests
 	${BIN_DIR}/testbin
 
 test_newborns: build_tests
+	rm test_nb_file.bin || true
 	${BIN_DIR}/testnb
 
 test_deletion: build_tests

@@ -58,7 +58,7 @@ nascimento* createNascimento(	int   id,
 				char* cidadeMae,
 				char* cidadeBebe) {
 
-    nascimento *n = (nascimento*) malloc(sizeof(nascimento));
+    nascimento *n = (nascimento*) calloc(1, sizeof(nascimento));
 
     n->id = id;
     n->idadeMae = idadeMae;
@@ -366,9 +366,9 @@ nb_err_t NBImportCSV(NEWBORNS* these_babies , const char* filename){
 
     if (csv_entries > 0)
     while(--csv_entries){ //Count one less because of header
-	// printf("\tentry n: %d\n", temp - csv_entries);
-	n = readCsvEntry(cf);
-	__insert_baby_nb(these_babies->bf, n, -1);
+        //printf("\tentry n: %d\n", temp - csv_entries);
+        n = readCsvEntry(cf);
+        appendRegisterBinFile(these_babies->bf, &__build_bin_data_nb, n);
         free(n);
     }
 
@@ -405,3 +405,163 @@ void NBDeleteInstance(NEWBORNS* these_babies) {
     free(these_babies);
 }
 
+
+/* Field index on search args:
+0    id
+1    idadeMae
+2    data
+3    sexo
+4    estadoMae
+5    estadoBebe
+6    cidadeMae
+7    cidadeBebe
+*/
+
+nascimento* __parse_data_key_value_based_nb(STRING_PAIR_VECTOR key_val_vec) {
+    //Here we are expecting a vector of STRING_PAIR.
+    int id = -1;
+    int idadeMae = -1;
+    char date[11] = {0};
+    char sexo = '0';
+    char estadoMae[4] = {0};
+    char estadoBebe[4] = {0};
+    char cidadeMae[99] = {0};
+    char cidadeBebe[99] = {0};
+
+    #define KVP (key_val_vec.data[i])
+    for (int i = 0; i < key_val_vec.size; ++i)
+    {
+	printf("Filter is {%s} {%s}\n", KVP.key, KVP.value);
+        //Accessing ith pointer of our vector.
+        if (strcmp(KVP.key, "cidadeMae") == 0) {//This entry is for cidadeMae
+            strcpy(cidadeMae, (char*)KVP.value); //Copying into buffer
+            continue; }
+
+        if (strcmp(KVP.key, "cidadeBebe") == 0) {//This entry is for cidadeBebe
+	    strcpy(cidadeBebe, (char*)KVP.value); //Copying into buffer
+            continue; }
+
+        if (strcmp(KVP.key, "idNascimento") == 0) {//This entry is for idNascimento
+            id = atoi((char*)KVP.value);
+            continue; }
+
+        if (strcmp(KVP.key, "idadeMae") == 0) {//This entry is for idadeMae
+            idadeMae = atoi((char*)KVP.value);
+            continue; }
+
+        if (strcmp(KVP.key, "dataNascimento") == 0) {//This entry is for dataNascimento
+            strncpy(date, (char*)KVP.value, 10); //Copying into buffer
+            continue; }
+
+        if (strcmp(KVP.key, "sexoBebe") == 0) {//This entry is for sexoBebe
+            sexo = ((char*)KVP.value)[0];
+            continue; }
+
+        if (strcmp(KVP.key, "estadoMae") == 0) {//This entry is for estadoMae
+            strncpy(estadoMae, (char*)KVP.value, 2);
+            continue; }
+
+        if (strcmp(KVP.key, "estadoBebe") == 0) {//This entry is for estadoBebe
+            strncpy(estadoBebe, (char*)KVP.value, 2);
+            continue; }
+        return NULL; //No rules for the filter...
+    }
+    #undef KVP
+
+    return createNascimento(id,
+                idadeMae,
+                date,
+                sexo,
+                estadoMae,
+                estadoBebe,
+                cidadeMae,
+                cidadeBebe);
+}
+
+// Searchs for register that matches fields.
+nb_err_t NBSearchMatchingFields(NEWBORNS* these_babies, STRING_PAIR_VECTOR args) {
+    //Receives a STRING_PAIR_VECTOR
+    nascimento* filter;
+
+    filter = __parse_data_key_value_based_nb(args);
+    if (filter == NULL) {
+        //Filter wrong.
+        return NOT_FOUND;
+    }
+
+    //Iter through binary file.
+    size_t nregs;   //Number of registers retrieved from file
+    nascimento *n;  //Temporary structure
+    void* ptr = NULL;   //Ptr to receive data
+
+    nregs = getNumRegistersBinFile(these_babies->bf);
+
+    printf("SEARCH RESULTS\n");
+/*
+printf("filter:\n%d\n%d\n%s\n%c\n%s\n%s\n%s\n%s\n", filter->id,
+						    filter->idadeMae,
+						    filter->data,
+						    filter->sexo,
+						    filter->estadoMae,
+						    filter->estadoBebe,
+						    filter->cidadeMae,
+						    filter->cidadeBebe);
+
+*/
+    for(int i = 0 ; i < nregs; i++) {
+
+        //Retrieving register of given index.
+        if (searchRegisterBinFile(these_babies->bf, i, &ptr) != OK) {
+                return NOT_FOUND;
+        }
+        //Parsing acquired data.
+        n = __parse_bin_data_nb(ptr);
+
+	//Applying filter.
+        if( ( (filter->id != -1) ? filter->id == n->id : 1) &&
+
+            ( (filter->idadeMae != -1) ? filter->idadeMae == n->idadeMae : 1) &&
+
+            ( (filter->data[0] != 0) ? strcmp(filter->data, n->data) == 0  : 1) &&
+
+            ( (filter->sexo != '0') ? filter->sexo == n->sexo : 1) &&
+
+            ( (filter->estadoMae[0] != 0) ?
+                            strcmp(filter->estadoMae, n->estadoMae) == 0  : 1) &&
+
+            (filter->estadoBebe[0] != 0 ?
+                            strcmp(filter->estadoBebe, n->estadoBebe) == 0 : 1) &&
+
+            (filter->cidadeMae[0] != 0 ?
+                            strcmp(filter->cidadeMae, n->cidadeMae) == 0 : 1) &&
+
+            (filter->cidadeBebe[0] != 0 ?
+		((n->cidadeBebe[0] != 0) ?
+		    (strcmp(filter->cidadeBebe, n->cidadeBebe)) == 0 : 0) : 1)
+            ) {
+            //TODO: se o nasicmento tem capo de string nula, ta retornando 0. tem q checar
+                printNewborn(n);
+        }
+
+        free(n);
+    }
+
+    if (ptr != NULL) free(ptr);
+    free(filter);
+}
+
+nb_err_t NBSearchByRegisterNumber(NEWBORNS* these_babies, int reg_number) {
+    void* ptr = NULL;
+    nascimento* this_baby;
+
+    if (searchRegisterBinFile(these_babies->bf, reg_number, &ptr) != OK) {
+        return NOT_FOUND;
+    }
+
+    this_baby = __parse_bin_data_nb(ptr); //Parse acquired data.
+    printNewborn(this_baby);
+
+    //Freeing allocated data.
+    free(this_baby);
+    free(ptr);
+}
