@@ -232,6 +232,7 @@ void* __build_bin_data_nb(void *n_data) {
 
 // Inserts baby as new entry to .bin file
 void __insert_baby_nb(BIN_FILE* bf, nascimento* n,  int rrn) {
+	// printf("Inserindo BB %s em %d\n", n->cidadeBebe, rrn);
     insertRegisterBinFile(bf, &__build_bin_data_nb, n, rrn);
 }
 

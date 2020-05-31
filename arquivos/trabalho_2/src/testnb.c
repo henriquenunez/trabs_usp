@@ -25,9 +25,7 @@ int main() {
 
     bb = NBCreateInstance("test_nb_file.bin");
     //Importing minified CSV
-	NBImportCSV(bb, "little.csv");
-    NBPrintAllNewborns(bb);
-
+    NBImportCSV(bb, "little.csv");
 
     STRING_PAIR criterion_0;
     STRING_PAIR criterion_1;
