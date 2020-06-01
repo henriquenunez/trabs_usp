@@ -24,9 +24,11 @@ int main() {
     NEWBORNS* bb;
 
     bb = NBCreateInstance("test_nb_file.bin");
-    //Importing minified CSV
-    NBImportCSV(bb, "little.csv");
 
+//Importing minified CSV
+    printf("Testing Data Import\n");
+
+    NBImportCSV(bb, "little.csv");
     STRING_PAIR criterion_0;
     STRING_PAIR criterion_1;
 
@@ -34,7 +36,6 @@ int main() {
 
 /*FIRST QUERY*/
     //Making filters.
-    printf("\tFIRST QUERY!\n");
 
     //Criterion 0
    	criterion_0.key = DATANASCIMENTO_I;
@@ -47,11 +48,11 @@ int main() {
    	criteria.data[1] = criterion_1;
 
     //Search using filter
-    NBSearchMatchingFields(bb, criteria);
+    //printf("\tFIRST QUERY!\n");
+    //NBSearchMatchingFields(bb, criteria);
 
 /*SECOND QUERY*/
     //Making filters.
-    printf("\tSECOND QUERY!\n");
 
     //Criterion 0
    	criterion_0.key = IDNASCIMENTO_I;
@@ -64,11 +65,11 @@ int main() {
    	criteria.data[1] = criterion_1;
 
     //Search using filter
-    NBSearchMatchingFields(bb, criteria);
+    //printf("\tSECOND QUERY!\n");
+    //NBSearchMatchingFields(bb, criteria);
 
 /*THIRD QUERY*/
     //Making filters.
-    printf("\tTHIRD QUERY!\n");
 
     //Criterion 0
    	criterion_0.key = IDNASCIMENTO_I;
@@ -81,11 +82,11 @@ int main() {
    	criteria.data[1] = criterion_1;
 
     //Search using filter
-    NBSearchMatchingFields(bb, criteria);
+    //printf("\tTHIRD QUERY!\n");
+    //NBSearchMatchingFields(bb, criteria);
 
 /*FOURTH QUERY*/
     //Making filters.
-    printf("\tFOURTH QUERY!\n");
 
     //Criterion 0
    	criterion_0.key = SEXOBEBE_I;
@@ -98,10 +99,55 @@ int main() {
    	criteria.data[1] = criterion_1;
 
     //Search using filter
+    printf("\tFOURTH QUERY!\n");
     NBSearchMatchingFields(bb, criteria);
 
+/*FIFTH QUERY*/
+    //Making filters.
 
+    //Criterion 0
+   	criterion_0.key = SEXOBEBE_I;
+   	criterion_0.value = "2";
+   	criteria.data[0] = criterion_0;
 
+    //Criterion 1
+   	criterion_1.key = IDADEMAE_I;
+   	criterion_1.value = "666";
+   	criteria.data[1] = criterion_1;
+
+    //Search using filter
+    printf("\tFIFTH HARMONY!\n");
+    if(NBSearchMatchingFields(bb, criteria) != NB_OK)
+	printf("registro inexistente.\n");
+
+//Testing register number
+    printf("SEARCH BY RRN\n");
+    NBSearchByRegisterNumber(bb, 0);
+    NBSearchByRegisterNumber(bb, 3);
+    NBSearchByRegisterNumber(bb, 5);
+    if(NBSearchByRegisterNumber(bb, 100) != NB_OK)
+	printf("registro inexistente.\n");
+
+//Time to remove registers.
+    printf("REMOVING BY MATCHING FIELDS\n");
+
+    printf("Before.\n");
+    NBPrintAllNewborns(bb);
+
+    /*CRITERIA FOR REMOVAL!!!*/
+    //Criterion 0
+   	criterion_0.key = SEXOBEBE_I;
+   	criterion_0.value = "2";
+   	criteria.data[0] = criterion_0;
+
+    //Criterion 1
+   	criterion_1.key = IDADEMAE_I;
+   	criterion_1.value = "24";
+   	criteria.data[1] = criterion_1;
+
+    NBRemoveMatchingFields(bb, criteria);
+    printf("After.\n");
+    NBPrintAllNewborns(bb);
 
     NBDeleteInstance(bb);
     free(criteria.data);

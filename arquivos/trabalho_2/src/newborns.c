@@ -330,94 +330,6 @@ void printNewborn(nascimento *n){
 
 }
 
-/*EXPOSED FUNCTIONS*/
-
-// Opens .bin file with newborns to read
-NEWBORNS* NBCreateInstance(const char* gen_filename) {
-    NEWBORNS* ret_instance;
-    ret_instance = (NEWBORNS*) malloc(sizeof(NEWBORNS));
-
-    ret_instance->bf = openBinFile(gen_filename, REG_SIZE);
-
-    //Instanciation error-checking
-    if (ret_instance->bf == NULL) {
-	//dealloc stuff
-	//closeBinFile();
-	free(ret_instance);
-	return NULL;
-    }
-
-
-    return ret_instance;
-}
-
-// Gets all entries from .csv file and appends it on .bin file
-nb_err_t NBImportCSV(NEWBORNS* these_babies , const char* filename){
-    CSV_FILE *cf;
-    nascimento *n;
-    int csv_entries;
-    int temp;
-
-    cf = openCsvFile(filename);
-    csv_entries = countLinesCsvFile(cf);
-
-    temp = csv_entries;
-
-    skipHeaderCsvFile(cf);
-
-    if (csv_entries > 0)
-    while(--csv_entries){ //Count one less because of header
-        //printf("\tentry n: %d\n", temp - csv_entries);
-        n = readCsvEntry(cf);
-        appendRegisterBinFile(these_babies->bf, &__build_bin_data_nb, n);
-        free(n);
-    }
-
-    closeCsvFile(cf);
-}
-
-// Prints all entries in .bin newborns file in the pattern defined
-nb_err_t NBPrintAllNewborns(NEWBORNS* these_babies){
-    size_t nregs;	//Number of registers retrieved from file
-    nascimento *n;	//Temporary structure
-    void* ptr = NULL;	//Ptr to receive data
-
-
-    nregs = getNumRegistersBinFile(these_babies->bf) + 5;
-
-    for(int i = 0 ; i < nregs; i++){
-
-        if (getRegistersBinFile(these_babies->bf, &ptr) == OK) {
-	    n = __parse_bin_data_nb(ptr);
-	} else
-	    break;
-	//printf("PTR: %p\n", ptr);
-        printNewborn(n);
-	free(n);    //TODO should be changed to getRegistersBinFile, when funct
-		    //is ready
-    }
-
-    if (ptr != NULL) free(ptr);
-}
-
-// Closes and frees the .bin file used
-void NBDeleteInstance(NEWBORNS* these_babies) {
-    if (these_babies->bf != NULL) closeBinFile(these_babies->bf);
-    free(these_babies);
-}
-
-
-/* Field index on search args:
-0    id
-1    idadeMae
-2    data
-3    sexo
-4    estadoMae
-5    estadoBebe
-6    cidadeMae
-7    cidadeBebe
-*/
-
 nascimento* __parse_data_key_value_based_nb(STRING_PAIR_VECTOR key_val_vec) {
     //Here we are expecting a vector of STRING_PAIR.
     int id = -1;
@@ -479,10 +391,138 @@ nascimento* __parse_data_key_value_based_nb(STRING_PAIR_VECTOR key_val_vec) {
                 cidadeBebe);
 }
 
+/*EXPOSED FUNCTIONS*/
+
+// Opens .bin file with newborns to read
+NEWBORNS* NBCreateInstance(const char* gen_filename) {
+    NEWBORNS* ret_instance;
+    ret_instance = (NEWBORNS*) malloc(sizeof(NEWBORNS));
+
+    ret_instance->bf = openBinFile(gen_filename, REG_SIZE);
+
+    //Instanciation error-checking
+    if (ret_instance->bf == NULL) {
+	//dealloc stuff
+	//closeBinFile();
+	free(ret_instance);
+	return NULL;
+    }
+
+
+    return ret_instance;
+}
+
+// Gets all entries from .csv file and appends it on .bin file
+nb_err_t NBImportCSV(NEWBORNS* these_babies , const char* filename){
+    CSV_FILE *cf;
+    nascimento *n;
+    int csv_entries;
+    int temp;
+
+    cf = openCsvFile(filename);
+    csv_entries = countLinesCsvFile(cf);
+
+    temp = csv_entries;
+
+    skipHeaderCsvFile(cf);
+
+    if (csv_entries > 0)
+    while(--csv_entries){ //Count one less because of header
+        //printf("\tentry n: %d\n", temp - csv_entries);
+        n = readCsvEntry(cf);
+        appendRegisterBinFile(these_babies->bf, &__build_bin_data_nb, n);
+        free(n);
+    }
+
+    closeCsvFile(cf);
+}
+
+// Prints all entries in .bin newborns file in the pattern defined
+nb_err_t NBPrintAllNewborns(NEWBORNS* these_babies){
+    size_t nregs;	//Number of registers retrieved from file
+    nascimento *n;	//Temporary structure
+    void* ptr = NULL;	//Ptr to receive data
+
+    bin_err_t get_registers_ret;
+
+    //Resetting file iteration.
+    resetFileIterBinFile(these_babies->bf);
+
+    nregs = getNumRegistersBinFile(these_babies->bf) + 5;
+
+    for(int i = 0 ; i < nregs; i++){
+
+	get_registers_ret = getRegistersBinFile(these_babies->bf, &ptr);
+	if (get_registers_ret == OK) {
+	    n = __parse_bin_data_nb(ptr);
+	} else if(get_registers_ret == REMOVED_ENTRY) {
+	    continue;
+	} else break;
+	//printf("PTR: %p\n", ptr);
+        printNewborn(n);
+	free(n);    //TODO should be changed to getRegistersBinFile, when funct
+		    //is ready
+    }
+
+    if (ptr != NULL) free(ptr);
+}
+
+// Closes and frees the .bin file used
+void NBDeleteInstance(NEWBORNS* these_babies) {
+    if (these_babies->bf != NULL) closeBinFile(these_babies->bf);
+    free(these_babies);
+}
+
+
+/* Field index on search args:
+0    id
+1    idadeMae
+2    data
+3    sexo
+4    estadoMae
+5    estadoBebe
+6    cidadeMae
+7    cidadeBebe
+*/
+
+//This may not be the most beautiful one. Searchs if current baby matches
+//filter.
+int __apply_filter(nascimento *n, nascimento *filter) {
+
+return (
+    ( (filter->id != -1) ? filter->id == n->id : 1) &&
+
+    ( (filter->idadeMae != -1) ? filter->idadeMae == n->idadeMae : 1) &&
+
+    ( (filter->data[0] != 0) ?
+	(n->data[0] != 0 ?
+	    strcmp(filter->data, n->data) == 0 : 0)  : 1) &&
+
+    ( (filter->sexo != '0') ? filter->sexo == n->sexo : 1) &&
+
+    ( (filter->estadoMae[0] != 0) ?
+	(n->estadoMae[0] != 0 ?
+	    strcmp(filter->estadoMae, n->estadoMae) == 0 : 0)  : 1) &&
+
+    (filter->estadoBebe[0] != 0 ?
+	(n->estadoBebe[0] != 0 ?
+            strcmp(filter->estadoBebe, n->estadoBebe) == 0 : 0) : 1) &&
+
+    (filter->cidadeMae[0] != 0 ?
+	(n->cidadeMae[0] != 0 ?
+            strcmp(filter->cidadeMae, n->cidadeMae) == 0 : 0) : 1) &&
+
+    (filter->cidadeBebe[0] != 0 ?
+	(n->cidadeBebe[0] != 0 ?
+	    strcmp(filter->cidadeBebe, n->cidadeBebe) == 0 : 0) : 1)
+    );
+}
+
 // Searchs for register that matches fields.
 nb_err_t NBSearchMatchingFields(NEWBORNS* these_babies, STRING_PAIR_VECTOR args) {
     //Receives a STRING_PAIR_VECTOR
     nascimento* filter;
+    int any_found_flag = 0;
 
     filter = __parse_data_key_value_based_nb(args);
     if (filter == NULL) {
@@ -519,29 +559,9 @@ printf("filter:\n%d\n%d\n%s\n%c\n%s\n%s\n%s\n%s\n", filter->id,
         n = __parse_bin_data_nb(ptr);
 
 	//Applying filter.
-        if( ( (filter->id != -1) ? filter->id == n->id : 1) &&
-
-            ( (filter->idadeMae != -1) ? filter->idadeMae == n->idadeMae : 1) &&
-
-            ( (filter->data[0] != 0) ? strcmp(filter->data, n->data) == 0  : 1) &&
-
-            ( (filter->sexo != '0') ? filter->sexo == n->sexo : 1) &&
-
-            ( (filter->estadoMae[0] != 0) ?
-                            strcmp(filter->estadoMae, n->estadoMae) == 0  : 1) &&
-
-            (filter->estadoBebe[0] != 0 ?
-                            strcmp(filter->estadoBebe, n->estadoBebe) == 0 : 1) &&
-
-            (filter->cidadeMae[0] != 0 ?
-                            strcmp(filter->cidadeMae, n->cidadeMae) == 0 : 1) &&
-
-            (filter->cidadeBebe[0] != 0 ?
-		((n->cidadeBebe[0] != 0) ?
-		    (strcmp(filter->cidadeBebe, n->cidadeBebe)) == 0 : 0) : 1)
-            ) {
-            //TODO: se o nasicmento tem capo de string nula, ta retornando 0. tem q checar
+        if(__apply_filter(n, filter)) {
                 printNewborn(n);
+		any_found_flag = 1;
         }
 
         free(n);
@@ -549,6 +569,9 @@ printf("filter:\n%d\n%d\n%s\n%c\n%s\n%s\n%s\n%s\n", filter->id,
 
     if (ptr != NULL) free(ptr);
     free(filter);
+
+    if (any_found_flag) return NB_OK;
+    return NOT_FOUND;
 }
 
 nb_err_t NBSearchByRegisterNumber(NEWBORNS* these_babies, int reg_number) {
@@ -561,8 +584,65 @@ nb_err_t NBSearchByRegisterNumber(NEWBORNS* these_babies, int reg_number) {
 
     this_baby = __parse_bin_data_nb(ptr); //Parse acquired data.
     printNewborn(this_baby);
-
     //Freeing allocated data.
     free(this_baby);
     free(ptr);
+
+    return NB_OK;
 }
+
+nb_err_t NBRemoveMatchingFields(NEWBORNS* these_babies, STRING_PAIR_VECTOR args) {
+    //Receives a STRING_PAIR_VECTOR
+    nascimento* filter;
+
+    filter = __parse_data_key_value_based_nb(args);
+
+    if (filter == NULL) {
+        //Filter wrong.
+        return NOT_FOUND; //TODO define some error.
+    }
+
+    //Iter through binary file.
+    size_t nregs;   //Number of registers retrieved from file
+    nascimento *n;  //Temporary structure
+    void* ptr = NULL;   //Ptr to receive data
+
+    nregs = getNumRegistersBinFile(these_babies->bf);
+
+    //i here is the rrn of the current register.
+    for(int i = 0 ; i < nregs; i++) {
+        //Retrieving register of given index.
+        if (searchRegisterBinFile(these_babies->bf, i, &ptr) != OK) {
+                return NOT_FOUND; //TODO DEFINE ERROR
+        }
+        //Parsing acquired data.
+        n = __parse_bin_data_nb(ptr);
+
+	//Applying filter.
+        if(__apply_filter(n, filter)) {
+                //If matches criteria, remove and exit loop.
+		removeRegistersBinFile(these_babies->bf, i);
+		free(n);
+		break;
+        }
+
+        free(n);
+    }
+
+    if (ptr != NULL) free(ptr);
+    free(filter);
+
+    return NB_OK;
+}
+
+// Inserts newborn at end.
+nb_err_t NBInsertNewbornAtEnd(NEWBORNS* these_babies, STRING_PAIR_VECTOR args) {
+    //First, we build data from args.
+    nascimento *new_baby;
+
+    new_baby = __parse_data_key_value_based_nb(args);
+    appendRegisterBinFile(these_babies->bf, &__build_bin_data_nb, new_baby);
+
+    free(new_baby);
+}
+

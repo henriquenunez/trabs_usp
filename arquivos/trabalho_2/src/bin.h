@@ -57,5 +57,6 @@ bin_err_t removeRegistersBinFile(BIN_FILE*, size_t rrn);
 
 bin_err_t searchRegisterBinFile(BIN_FILE* this_file, size_t rrn, void** buff);
 
+void resetFileIterBinFile(BIN_FILE*);
 #endif
 

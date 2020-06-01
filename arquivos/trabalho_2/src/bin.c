@@ -307,6 +307,10 @@ bin_err_t insertRegisterBinFile(
     return OK;
 }
 
+void resetFileIterBinFile(BIN_FILE* this_file) {
+	this_file->current_rrn_index = 0;
+}
+
 // Saves an entry to ret buffer and returns status
 bin_err_t getRegistersBinFile(BIN_FILE* this_file, void** ret) {
 
@@ -328,7 +332,7 @@ bin_err_t getRegistersBinFile(BIN_FILE* this_file, void** ret) {
     int firstNum;
     memcpy(&firstNum, *ret, sizeof(int));
     // Checks if first number is -1, returning if entry is deleted or not
-    if(firstNum == -1) return NO_ENTRY;
+    if(firstNum == -1) return REMOVED_ENTRY;
 
     return OK;
 }
@@ -338,6 +342,7 @@ size_t getNumRegistersBinFile(BIN_FILE* this_file) {
     return __get_num_registers_bin(this_file);
 }
 
+// Get by relative register number.
 bin_err_t searchRegisterBinFile(BIN_FILE* this_file, size_t rrn, void** ret){
 
     // Sets RRN in binary file
@@ -350,7 +355,7 @@ bin_err_t searchRegisterBinFile(BIN_FILE* this_file, size_t rrn, void** ret){
 
 // Removes register of the given RRN.
 bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn){
-    
+
     //Check if rrn is WITHIN file, leq than last rrn.
     if(rrn > getNumRegistersBinFile(this_file)){
         return END_OF_FILE;
@@ -361,7 +366,7 @@ bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn){
     fseek(  this_file->fp,
 	        __byte_offset_curr_rrn_index_bin(this_file),
 		SEEK_SET);
-    
+
     putw(-1,  this_file->fp);
 
     // Update header
