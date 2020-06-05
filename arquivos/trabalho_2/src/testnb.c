@@ -3,9 +3,13 @@
 
 #include <stdlib.h>
 
+#include <string.h>
 #define CRIT_NUM 2
 
 int main() {
+
+//	printf("OWO %d\n", strlen(""));
+
 	STRING_PAIR_VECTOR criteria;
 
 	criteria.data = (STRING_PAIR*) malloc(CRIT_NUM * sizeof(STRING_PAIR));
@@ -32,9 +36,11 @@ int main() {
     STRING_PAIR criterion_0;
     STRING_PAIR criterion_1;
 
-/*SEARCHING BY MATCHING FIELDS*/
+#ifdef TEST_NB_MATCHING_FIELDS
 
-/*FIRST QUERY*/
+//SEARCHING BY MATCHING FIELDS
+
+//FIRST QUERY
     //Making filters.
 
     //Criterion 0
@@ -48,10 +54,10 @@ int main() {
    	criteria.data[1] = criterion_1;
 
     //Search using filter
-    //printf("\tFIRST QUERY!\n");
-    //NBSearchMatchingFields(bb, criteria);
+    printf("\tFIRST QUERY!\n");
+    NBSearchMatchingFields(bb, criteria);
 
-/*SECOND QUERY*/
+//SECOND QUERY
     //Making filters.
 
     //Criterion 0
@@ -65,10 +71,10 @@ int main() {
    	criteria.data[1] = criterion_1;
 
     //Search using filter
-    //printf("\tSECOND QUERY!\n");
-    //NBSearchMatchingFields(bb, criteria);
+    printf("\tSECOND QUERY!\n");
+    NBSearchMatchingFields(bb, criteria);
 
-/*THIRD QUERY*/
+//THIRD QUERY
     //Making filters.
 
     //Criterion 0
@@ -82,10 +88,10 @@ int main() {
    	criteria.data[1] = criterion_1;
 
     //Search using filter
-    //printf("\tTHIRD QUERY!\n");
-    //NBSearchMatchingFields(bb, criteria);
+    printf("\tTHIRD QUERY!\n");
+    NBSearchMatchingFields(bb, criteria);
 
-/*FOURTH QUERY*/
+//FOURTH QUERY
     //Making filters.
 
     //Criterion 0
@@ -102,31 +108,41 @@ int main() {
     printf("\tFOURTH QUERY!\n");
     NBSearchMatchingFields(bb, criteria);
 
-/*FIFTH QUERY*/
+//FIFTH QUERY
     //Making filters.
 
     //Criterion 0
    	criterion_0.key = SEXOBEBE_I;
-   	criterion_0.value = "2";
+   	criterion_0.value = "";
    	criteria.data[0] = criterion_0;
-
+/*
     //Criterion 1
    	criterion_1.key = IDADEMAE_I;
-   	criterion_1.value = "666";
+   	criterion_1.value = "";
    	criteria.data[1] = criterion_1;
-
+*/
+    criteria.size = 1;
     //Search using filter
     printf("\tFIFTH HARMONY!\n");
     if(NBSearchMatchingFields(bb, criteria) != NB_OK)
 	printf("registro inexistente.\n");
 
+#endif
+#ifdef TEST_NB_GET_RRN
+
 //Testing register number
     printf("SEARCH BY RRN\n");
+    printf("RRN = 0: ");
     NBSearchByRegisterNumber(bb, 0);
+    printf("RRN = 3: ");
     NBSearchByRegisterNumber(bb, 3);
+    printf("RRN = 5: ");
     NBSearchByRegisterNumber(bb, 5);
+
     if(NBSearchByRegisterNumber(bb, 100) != NB_OK)
 	printf("registro inexistente.\n");
+#endif
+#ifdef TEST_NB_REMOVE_MATCHING_FIELDS
 
 //Time to remove registers.
     printf("REMOVING BY MATCHING FIELDS\n");
@@ -134,7 +150,7 @@ int main() {
     printf("Before.\n");
     NBPrintAllNewborns(bb);
 
-    /*CRITERIA FOR REMOVAL!!!*/
+    //CRITERIA FOR REMOVAL!!!
     //Criterion 0
    	criterion_0.key = SEXOBEBE_I;
    	criterion_0.value = "2";
@@ -148,6 +164,59 @@ int main() {
     NBRemoveMatchingFields(bb, criteria);
     printf("After.\n");
     NBPrintAllNewborns(bb);
+#endif
+//#define TEST_NB_UPDATE_REGISTER
+#ifdef TEST_NB_UPDATE_REGISTER
+
+    printf("UPDATING REGISTER\n");
+
+    printf("Before.\n");
+    NBPrintAllNewborns(bb);
+
+    //FIELDS TO BE UPDATED
+    //Criterion 0
+   	criterion_0.key = SEXOBEBE_I;
+   	criterion_0.value = "4";
+   	criteria.data[0] = criterion_0;
+
+    //Criterion 1
+   	criterion_1.key = IDADEMAE_I;
+   	criterion_1.value = "99";
+   	criteria.data[1] = criterion_1;
+
+    NBUpdateByRegisterNumber(bb, 23, criteria);
+    printf("After.\n");
+    NBPrintAllNewborns(bb);
+
+
+
+
+#endif
+#define TEST_NB_APPEND_REGISTER
+#ifdef TEST_NB_APPEND_REGISTER
+
+    printf("APPENDING REGISTER\n");
+
+    printf("Before.\n");
+    NBPrintAllNewborns(bb);
+
+    //FIELDS TO BE UPDATED
+    //Criterion 0
+   	criterion_0.key = SEXOBEBE_I;
+   	criterion_0.value = "4";
+   	criteria.data[0] = criterion_0;
+
+    //Criterion 1
+   	criterion_1.key = IDADEMAE_I;
+   	criterion_1.value = "99";
+   	criteria.data[1] = criterion_1;
+
+    NBInsertNewbornAtEnd(bb, criteria);
+    printf("After.\n");
+    NBPrintAllNewborns(bb);
+
+
+#endif
 
     NBDeleteInstance(bb);
     free(criteria.data);

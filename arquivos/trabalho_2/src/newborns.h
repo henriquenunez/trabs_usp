@@ -8,7 +8,8 @@ typedef enum _nb_error nb_err_t;
 
 enum _nb_error {
 	NB_OK,
-	NOT_FOUND
+	NOT_FOUND,
+	FILTER_ERROR
 };
 
 /*Instanciation functions*/

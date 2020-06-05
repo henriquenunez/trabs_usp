@@ -265,7 +265,7 @@ bin_err_t insertRegisterBinFile(
 			SEEK_SET);
 			// printf("@ EOF\n");
 			// Update header info
-			} 
+			}
 			__change_num_registers_bin(this_file, 1);
 			__change_rrn_next_register_bin(this_file, 1);
 		}else{
@@ -280,7 +280,7 @@ bin_err_t insertRegisterBinFile(
 				SEEK_SET);
 				// printf("@ %d\n", rrn);
 				// Update header info
-			} 
+			}
 				__change_num_updated_registers_bin(this_file, 1);
 		}
 
@@ -303,6 +303,59 @@ bin_err_t insertRegisterBinFile(
     free(data_to_be_written);
 
     //printf("number of registers: %d\n", __get_num_registers_bin(this_file));
+
+    return OK;
+}
+
+// Update entry on binary file.
+bin_err_t updateRegisterBinFile(
+			BIN_FILE* this_file,
+			void*(*insert_func)(void* data, void* old_bin_data),
+			void* ins_data,
+			int rrn) {
+    
+    bin_err_t err_code;
+    //void* data_to_be_written;
+    void* curr_bin_data = NULL;
+
+    //First, we must retrieve the bin data from given rrn.
+    err_code = searchRegisterBinFile(this_file, rrn, &curr_bin_data);
+    if (err_code != OK) return err_code;
+
+	curr_bin_data = insert_func(ins_data, curr_bin_data);
+
+//    if (data_to_be_written == NULL)
+//	return WRITE_ERROR;
+
+	// printf("rrn: %d\n", rrn);
+	// Sets correct rrn
+	this_file->current_rrn_index = rrn;
+
+	// Navigate to correct position
+	if(ftell(this_file->fp) != __byte_offset_curr_rrn_index_bin(this_file)){
+		fseek(  this_file->fp,
+		__byte_offset_curr_rrn_index_bin(this_file),
+		SEEK_SET);
+		// printf("@ %d\n", rrn);
+		// Update header info
+	}
+	
+	__change_num_updated_registers_bin(this_file, 1);
+
+	//printf("RAM SEEK is: %d\n", __byte_offset_next_rrn_bin(this_file));
+	//printf("FP  SEEK is: %d\n\n",  ftell(this_file->fp));
+	/*
+	fseek(  this_file->fp,
+	__byte_offset_rrn_bin(this_file),
+	SEEK_SET);
+	*/
+
+	//printf("SEEK is: %d ", ftell(this_file->fp));
+	//printf("Offset is: %d\n", next_reg_rrn*this_file->register_size);
+	fwrite(curr_bin_data, this_file->register_size, 1, this_file->fp);
+
+	//free(data_to_be_written);
+	free(curr_bin_data);
 
     return OK;
 }
