@@ -60,7 +60,7 @@ tests: test_csv test_bin test_newborns
 
 run:
 	${BIN_DIR}/trab
-	rm *.bin || true
+#	rm *.bin || true
 
 zip: clean
 	rm *.bin || true

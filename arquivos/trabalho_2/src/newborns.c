@@ -344,7 +344,7 @@ nascimento* __parse_data_key_value_based_nb(STRING_PAIR_VECTOR key_val_vec) {
     #define KVP (key_val_vec.data[i])
     for (int i = 0; i < key_val_vec.size; ++i)
     {
-	printf("Filter is {%s} {%s}\n", KVP.key, KVP.value);
+	// printf("Filter is {%s} {%s}\n", KVP.key, KVP.value);
         //Accessing ith pointer of our vector.
         if (strcmp(KVP.key, "cidadeMae") == 0) {//This entry is for cidadeMae
             strcpy(cidadeMae, (char*)KVP.value); //Copying into buffer
@@ -537,7 +537,7 @@ nb_err_t NBSearchMatchingFields(NEWBORNS* these_babies, STRING_PAIR_VECTOR args)
 
     nregs = getNumRegistersBinFile(these_babies->bf);
 
-    printf("SEARCH RESULTS\n");
+    // printf("SEARCH RESULTS\n");
 /*
 printf("filter:\n%d\n%d\n%s\n%c\n%s\n%s\n%s\n%s\n", filter->id,
 						    filter->idadeMae,
@@ -612,7 +612,11 @@ nb_err_t NBRemoveMatchingFields(NEWBORNS* these_babies, STRING_PAIR_VECTOR args)
     //i here is the rrn of the current register.
     for(int i = 0 ; i < nregs; i++) {
         //Retrieving register of given index.
-        if (searchRegisterBinFile(these_babies->bf, i, &ptr) != OK) {
+        // if (searchRegisterBinFile(these_babies->bf, i, &ptr) != OK) {
+					bin_err_t response = searchRegisterBinFile(these_babies->bf, i, &ptr);
+					if (response != OK) {
+				// printf("%d\n", response);
+								if(response == REMOVED_ENTRY) continue;
                 return NOT_FOUND; //TODO DEFINE ERROR
         }
         //Parsing acquired data.
