@@ -32,6 +32,17 @@ bin_err_t insertRegisterBinFile(BIN_FILE*,
 				void* ins_data,
 				int rrn);
 
+/*updateRegisterBinFile parameters:
+- insert_func: a function that receives a struct pointed by ins_data
+- ins_data: pointer to struct that can be cast into known struct type
+- rrn: relative register number for the data to be inserted in.
+*/
+bin_err_t updateRegisterBinFile(BIN_FILE*,
+				void*(*insert_func)(void*, void*),
+				void* ins_data,
+				int rrn);
+
+
 
 /*appendRegisterBinFile parameters:
 - insert_func: a function that receives a struct pointed by ins_data

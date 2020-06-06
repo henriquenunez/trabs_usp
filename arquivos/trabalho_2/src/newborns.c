@@ -46,6 +46,17 @@ struct _nascimento{
     char estadoBebe[3];
     char cidadeMae[98];
     char cidadeBebe[98];
+
+    // Theses values are helpers, so we know whether
+    // a value is null or not.
+    char nullId;
+    char nullIdadeMae;
+    char nullData;
+    char nullSexo;
+    char nullEstadoMae;
+    char nullEstadoBebe;
+    char nullCidadeMae;
+    char nullCidadeBebe;
 };
 
 //Builds struct nascimento.
@@ -341,47 +352,100 @@ nascimento* __parse_data_key_value_based_nb(STRING_PAIR_VECTOR key_val_vec) {
     char cidadeMae[99] = {0};
     char cidadeBebe[99] = {0};
 
+    //Null values
+    char nullId = 0;
+    char nullIdadeMae = 0;
+    char nullData = 0;
+    char nullSexo = 0;
+    char nullEstadoMae = 0;
+    char nullEstadoBebe = 0;
+    char nullCidadeMae = 0;
+    char nullCidadeBebe = 0;
+
+    /* The logic here is the following:
+	- If a value is NOT given, null* will be 0, and the reference value will
+	  be the default one (i.e. -1 for 'id', "\0\0\0\0\0" for string.)
+	- The filter will first check for the value to be NULL (null* == 1), if
+	  null, the filter will try to find the very default value.
+	- In case field is not NULL, the filter will compare both values.
+    */
+
     #define KVP (key_val_vec.data[i])
     for (int i = 0; i < key_val_vec.size; ++i)
     {
 	// printf("Filter is {%s} {%s}\n", KVP.key, KVP.value);
         //Accessing ith pointer of our vector.
         if (strcmp(KVP.key, "cidadeMae") == 0) {//This entry is for cidadeMae
-            strcpy(cidadeMae, (char*)KVP.value); //Copying into buffer
-            continue; }
+	    if (strlen(KVP.value) == 0)
+		nullCidadeMae = 1;
+	    else
+		strcpy(cidadeMae, (char*)KVP.value); //Copying into buffer
+            continue;
+	}
 
         if (strcmp(KVP.key, "cidadeBebe") == 0) {//This entry is for cidadeBebe
-	    strcpy(cidadeBebe, (char*)KVP.value); //Copying into buffer
-            continue; }
+	    if (strlen(KVP.value) == 0)
+		nullCidadeBebe = 1;
+	    else
+	        strcpy(cidadeBebe, (char*)KVP.value); //Copying into buffer
+            continue;
+	}
 
         if (strcmp(KVP.key, "idNascimento") == 0) {//This entry is for idNascimento
-            id = atoi((char*)KVP.value);
-            continue; }
+            if (strlen(KVP.value) == 0)
+		nullId = 1;
+	    else
+		id = atoi((char*)KVP.value);
+            continue;
+	}
 
         if (strcmp(KVP.key, "idadeMae") == 0) {//This entry is for idadeMae
-            idadeMae = atoi((char*)KVP.value);
-            continue; }
+ 	    if (strlen(KVP.value) == 0)
+		nullIdadeMae = 1;
+	    else
+		idadeMae = atoi((char*)KVP.value);
+            continue;
+	}
 
         if (strcmp(KVP.key, "dataNascimento") == 0) {//This entry is for dataNascimento
-            strncpy(date, (char*)KVP.value, 10); //Copying into buffer
-            continue; }
+ 	    if (strlen(KVP.value) == 0)
+		nullData = 1;
+	    else
+		strncpy(date, (char*)KVP.value, 10); //Copying into buffer
+            continue;
+	}
 
         if (strcmp(KVP.key, "sexoBebe") == 0) {//This entry is for sexoBebe
-            sexo = ((char*)KVP.value)[0];
-            continue; }
+	    if (strlen(KVP.value) == 0)
+		nullSexo = 1;
+	    else
+		sexo = ((char*)KVP.value)[0];
+            continue;
+	}
 
         if (strcmp(KVP.key, "estadoMae") == 0) {//This entry is for estadoMae
-            strncpy(estadoMae, (char*)KVP.value, 2);
-            continue; }
+            if (strlen(KVP.value) == 0)
+		nullEstadoMae = 1;
+	    else
+		strncpy(estadoMae, (char*)KVP.value, 2);
+            continue;
+	}
 
         if (strcmp(KVP.key, "estadoBebe") == 0) {//This entry is for estadoBebe
-            strncpy(estadoBebe, (char*)KVP.value, 2);
-            continue; }
-        return NULL; //No rules for the filter...
+	    if (strlen(KVP.value) == 0)
+		nullEstadoBebe = 1;
+	    else
+		strncpy(estadoBebe, (char*)KVP.value, 2);
+            continue;
+	}
+
+	return NULL; //No rules for the filter...
     }
     #undef KVP
 
-    return createNascimento(id,
+    nascimento *n;
+
+    n = createNascimento(id,
                 idadeMae,
                 date,
                 sexo,
@@ -389,6 +453,18 @@ nascimento* __parse_data_key_value_based_nb(STRING_PAIR_VECTOR key_val_vec) {
                 estadoBebe,
                 cidadeMae,
                 cidadeBebe);
+
+
+    n->nullId	       = nullId;
+    n->nullIdadeMae    = nullIdadeMae;
+    n->nullData	       = nullData;
+    n->nullSexo	       = nullSexo;
+    n->nullEstadoMae   = nullEstadoMae;
+    n->nullEstadoBebe  = nullEstadoBebe;
+    n->nullCidadeMae   = nullCidadeMae;
+    n->nullCidadeBebe  = nullCidadeBebe;
+
+    return n;
 }
 
 /*EXPOSED FUNCTIONS*/
@@ -489,33 +565,93 @@ void NBDeleteInstance(NEWBORNS* these_babies) {
 //filter.
 int __apply_filter(nascimento *n, nascimento *filter) {
 
-return (
-    ( (filter->id != -1) ? filter->id == n->id : 1) &&
+/*
+printf("filter nulls:\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n", filter->nullId,
+						    filter->nullIdadeMae,
+						    filter->nullData,
+						    filter->nullSexo,
+						    filter->nullEstadoMae,
+						    filter->nullEstadoBebe,
+						    filter->nullCidadeMae,
+						    filter->nullCidadeBebe);
 
-    ( (filter->idadeMae != -1) ? filter->idadeMae == n->idadeMae : 1) &&
+printf("filter:\n%d\n%d\n%s\n%c\n%s\n%s\n%s\n%s\n", filter->id,
+						    filter->idadeMae,
+						    filter->data,
+						    filter->sexo,
+						    filter->estadoMae,
+						    filter->estadoBebe,
+						    filter->cidadeMae,
+						    filter->cidadeBebe);
 
-    ( (filter->data[0] != 0) ?
-	(n->data[0] != 0 ?
-	    strcmp(filter->data, n->data) == 0 : 0)  : 1) &&
+printf("n:\n%d\n%d\n%s\n%c\n%s\n%s\n%s\n%s\n",	    n->id,
+						    n->idadeMae,
+						    n->data,
+						    n->sexo,
+						    n->estadoMae,
+						    n->estadoBebe,
+						    n->cidadeMae,
+						    n->cidadeBebe);
 
-    ( (filter->sexo != '0') ? filter->sexo == n->sexo : 1) &&
+*/
 
-    ( (filter->estadoMae[0] != 0) ?
-	(n->estadoMae[0] != 0 ?
-	    strcmp(filter->estadoMae, n->estadoMae) == 0 : 0)  : 1) &&
+char m = 0;
 
-    (filter->estadoBebe[0] != 0 ?
-	(n->estadoBebe[0] != 0 ?
-            strcmp(filter->estadoBebe, n->estadoBebe) == 0 : 0) : 1) &&
+m= (
+    //If filter IS NULL, match null id (-1).
+    ((filter->nullId) ? (n->id == -1) :
+	//Else see if value is nonexistant.
+	( (filter->id != -1) ? filter->id == n->id : 1)) &&
 
-    (filter->cidadeMae[0] != 0 ?
-	(n->cidadeMae[0] != 0 ?
-            strcmp(filter->cidadeMae, n->cidadeMae) == 0 : 0) : 1) &&
+    //If filter IS NULL, match null idadeMae (-1).
+    ((filter->nullIdadeMae) ? (n->idadeMae == -1) :
+	//Else see if value is nonexistant.
+        ( (filter->idadeMae != -1) ? filter->idadeMae == n->idadeMae : 1)) &&
 
-    (filter->cidadeBebe[0] != 0 ?
-	(n->cidadeBebe[0] != 0 ?
-	    strcmp(filter->cidadeBebe, n->cidadeBebe) == 0 : 0) : 1)
+    //If filter IS NULL, match null data ("\0......").
+    ((filter->nullData) ? (n->data[0] == 0) :
+	//Else see if value is nonexistant.
+	( (filter->data[0] != 0) ?
+	    (n->data[0] != 0 ?
+		strcmp(filter->data, n->data) == 0 : 0)  : 1)) &&
+
+    //If filter IS NULL, match null sexo ('0').
+    ((filter->nullSexo) ? (n->sexo == '0') :
+	//Else see if value is nonexistant.
+	( (filter->sexo != '0') ? filter->sexo == n->sexo : 1)) &&
+
+    //If filter IS NULL, match null estadoMae ("\0...").
+    ((filter->nullEstadoMae) ? (n->estadoMae[0] == 0) :
+	//Else see if value is nonexistant.
+	( (filter->estadoMae[0] != 0) ?
+	    (n->estadoMae[0] != 0 ?
+		strcmp(filter->estadoMae, n->estadoMae) == 0 : 0)  : 1)) &&
+
+    //If filter IS NULL, match null estadoBebe ("\0...").
+    ((filter->nullEstadoBebe) ? (n->estadoBebe[0] == 0) :
+	//Else see if value is nonexistant.
+	(filter->estadoBebe[0] != 0 ?
+	    (n->estadoBebe[0] != 0 ?
+		strcmp(filter->estadoBebe, n->estadoBebe) == 0 : 0) : 1)) &&
+
+    //If filter IS NULL, match null cidadeMae ("\0...").
+    ((filter->nullCidadeMae) ? (n->cidadeMae[0] == 0) :
+	//Else see if value is nonexistant.
+	(filter->cidadeMae[0] != 0 ?
+	    (n->cidadeMae[0] != 0 ?
+		strcmp(filter->cidadeMae, n->cidadeMae) == 0 : 0) : 1)) &&
+
+    //If filter IS NULL, match null cidadeBebe ("\0...").
+    ((filter->nullCidadeBebe) ? (n->cidadeBebe[0] == 0) :
+	//Else see if value is nonexistant.
+	(filter->cidadeBebe[0] != 0 ?
+	    (n->cidadeBebe[0] != 0 ?
+		strcmp(filter->cidadeBebe, n->cidadeBebe) == 0 : 0) : 1))
     );
+
+//printf("Matches ? {%d}\n", m);
+
+    return m;
 }
 
 // Searchs for register that matches fields.
@@ -626,6 +762,8 @@ nb_err_t NBRemoveMatchingFields(NEWBORNS* these_babies, STRING_PAIR_VECTOR args)
         if(__apply_filter(n, filter)) {
                 //If matches criteria, remove and exit loop.
 		removeRegistersBinFile(these_babies->bf, i);
+		printf(">>>");
+		printNewborn(n); //Removed register.
 		free(n);
 		break;
         }
@@ -648,5 +786,192 @@ nb_err_t NBInsertNewbornAtEnd(NEWBORNS* these_babies, STRING_PAIR_VECTOR args) {
     appendRegisterBinFile(these_babies->bf, &__build_bin_data_nb, new_baby);
 
     free(new_baby);
+}
+
+//#undef DEBUG
+
+// Updating fields of current register.
+void* __update_bin_data_nb(void *n_data, void *curr_data) {
+    int offset = 0;
+    int aux;
+
+    #define NAS ((nascimento*)n_data) //n_data is a pointer to a struct.
+    #define BUFFOFF (curr_data + offset)
+
+    if (strlen(NAS->cidadeMae)) {
+	*((int*) BUFFOFF) = strlen(NAS->cidadeMae);
+    } else if(NAS->nullCidadeMae) {
+	*((int*) BUFFOFF) = 0;
+    }
+    offset += sizeof(int);
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+    if (strlen(NAS->cidadeBebe)) {
+	*((int*) BUFFOFF) = strlen(NAS->cidadeBebe);
+    } else if(NAS->nullCidadeBebe) {
+	*((int*) BUFFOFF) = 0;
+    }
+    offset += sizeof(int);
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+
+    // printf("offset: %d\n", offset);
+
+    /*Variable length fields max size: 96*/
+    if (strlen(NAS->cidadeMae)) {
+        memcpy(BUFFOFF, NAS->cidadeMae, strlen(NAS->cidadeMae));
+	offset += strlen(NAS->cidadeMae);
+    } else
+	offset += *((int*)(curr_data + 0));
+	//Getting strlen of field. Will be 0 if field was NULL.
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+
+    // printf("offset: %d\n", offset);
+
+    if (strlen(NAS->cidadeBebe)) {
+        memcpy(BUFFOFF, NAS->cidadeBebe, strlen(NAS->cidadeBebe));
+	offset += strlen(NAS->cidadeBebe);
+    } else
+	offset += *((int*)(curr_data + sizeof(int)));
+	//Getting strlen of field. Will be 0 if field was NULL.
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+
+    // printf("offset: %d\n", offset);
+
+    /* In my opinion, this function MUST fill remaining space with garbage, but
+     * according to the specification, there must be the previous bytes in this
+     * very space.
+    memset(BUFFOFF,
+	    0x24,
+	VAR_FIELDS_MAX_LEN -
+	  (((strlen(NAS->cidadeMae) > 0)?(strlen(NAS->cidadeMae)):0) +
+	  ((strlen(NAS->cidadeBebe) > 0)?(strlen(NAS->cidadeBebe)):0))
+	);
+    */
+
+    offset +=
+	VAR_FIELDS_MAX_LEN -
+	    (*((int*)(curr_data + 0)) + //cidadeMae length
+	    *((int*)(curr_data + sizeof(int)))); //cidadeMae length
+
+    // printf("offset: %d\n", offset);
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+
+    /*Static fields*/
+    if (NAS->id != -1) //If id is not null
+        *((int*) BUFFOFF) = NAS->id;
+    else if (NAS->nullId)
+        *((int*) BUFFOFF) = 0;
+
+    offset += sizeof(int);
+    // printf("offset: %d\n", offset);
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+
+    if (NAS->idadeMae != -1) //If idadeMae is not null
+        *((int*) BUFFOFF) = NAS->idadeMae;
+    else if (NAS->nullIdadeMae)
+        *((int*) BUFFOFF) = -1;
+    offset += sizeof(int);
+    // printf("offset: %d\n", offset);
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+
+    /*Date string*/
+    if (strlen(NAS->data)) {
+	memcpy(BUFFOFF, NAS->data, 10);
+    } else if (NAS->nullData) {
+	memcpy(BUFFOFF, "\0$$$$$$$$$", 10);
+    }
+    offset += 10;
+    // printf("offset: %d\n", offset);
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+
+    //TODO maybe weird stuff will happen here, due to the '0' stuff.
+    if (NAS->sexo != '0')
+	*((char*) BUFFOFF) = NAS->sexo;
+    else if (NAS->nullSexo)
+        *((char*) BUFFOFF) = '0';
+    offset += 1;
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+
+    if (strlen(NAS->estadoMae))
+	memcpy(BUFFOFF, NAS->estadoMae, 2);
+    else if (NAS->nullEstadoMae)
+	memcpy(BUFFOFF, "\0$", 2);
+    offset += 2;
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+
+    if (strlen(NAS->estadoBebe))
+	memcpy(BUFFOFF, NAS->estadoBebe, 2);
+    else if (NAS->nullEstadoBebe)
+	memcpy(BUFFOFF, "\0$", 2);
+
+    offset += 2;
+
+    #ifdef DEBUG
+    printf("offset: %d\n", offset);
+    #endif
+
+    #undef NAS
+    #undef BUFFOFF
+
+    return curr_data;
+}
+
+nb_err_t NBUpdateByRegisterNumber(NEWBORNS* these_babies,
+				    int rrn,
+				    STRING_PAIR_VECTOR args) {
+    nascimento *update_fields_baby;
+    void* current_baby_bin = NULL;
+
+    //First, we build data from args.
+    update_fields_baby = __parse_data_key_value_based_nb(args);
+    if (update_fields_baby == NULL) return FILTER_ERROR;
+
+    //Retrieve binary data.
+
+    updateRegisterBinFile(these_babies->bf,
+			    &__update_bin_data_nb,
+			    update_fields_baby,
+			    rrn);
+
+    free(update_fields_baby);
 }
 
