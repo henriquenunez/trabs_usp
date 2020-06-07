@@ -415,7 +415,7 @@ bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn){
     }
     //fill accordingly, with -1
     this_file->current_rrn_index = rrn;
-    printf("offset: %d\n", __byte_offset_curr_rrn_index_bin(this_file));
+    // printf("offset: %d\n", __byte_offset_curr_rrn_index_bin(this_file));
     fseek(  this_file->fp,
 	        __byte_offset_curr_rrn_index_bin(this_file),
 		SEEK_SET);

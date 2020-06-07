@@ -213,7 +213,7 @@ int main(void)
 			}
 
 			nb_err_t response = NBRemoveMatchingFields(bb, vector);
-			if(response != NB_OK) printf("Registro inexistente. [%d]\n", response);
+			if(response != NB_OK) printf("Registro inexistente.\n");
 
 			// Freeing vector
 			for(int i = 0 ; i < m ; i++){
@@ -227,62 +227,120 @@ int main(void)
 		free(arq_bin);
 		break;
 
-//	case 6:
-//		scanf(" %ms", arq_bin);
-//
-//		// Verifica se existe arquivo
-//		fp = fopen(arq_bin, "rb");
-//		if(fp == NULL){
-//			printf("Falha no processamento do arquivo.\n");
-//			break;
-//		}
-//		fclose(fp);
-//
-//		// Abre arquivo binário
-//		bb = NBCreateInstance(arq_bin);
-//		if(bb == NULL){
-//			printf("Falha no processamento do arquivo.\n");
-//		}
-//
-//		int times = 0;
-//		scanf("%d", &times);
-//		for(int i = 0 ; i < times ; i++){
-//		/* 
-//			Put here logic for function
-//		 */
-//		}
-//		fflush(0);
-//		NBDeleteInstance(bb);
-//		free(arq_bin);
-//		break;
-//
-//	case 7:
-//		scanf(" %ms", arq_bin);
-//
-//		// Verifica se existe arquivo
-//		fp = fopen(arq_bin, "rb");
-//		if(fp == NULL){
-//			printf("Falha no processamento do arquivo.\n");
-//			break;
-//		}
-//		fclose(fp);
-//
-//		// Abre arquivo binário
-//		bb = NBCreateInstance(arq_bin);
-//		if(bb == NULL){
-//			printf("Falha no processamento do arquivo.\n");
-//		}
-//
-//		int times = 0;
-//		scanf("%d", &times);
-//		for(int i = 0 ; i < times ; i++){
-//			int rrn = 0;
-//			scanf("%d", &rrn);
-//			//Put here logic for function
-//		}
-//		fflush(0);
-//		NBDeleteInstance(bb);
-//		free(arq_bin);
-//		break;
+	case 6:
+		scanf(" %ms", &arq_bin);
+
+		// Verifica se existe arquivo
+		fp = fopen(arq_bin, "rb");
+		if(fp == NULL){
+			printf("Falha no processamento do arquivo.\n");
+			break;
+		}
+		fclose(fp);
+
+		// Abre arquivo binário
+		bb = NBCreateInstance(arq_bin);
+		if(bb == NULL){
+			printf("Falha no processamento do arquivo.\n");
+		}
+
+		times = 0;
+		scanf("%d", &times);
+		for(int i = 0 ; i < times ; i++){
+      // Inicializing vector
+			STRING_PAIR_VECTOR vector;
+			vector.size = 8;
+			vector.data = (STRING_PAIR*) malloc(8*sizeof(STRING_PAIR));
+
+      char* keyVector[] = {"cidadeMae", "cidadeBebe", "idNascimento", "idadeMae", "dataNascimento", "sexoBebe", "estadoMae", "estadoBebe"};
+      
+      // Getting inputs
+      for(int j = 0 ; j < 8 ; j++){
+        // printf("Data: %d\n", j);
+        STRING_PAIR node;
+        node.key = keyVector[j];
+        node.value = (char*) malloc(50*sizeof(char));
+        scan_quote_string(node.value);
+        vector.data[j] = node;
+      }
+
+      // Calling function
+      if(NBInsertNewbornAtEnd(bb, vector) != NB_OK) printf("Falha no processamento do arquivo.\n");
+
+      // Freeing vector
+			for(int i = 0 ; i < 8 ; i++){
+				// free(vector.data[i].key);
+				free(vector.data[i].value);
+			}
+			free(vector.data);
+
+		}
+		fflush(0);
+		NBDeleteInstance(bb);
+    binarioNaTela(arq_bin);
+		free(arq_bin);
+		break;
+
+	case 7:
+		scanf(" %ms", &arq_bin);
+
+		// Verifica se existe arquivo
+		fp = fopen(arq_bin, "rb");
+		if(fp == NULL){
+			printf("Falha no processamento do arquivo.\n");
+			break;
+		}
+		fclose(fp);
+
+		// Abre arquivo binário
+		bb = NBCreateInstance(arq_bin);
+		if(bb == NULL){
+			printf("Falha no processamento do arquivo.\n");
+		}
+
+		times = 0;
+		scanf("%d", &times);
+		for(int i = 0 ; i < times ; i++){
+			int rrn = 0;
+			scanf("%d", &rrn);
+			
+      int m = 0;
+			scanf("%d", &m);
+
+			// Inicializing vector
+			STRING_PAIR_VECTOR vector;
+			vector.size = m;
+			vector.data = (STRING_PAIR*) malloc(m*sizeof(STRING_PAIR));
+
+			// Filling vector data
+			for(int i = 0 ; i < m ; i++){
+				char *key;
+				char *value = (char*) malloc(97*sizeof(char));
+				scanf(" %ms", &key);
+				if(strcmp(key, "idadeMae") == 0 || strcmp(key, "idNascimento") == 0){
+					scanf(" %s", value);
+				}else{
+					scan_quote_string(value);
+				}
+				STRING_PAIR node;
+				node.key = key;
+				node.value = value;
+				vector.data[i] = node;
+			}
+
+			nb_err_t response = NBUpdateByRegisterNumber(bb, rrn, vector);
+			if(response != NB_OK) printf("Registro inexistente.\n");
+
+			// Freeing vector
+			for(int i = 0 ; i < m ; i++){
+				free(vector.data[i].key);
+				free(vector.data[i].value);
+			}
+			free(vector.data);
+		}
+		fflush(0);
+		NBDeleteInstance(bb);
+		free(arq_bin);
+		break;
 	}
 }

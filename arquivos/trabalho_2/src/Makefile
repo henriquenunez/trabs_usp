@@ -1,4 +1,4 @@
-CFLAGS = -g -DDEBUG
+CFLAGS = -g
 LDFLAGS = -fsanitize=address
 BIN_DIR = ./bin
 TEST_DIR = ./tests
