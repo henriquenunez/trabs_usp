@@ -762,8 +762,8 @@ nb_err_t NBRemoveMatchingFields(NEWBORNS* these_babies, STRING_PAIR_VECTOR args)
         if(__apply_filter(n, filter)) {
                 //If matches criteria, remove and exit loop.
 		removeRegistersBinFile(these_babies->bf, i);
-		printf(">>>");
-		printNewborn(n); //Removed register.
+		// printf(">>>");
+		// printNewborn(n); //Removed register.
 		free(n);
 		break;
         }

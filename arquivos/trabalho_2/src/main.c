@@ -57,6 +57,7 @@ int main(void)
 		if (fp == NULL)
 		{
 			printf("Falha no processamento do arquivo.\n");
+      free(arq_bin);
 			break;
 		}
 		fclose(fp);
@@ -81,12 +82,13 @@ int main(void)
 	case 3:
 
 		scanf(" %ms", &arq_bin);
-
+    // printf("%s\n", arq_bin);
 		// Verifica se existe o arquivo
 		fp = fopen(arq_bin, "rb");
 		if (fp == NULL)
 		{
 			printf("Falha no processamento do arquivo.\n");
+      free(arq_bin);
 			break;
 		}
 		fclose(fp);
@@ -123,7 +125,8 @@ int main(void)
 		}
 
 		// Calling search
-		if(NBSearchMatchingFields(bb, vector) != NB_OK) printf("Registro inexistente.\n");
+    nb_err_t response = NBSearchMatchingFields(bb, vector);
+		if(response != NB_OK) printf("Registro inexistente.\n");
 
 		// Freeing vector
 		for(int i = 0 ; i < m ; i++){
@@ -143,7 +146,8 @@ int main(void)
 		// Verifica se existe arquivo
 		fp = fopen(arq_bin, "rb");
 		if(fp == NULL){
-			printf("Falha no processamento do arquivo. /* [Not found] */\n");
+			printf("Falha no processamento do arquivo.\n");
+      free(arq_bin);
 			break;
 		}
 		fclose(fp);
@@ -159,7 +163,8 @@ int main(void)
 		scanf("%d", &rrn);
 
 		// Calling search
-		if(NBSearchByRegisterNumber(bb, rrn) != NB_OK) printf("Registro Inexistente.\n");
+    response = NBSearchByRegisterNumber(bb, rrn);
+		if(response != NB_OK) printf("Registro Inexistente.\n");
 
 		// Clering memory
 		fflush(0);
@@ -174,6 +179,7 @@ int main(void)
 		fp = fopen(arq_bin, "rb");
 		if(fp == NULL){
 			printf("Falha no processamento do arquivo.\n");
+      free(arq_bin);
 			break;
 		}
 		fclose(fp);
@@ -212,8 +218,8 @@ int main(void)
 				vector.data[i] = node;
 			}
 
-			nb_err_t response = NBRemoveMatchingFields(bb, vector);
-			if(response != NB_OK) printf("Registro inexistente.\n");
+			response = NBRemoveMatchingFields(bb, vector);
+			// if(response != NB_OK) printf("Registro inexistente.\n");
 
 			// Freeing vector
 			for(int i = 0 ; i < m ; i++){
@@ -224,6 +230,7 @@ int main(void)
 		}
 		fflush(0);
 		NBDeleteInstance(bb);
+    binarioNaTela(arq_bin);
 		free(arq_bin);
 		break;
 
@@ -234,6 +241,7 @@ int main(void)
 		fp = fopen(arq_bin, "rb");
 		if(fp == NULL){
 			printf("Falha no processamento do arquivo.\n");
+      free(arq_bin);
 			break;
 		}
 		fclose(fp);
@@ -265,7 +273,8 @@ int main(void)
       }
 
       // Calling function
-      if(NBInsertNewbornAtEnd(bb, vector) != NB_OK) printf("Falha no processamento do arquivo.\n");
+      response = NBInsertNewbornAtEnd(bb, vector);
+      // if(NBInsertNewbornAtEnd(bb, vector) != NB_OK){ printf("Falha no processamento do arquivo.\n");}
 
       // Freeing vector
 			for(int i = 0 ; i < 8 ; i++){
@@ -288,6 +297,7 @@ int main(void)
 		fp = fopen(arq_bin, "rb");
 		if(fp == NULL){
 			printf("Falha no processamento do arquivo.\n");
+      free(arq_bin);
 			break;
 		}
 		fclose(fp);
@@ -328,8 +338,8 @@ int main(void)
 				vector.data[i] = node;
 			}
 
-			nb_err_t response = NBUpdateByRegisterNumber(bb, rrn, vector);
-			if(response != NB_OK) printf("Registro inexistente.\n");
+			response = NBUpdateByRegisterNumber(bb, rrn, vector);
+			// if(response != NB_OK) printf("Registro inexistente.\n");
 
 			// Freeing vector
 			for(int i = 0 ; i < m ; i++){
@@ -340,6 +350,7 @@ int main(void)
 		}
 		fflush(0);
 		NBDeleteInstance(bb);
+    binarioNaTela(arq_bin);
 		free(arq_bin);
 		break;
 	}

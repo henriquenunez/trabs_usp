@@ -1,5 +1,5 @@
 CFLAGS = -g
-LDFLAGS = -fsanitize=address
+LDFLAGS = 
 BIN_DIR = ./bin
 TEST_DIR = ./tests
 

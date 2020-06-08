@@ -423,7 +423,7 @@ bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn){
     putw(-1,  this_file->fp);
 
     // Update header
-    __change_num_registers_bin(this_file, -1);
+    // __change_num_registers_bin(this_file, -1);
 		__change_num_deleted_registers_bin(this_file, 1);
 
 }
