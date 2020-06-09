@@ -163,8 +163,13 @@ BIN_FILE* openBinFile(const char* filename, size_t register_size) {
 
     //Check file consistency
     if (__get_status_bin(ret_file) != '1') {
-	closeBinFile(ret_file);
-	return NULL;
+
+        //Will just free resources and close file, no header toggling.
+        fclose(ret_file->fp);
+        free(ret_file->header);
+        free(ret_file);
+	   
+        return NULL;
     }
 
     //Defines register size

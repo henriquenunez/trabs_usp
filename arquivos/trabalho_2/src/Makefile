@@ -1,5 +1,5 @@
 CFLAGS = -g
-LDFLAGS = 
+LDFLAGS = #-fsanitize=address
 BIN_DIR = ./bin
 TEST_DIR = ./tests
 
@@ -21,6 +21,7 @@ build_tests: clean csv.o bin.o newborns.o
 	gcc ${CFLAGS} testcsvreader.c ${BIN_DIR}/csv.o -o ${BIN_DIR}/testcsvreader ${LDFLAGS}
 	gcc ${CFLAGS} testbin.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testbin ${LDFLAGS}
 	gcc ${CFLAGS} testnb.c ${BIN_DIR}/newborns.o ${BIN_DIR}/csv.o ${BIN_DIR}/bin.o -o ${BIN_DIR}/testnb ${LDFLAGS}
+	gcc ${CFLAGS} big_testnb.c ${BIN_DIR}/newborns.o ${BIN_DIR}/csv.o ${BIN_DIR}/bin.o -o ${BIN_DIR}/bigtestnb ${LDFLAGS}
 	gcc ${CFLAGS} testdelete.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testdelete ${LDFLAGS}
 	gcc ${CFLAGS} testsearch.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testsearch ${LDFLAGS}
 	gcc ${CFLAGS} testInsert.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testInsert ${LDFLAGS}
@@ -30,6 +31,11 @@ test_csv: build_tests
 
 test_bin: build_tests
 	${BIN_DIR}/testbin
+
+test_big_newborns: build_tests
+	rm test_nb_file.bin || true
+	${BIN_DIR}/bigtestnb
+	rm gen_file.bin
 
 test_newborns: build_tests
 	rm test_nb_file.bin || true

@@ -416,7 +416,7 @@ nascimento* __parse_data_key_value_based_nb(STRING_PAIR_VECTOR key_val_vec) {
 	}
 
         if (strcmp(KVP.key, "sexoBebe") == 0) {//This entry is for sexoBebe
-	    if (strlen(KVP.value) == 0)
+	    if (strlen(KVP.value) == 0 || ((char*)KVP.value)[0] == '0')
 		nullSexo = 1;
 	    else
 		sexo = ((char*)KVP.value)[0];
