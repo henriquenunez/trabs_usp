@@ -376,7 +376,7 @@ bin_err_t getRegistersBinFile(BIN_FILE* this_file, void** ret) {
     //TODO handle memory management when last register is read.
 
     //Tests whether there are no more registers to fetch, and resets index
-    if (this_file->current_rrn_index >= __get_num_registers_bin(this_file) ) {
+    if (this_file->current_rrn_index >= __get_num_registers_bin(this_file) + __get_num_deleted_registers_bin(this_file) ) {
 	*ret = NULL;
 	this_file->current_rrn_index = 0;
 	return END_OF_FILE;
@@ -415,7 +415,7 @@ bin_err_t searchRegisterBinFile(BIN_FILE* this_file, size_t rrn, void** ret){
 bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn){
 
     //Check if rrn is WITHIN file, leq than last rrn.
-    if(rrn > getNumRegistersBinFile(this_file)){
+    if(rrn > getNumRegistersBinFile(this_file) +__get_num_deleted_registers_bin(this_file)){
         return END_OF_FILE;
     }
     //fill accordingly, with -1
@@ -428,7 +428,7 @@ bin_err_t removeRegistersBinFile(BIN_FILE* this_file, size_t rrn){
     putw(-1,  this_file->fp);
 
     // Update header
-    // __change_num_registers_bin(this_file, -1);
+    __change_num_registers_bin(this_file, -1);
 		__change_num_deleted_registers_bin(this_file, 1);
 
 }

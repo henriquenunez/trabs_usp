@@ -745,6 +745,8 @@ nb_err_t NBRemoveMatchingFields(NEWBORNS* these_babies, STRING_PAIR_VECTOR args)
 
     nregs = getNumRegistersBinFile(these_babies->bf);
 
+
+
     //i here is the rrn of the current register.
     for(int i = 0 ; i < nregs; i++) {
         //Retrieving register of given index.
@@ -752,23 +754,24 @@ nb_err_t NBRemoveMatchingFields(NEWBORNS* these_babies, STRING_PAIR_VECTOR args)
 					bin_err_t response = searchRegisterBinFile(these_babies->bf, i, &ptr);
 					if (response != OK) {
 				// printf("%d\n", response);
-								if(response == REMOVED_ENTRY) continue;
+								if(response == REMOVED_ENTRY) {nregs++; continue;}
                 return NOT_FOUND; //TODO DEFINE ERROR
         }
         //Parsing acquired data.
         n = __parse_bin_data_nb(ptr);
 
 	//Applying filter.
-        if(__apply_filter(n, filter)) {
+        int filterResponse = __apply_filter(n, filter);
+        if(filterResponse) {
                 //If matches criteria, remove and exit loop.
 		removeRegistersBinFile(these_babies->bf, i);
 		// printf(">>>");
 		// printNewborn(n); //Removed register.
 		free(n);
-		break;
+		// break;
         }
 
-        free(n);
+        // free(n);
     }
 
     if (ptr != NULL) free(ptr);
