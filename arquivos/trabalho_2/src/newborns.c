@@ -963,7 +963,6 @@ nb_err_t NBUpdateByRegisterNumber(NEWBORNS* these_babies,
 				    STRING_PAIR_VECTOR args) {
     nascimento *update_fields_baby;
     void* current_baby_bin = NULL;
-
     //First, we build data from args.
     update_fields_baby = __parse_data_key_value_based_nb(args);
     if (update_fields_baby == NULL) return FILTER_ERROR;
@@ -974,7 +973,6 @@ nb_err_t NBUpdateByRegisterNumber(NEWBORNS* these_babies,
 			    &__update_bin_data_nb,
 			    update_fields_baby,
 			    rrn);
-
     free(update_fields_baby);
 }
 

@@ -113,11 +113,7 @@ int main(void)
 			char *key;
 			char *value = (char*) malloc(97*sizeof(char));
 			scanf(" %ms", &key);
-			if(strcmp(key, "idadeMae") == 0 || strcmp(key, "idNascimento") == 0){
-				scanf(" %s", value);
-			}else{
-				scan_quote_string(value);
-			}
+			scan_quote_string(value);
 			STRING_PAIR node;
 			node.key = key;
 			node.value = value;
@@ -208,11 +204,7 @@ int main(void)
 				char *key;
 				char *value = (char*) malloc(97*sizeof(char));
 				scanf(" %ms", &key);
-				if(strcmp(key, "idadeMae") == 0 || strcmp(key, "idNascimento") == 0){
-					scanf(" %s", value);
-				}else{
-					scan_quote_string(value);
-				}
+				scan_quote_string(value);
 				STRING_PAIR node;
 				node.key = key;
 				node.value = value;
@@ -331,11 +323,7 @@ int main(void)
 				char *key;
 				char *value = (char*) malloc(97*sizeof(char));
 				scanf(" %ms", &key);
-				if(strcmp(key, "idadeMae") == 0 || strcmp(key, "idNascimento") == 0){
-					scanf(" %s", value);
-				}else{
-					scan_quote_string(value);
-				}
+				scan_quote_string(value);
 				STRING_PAIR node;
 				node.key = key;
 				node.value = value;
