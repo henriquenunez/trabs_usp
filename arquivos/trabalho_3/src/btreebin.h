@@ -5,9 +5,10 @@ typedef struct _btree_handle BTREE;
 
 typedef enum _btree_err
 {
-    OK,
-    NEW_FILE, //Created new file.
-    CORRUPTED //First byte not equal to '1'.
+    BTR_OK,
+    BTR_ERROR,
+    BTR_NEW_FILE, //Created new file.
+    BTR_CORRUPTED //First byte not equal to '1'.
 } btree_err_t;
 
 /* Opens B-Tree.
@@ -18,7 +19,7 @@ BTREE* openBTree(const char* filename, btree_err_t* err);
 void closeBTree(BTREE*);
 
 btree_err_t insertKeyValBTree(BTREE*, int key, int value);
-int getValByKeyBTree(BTREE*, unsigned int key);
+int getValByKeyBTree(BTREE*, int key);
 
 #endif
 

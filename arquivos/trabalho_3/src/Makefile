@@ -1,6 +1,6 @@
 CC=clang
 CFLAGS = -g
-LDFLAGS = #-fsanitize=address
+LDFLAGS = -fsanitize=address
 BIN_DIR = ./bin
 TEST_DIR = ./tests
 
@@ -21,7 +21,7 @@ newborns.o: build_dir
 btreebin.o:
 	${CC} ${CFLAGS} -c btreebin.c -o ${BIN_DIR}/btreebin.o ${LDFLAGS}
 
-build_tests: clean csv.o bin.o newborns.o
+build_tests: clean csv.o bin.o newborns.o btreebin.o
 	${CC} ${CFLAGS} testcsvreader.c ${BIN_DIR}/csv.o -o ${BIN_DIR}/testcsvreader ${LDFLAGS}
 	${CC} ${CFLAGS} testbin.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testbin ${LDFLAGS}
 	${CC} ${CFLAGS} testnb.c ${BIN_DIR}/newborns.o ${BIN_DIR}/csv.o ${BIN_DIR}/bin.o -o ${BIN_DIR}/testnb ${LDFLAGS}
@@ -29,6 +29,7 @@ build_tests: clean csv.o bin.o newborns.o
 	${CC} ${CFLAGS} testdelete.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testdelete ${LDFLAGS}
 	${CC} ${CFLAGS} testsearch.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testsearch ${LDFLAGS}
 	${CC} ${CFLAGS} testInsert.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testInsert ${LDFLAGS}
+	${CC} ${CFLAGS} testbtree.c ${BIN_DIR}/btreebin.o -o ${BIN_DIR}/testBTree ${LDFLAGS}
 
 test_csv: build_tests
 	${BIN_DIR}/testcsvreader
@@ -66,7 +67,7 @@ test_insert: build_tests
 	hexdump -C insert.bin
 	#rm insert.bin
 
-test_btree:
+test_btree: build_tests
 	${BIN_DIR}/testBTree
 
 tests: test_csv test_bin test_newborns

@@ -168,7 +168,7 @@ BIN_FILE* openBinFile(const char* filename, size_t register_size) {
         fclose(ret_file->fp);
         free(ret_file->header);
         free(ret_file);
-	   
+
         return NULL;
     }
 
