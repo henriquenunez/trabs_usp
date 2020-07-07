@@ -976,3 +976,23 @@ nb_err_t NBUpdateByRegisterNumber(NEWBORNS* these_babies,
     free(update_fields_baby);
 }
 
+int NBgetNumRegistersBinFile(NEWBORNS* these_babies){
+  return getNumRegistersBinFile(these_babies->bf);
+}
+
+int NBGetIDByRegisterNumber(NEWBORNS* these_babies, int rrn){
+  void* ptr = NULL;
+  nascimento* this_baby;
+
+  if (searchRegisterBinFile(these_babies->bf, rrn, &ptr) != OK) {
+      return -1;
+  }
+
+  this_baby = __parse_bin_data_nb(ptr); //Parse acquired data.
+
+  return this_baby->id;
+}
+
+/* TO DO
+- NBgetNumRegistersBinFile
+- NBGetIDByRegisterNumber */

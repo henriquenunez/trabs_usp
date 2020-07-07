@@ -1,4 +1,4 @@
-CC=clang
+CC=gcc
 CFLAGS = -g
 LDFLAGS = -fsanitize=address
 BIN_DIR = ./bin
@@ -6,8 +6,8 @@ TEST_DIR = ./tests
 
 all: clean build
 
-build: build_dir csv.o bin.o newborns.o
-	${CC} ${CFLAGS} ./bin/csv.o ./bin/bin.o ./bin/newborns.o main.c -o ${BIN_DIR}/trab ${LDFLAGS}
+build: build_dir csv.o bin.o newborns.o btreebin.o
+	${CC} ${CFLAGS} ./bin/csv.o ./bin/bin.o ./bin/newborns.o ./bin/btreebin.o main.c -o ${BIN_DIR}/trab ${LDFLAGS}
 
 csv.o: build_dir
 	${CC} ${CFLAGS} -c csv.c -o ${BIN_DIR}/csv.o ${LDFLAGS}

@@ -40,8 +40,8 @@ struct _btree_node
 
 typedef enum _btree_ret
 {
-    BTR_KEY_FOUND,
-    BTR_KEY_NOT_FOUND
+  BTR_KEY_FOUND,
+  BTR_KEY_NOT_FOUND
 } btr_ret_t;
 
 /*TOP LEVEL DATA STRUCTURE*/
@@ -169,14 +169,15 @@ btree_node __bin_to_node_btree(void *bin_data)
 /*HEADER FUNCTIONS*/
 
 // Creates new header
-void __init_header_btree(BTREE *this_btree){
-  #define H this_btree->header_buffer
+void __init_header_btree(BTREE *this_btree)
+{
+#define H this_btree->header_buffer
   H.status = '0';
   H.key_number = 0;
   H.level_number = 0;
   H.next_rrn = 0;
   H.root_node = 0;
-    #undef H
+#undef H
 }
 
 //Reads header from file.
@@ -205,10 +206,11 @@ void __write_header_btree(BTREE *this_btree)
 /* NODE FUNCTIONS */
 
 // Read node at rrn
-btree_node __get_node_rrn_btree(BTREE *this_btree, int rrn){
+btree_node __get_node_rrn_btree(BTREE *this_btree, int rrn)
+{
 
   // Seek correct position in file
-  fseek(this_btree->btree_file, rrn*NODE_SIZE+HEADER_SIZE, SEEK_SET);
+  fseek(this_btree->btree_file, rrn * NODE_SIZE + HEADER_SIZE, SEEK_SET);
 
   // Read and put in void array
   void *buffer = malloc(NODE_SIZE);
@@ -224,9 +226,9 @@ btree_node __get_node_rrn_btree(BTREE *this_btree, int rrn){
 
 btree_node __new_node_zeroes_btree()
 {
-    btree_node ret_node;
-    memset(&ret_node, -1, sizeof(btree_node));
-    return ret_node;
+  btree_node ret_node;
+  memset(&ret_node, -1, sizeof(btree_node));
+  return ret_node;
 }
 
 /*BTREE ALGORITHM FUNCTIONS*/
@@ -258,102 +260,106 @@ int __scan_node_for_key(btree_node a_node, int key, btr_ret_t *ret_type)
 }*/
 
 //Searchs for node containing a given key.
-int __search_node_by_key_btree(BTREE* this_btree, int key, btr_ret_t *ret_type)
+int __search_node_by_key_btree(BTREE *this_btree, int key, btr_ret_t *ret_type)
 {
-    btree_node temp_search_node;
-    int temp_search_node_rrn;
-    int prev_search_node_rrn;
-    int i;
+  btree_node temp_search_node;
+  int temp_search_node_rrn;
+  int prev_search_node_rrn;
+  int i;
 
-    //Begin scanning by root node.
-    temp_search_node_rrn = this_btree->header_buffer.root_node;
+  //Begin scanning by root node.
+  temp_search_node_rrn = this_btree->header_buffer.root_node;
 
-    while(1)
+  while (1)
+  {
+    prev_search_node_rrn = temp_search_node_rrn;
+
+    printf("Searching on rrn %d\n", temp_search_node_rrn);
+
+    temp_search_node =
+        __get_node_rrn_btree(this_btree, temp_search_node_rrn);
+
+    for (i = 0; i < BTREE_ORDER - 1;)
     {
-	prev_search_node_rrn = temp_search_node_rrn;
+      if (key < temp_search_node.keyValues[i].C)
+      {
+        //Then, should go to descentants.
+        temp_search_node_rrn = temp_search_node.descendants[i];
+        break;
+      }
 
-	printf("Searching on rrn %d\n", temp_search_node_rrn);
+      if (key == temp_search_node.keyValues[i].C)
+      {
+        //Found key, stop searching.
+        *ret_type = BTR_KEY_FOUND;
+        return temp_search_node_rrn;
+      }
 
-	temp_search_node =
-	    __get_node_rrn_btree(this_btree, temp_search_node_rrn);
-
-	for(i = 0 ; i < BTREE_ORDER-1 ; )
-	{
-	    if(key < temp_search_node.keyValues[i].C)
-	    {
-		//Then, should go to descentants.
-		temp_search_node_rrn = temp_search_node.descendants[i];
-		break;
-	    }
-
-	    if(key == temp_search_node.keyValues[i].C)
-	    {
-		//Found key, stop searching.
-		*ret_type = BTR_KEY_FOUND;
-		return temp_search_node_rrn;
-	    }
-
-	    temp_search_node_rrn = temp_search_node.descendants[++i];
-	}
-
-	if(temp_search_node_rrn == -1)
-	{
-	    *ret_type = BTR_KEY_NOT_FOUND;
-	    return prev_search_node_rrn;
-	}
+      temp_search_node_rrn = temp_search_node.descendants[++i];
     }
+
+    if (temp_search_node_rrn == -1)
+    {
+      *ret_type = BTR_KEY_NOT_FOUND;
+      return prev_search_node_rrn;
+    }
+  }
 }
 
 /*EXPOSED FUNCTIONS*/
 
 BTREE *openBTree(const char *filename, btree_err_t *err)
 {
-    *err = BTR_OK;
+  *err = BTR_OK;
 
-    // Allocate struct
-    BTREE *ret_btree = (BTREE*) malloc(sizeof(BTREE));
+  // Allocate struct
+  BTREE *ret_btree = (BTREE *)malloc(sizeof(BTREE));
 
-    // Open file
-    ret_btree->btree_file = fopen(filename, "r+b");
+  // Open file
+  ret_btree->btree_file = fopen(filename, "r+b");
 
-    // File does not exist, create file
-    if(ret_btree->btree_file == NULL){
+  // File does not exist, create file
+  if (ret_btree->btree_file == NULL)
+  {
 
-	ret_btree->btree_file = fopen(filename, "w+bx");
-	__init_header_btree(ret_btree);
-	*err = BTR_NEW_FILE;
+    ret_btree->btree_file = fopen(filename, "w+bx");
+    __init_header_btree(ret_btree);
+    *err = BTR_NEW_FILE;
+  }
+  else
+  { // File exists
 
-    }else{ // File exists
+    // Read header from file
+    __read_header_btree(ret_btree);
 
-	// Read header from file
-	__read_header_btree(ret_btree);
-
-	// Check file consistency
-    if (ret_btree->header_buffer.status != '1'){
-	// Inconsistent, clear memory and return null
-	fclose(ret_btree->btree_file);
-	free(ret_btree);
-	*err = BTR_CORRUPTED;
-	return NULL;
+    // Check file consistency
+    if (ret_btree->header_buffer.status != '1')
+    {
+      // Inconsistent, clear memory and return null
+      fclose(ret_btree->btree_file);
+      free(ret_btree);
+      *err = BTR_CORRUPTED;
+      return NULL;
     }
 
     // Loads root node
     ret_btree->nodes_buffer[0] = __get_node_rrn_btree(ret_btree,
-					    ret_btree->header_buffer.root_node);
-    }
+                                                      ret_btree->header_buffer.root_node);
+  }
 
-    // Failed to create file
-    if(ret_btree->btree_file == NULL){
-	closeBTree(ret_btree);
-	*err = BTR_ERROR;
-	return NULL;
-    }
+  // Failed to create file
+  if (ret_btree->btree_file == NULL)
+  {
+    closeBTree(ret_btree);
+    *err = BTR_ERROR;
+    return NULL;
+  }
 
-    //After all error checking, set status to '0' and update on file.
-    ret_btree->header_buffer.status = '0';
-    __write_header_btree(ret_btree);
+  //After all error checking, set status to '0' and update on file.
+  ret_btree->header_buffer.status = '0';
+  __write_header_btree(ret_btree);
 
-    return ret_btree;
+  return ret_btree;
 }
 
 void closeBTree(BTREE *this_btree)
@@ -367,118 +373,113 @@ void closeBTree(BTREE *this_btree)
 
 btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
 {
-    void* node;
-    //First we must search...
+  void *node;
+  //First we must search...
 
-    //THIS IS JUST A TEST...
-    this_btree->nodes_buffer[0] = __new_node_zeroes_btree();
-    this_btree->nodes_buffer[0].keyValues[0].C = 5;
-    this_btree->nodes_buffer[0].keyValues[0].P = 105;
-    this_btree->nodes_buffer[0].keyValues[1].C = 11;
-    this_btree->nodes_buffer[0].keyValues[1].P = 111;
-    //Setting descendants
-    this_btree->nodes_buffer[0].descendants[0] = 1;
-    this_btree->nodes_buffer[0].descendants[1] = 2;
+  //THIS IS JUST A TEST...
+  this_btree->nodes_buffer[0] = __new_node_zeroes_btree();
+  this_btree->nodes_buffer[0].keyValues[0].C = 5;
+  this_btree->nodes_buffer[0].keyValues[0].P = 105;
+  this_btree->nodes_buffer[0].keyValues[1].C = 11;
+  this_btree->nodes_buffer[0].keyValues[1].P = 111;
+  //Setting descendants
+  this_btree->nodes_buffer[0].descendants[0] = 1;
+  this_btree->nodes_buffer[0].descendants[1] = 2;
 
+  node = __node_to_bin_btree(this_btree->nodes_buffer[0]);
 
-    node = __node_to_bin_btree(this_btree->nodes_buffer[0]);
+  //Write node at rrn 0
+  fwrite(node, NODE_SIZE, 1, this_btree->btree_file);
+  free(node);
 
-    //Write node at rrn 0
-    fwrite(node, NODE_SIZE, 1, this_btree->btree_file);
-    free(node);
+  //THIS IS JUST A TEST...
+  this_btree->nodes_buffer[1] = __new_node_zeroes_btree();
+  this_btree->nodes_buffer[1].keyValues[0].C = 0;
+  this_btree->nodes_buffer[1].keyValues[0].P = 100;
+  this_btree->nodes_buffer[1].keyValues[1].C = 1;
+  this_btree->nodes_buffer[1].keyValues[1].P = 101;
+  this_btree->nodes_buffer[1].keyValues[2].C = 2;
+  this_btree->nodes_buffer[1].keyValues[2].P = 102;
+  this_btree->nodes_buffer[1].keyValues[3].C = 3;
+  this_btree->nodes_buffer[1].keyValues[3].P = 103;
+  this_btree->nodes_buffer[1].keyValues[4].C = 4;
+  this_btree->nodes_buffer[1].keyValues[4].P = 104;
 
-    //THIS IS JUST A TEST...
-    this_btree->nodes_buffer[1] = __new_node_zeroes_btree();
-    this_btree->nodes_buffer[1].keyValues[0].C = 0;
-    this_btree->nodes_buffer[1].keyValues[0].P = 100;
-    this_btree->nodes_buffer[1].keyValues[1].C = 1;
-    this_btree->nodes_buffer[1].keyValues[1].P = 101;
-    this_btree->nodes_buffer[1].keyValues[2].C = 2;
-    this_btree->nodes_buffer[1].keyValues[2].P = 102;
-    this_btree->nodes_buffer[1].keyValues[3].C = 3;
-    this_btree->nodes_buffer[1].keyValues[3].P = 103;
-    this_btree->nodes_buffer[1].keyValues[4].C = 4;
-    this_btree->nodes_buffer[1].keyValues[4].P = 104;
+  node = __node_to_bin_btree(this_btree->nodes_buffer[1]);
 
-    node = __node_to_bin_btree(this_btree->nodes_buffer[1]);
+  //Write node at rrn 1
+  fwrite(node, NODE_SIZE, 1, this_btree->btree_file);
 
-    //Write node at rrn 1
-    fwrite(node, NODE_SIZE, 1, this_btree->btree_file);
+  free(node);
 
-    free(node);
+  //THIS IS JUST A TEST...
+  this_btree->nodes_buffer[2] = __new_node_zeroes_btree();
+  this_btree->nodes_buffer[2].keyValues[0].C = 6;
+  this_btree->nodes_buffer[2].keyValues[0].P = 106;
+  this_btree->nodes_buffer[2].keyValues[1].C = 7;
+  this_btree->nodes_buffer[2].keyValues[1].P = 107;
+  this_btree->nodes_buffer[2].keyValues[2].C = 8;
+  this_btree->nodes_buffer[2].keyValues[2].P = 108;
+  this_btree->nodes_buffer[2].keyValues[3].C = 9;
+  this_btree->nodes_buffer[2].keyValues[3].P = 109;
+  this_btree->nodes_buffer[2].keyValues[4].C = 10;
+  this_btree->nodes_buffer[2].keyValues[4].P = 110;
 
-    //THIS IS JUST A TEST...
-    this_btree->nodes_buffer[2] = __new_node_zeroes_btree();
-    this_btree->nodes_buffer[2].keyValues[0].C = 6;
-    this_btree->nodes_buffer[2].keyValues[0].P = 106;
-    this_btree->nodes_buffer[2].keyValues[1].C = 7;
-    this_btree->nodes_buffer[2].keyValues[1].P = 107;
-    this_btree->nodes_buffer[2].keyValues[2].C = 8;
-    this_btree->nodes_buffer[2].keyValues[2].P = 108;
-    this_btree->nodes_buffer[2].keyValues[3].C = 9;
-    this_btree->nodes_buffer[2].keyValues[3].P = 109;
-    this_btree->nodes_buffer[2].keyValues[4].C = 10;
-    this_btree->nodes_buffer[2].keyValues[4].P = 110;
+  node = __node_to_bin_btree(this_btree->nodes_buffer[2]);
 
-    node = __node_to_bin_btree(this_btree->nodes_buffer[2]);
+  //Write node at rrn 1
+  fwrite(node, NODE_SIZE, 1, this_btree->btree_file);
 
-    //Write node at rrn 1
-    fwrite(node, NODE_SIZE, 1, this_btree->btree_file);
+  free(node);
 
-    free(node);
-
-    return BTR_OK;
+  return BTR_OK;
 }
 
 int getValByKeyBTree(BTREE *this_btree, int key)
 {
-    btree_node temp_node;
-    btr_ret_t search_result;
+  btree_node temp_node;
+  btr_ret_t search_result;
 
-    //THIS IS JUST A TEST...
+  //THIS IS JUST A TEST...
 
-    //Reading node rrn 0.
-    temp_node = __get_node_rrn_btree(this_btree, 0);
+  //Reading node rrn 0.
+  temp_node = __get_node_rrn_btree(this_btree, 0);
 
-    printf("Node 0\n");
+  printf("Node 0\n");
 
-    for(int i = 0 ; i < BTREE_ORDER-1 ; i++)
-    {
-	printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
-					    temp_node.keyValues[i].P);
+  for (int i = 0; i < BTREE_ORDER - 1; i++)
+  {
+    printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
+           temp_node.keyValues[i].P);
+  }
 
-    }
+  //Reading node rrn 1.
+  temp_node = __get_node_rrn_btree(this_btree, 1);
 
-    //Reading node rrn 1.
-    temp_node = __get_node_rrn_btree(this_btree, 1);
+  printf("Node 1\n");
 
-    printf("Node 1\n");
+  for (int i = 0; i < BTREE_ORDER - 1; i++)
+  {
+    printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
+           temp_node.keyValues[i].P);
+  }
 
-    for(int i = 0 ; i < BTREE_ORDER-1 ; i++)
-    {
-	printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
-					    temp_node.keyValues[i].P);
+  //Reading node rrn 2.
+  temp_node = __get_node_rrn_btree(this_btree, 2);
 
-    }
+  printf("Node 2\n");
 
-    //Reading node rrn 2.
-    temp_node = __get_node_rrn_btree(this_btree, 2);
+  for (int i = 0; i < BTREE_ORDER - 1; i++)
+  {
+    printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
+           temp_node.keyValues[i].P);
+  }
 
-    printf("Node 2\n");
+  printf("Begin searching...\n");
+  int rrn;
+  rrn = __search_node_by_key_btree(this_btree, key, &search_result);
 
-    for(int i = 0 ; i < BTREE_ORDER-1 ; i++)
-    {
-	printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
-					    temp_node.keyValues[i].P);
+  printf("Result type is %d, rrn is %d\n", search_result, rrn);
 
-    }
-
-    printf("Begin searching...\n");
-    int rrn;
-    rrn = __search_node_by_key_btree(this_btree, key, &search_result);
-
-    printf("Result type is %d, rrn is %d\n", search_result, rrn);
-
-    return 0;
+  return 0;
 }
-
