@@ -1,5 +1,6 @@
 #include "btreebin.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -24,25 +25,29 @@ struct _btree_header
   int32_t key_number;
 };
 
-struct _btree_node
+typedef struct
 {
-  int32_t level; //Level to root.
-  int32_t n;     //Key number.
-  struct
-  {
     int32_t C;
     int32_t P;
-  } keyValues[BTREE_ORDER - 1];
-  int32_t descendants[BTREE_ORDER];
+} key_values_t;
+
+struct _btree_node
+{
+    int32_t level; //Level to root.
+    int32_t n;     //Key number.
+    key_values_t keyValues[BTREE_ORDER - 1];
+    int32_t descendants[BTREE_ORDER];
 };
 
 /* HELPER RETURN TYPE*/
 
-typedef enum _btree_ret
+typedef enum _btree_node_ret
 {
-  BTR_KEY_FOUND,
-  BTR_KEY_NOT_FOUND
-} btr_ret_t;
+    BTR_NODE_OK,
+    BTR_NODE_KEY_FOUND,
+    BTR_NODE_KEY_NOT_FOUND,
+    BTR_NODE_FULL
+} btr_node_ret_t;
 
 /*TOP LEVEL DATA STRUCTURE*/
 struct _btree_handle
@@ -169,15 +174,14 @@ btree_node __bin_to_node_btree(void *bin_data)
 /*HEADER FUNCTIONS*/
 
 // Creates new header
-void __init_header_btree(BTREE *this_btree)
-{
-#define H this_btree->header_buffer
-  H.status = '0';
-  H.key_number = 0;
-  H.level_number = 0;
-  H.next_rrn = 0;
-  H.root_node = 0;
-#undef H
+void __init_header_btree(BTREE *this_btree){
+    #define H this_btree->header_buffer
+    H.status = '0';
+    H.key_number = 0;
+    H.level_number = 0;
+    H.next_rrn = 0;
+    H.root_node = -1;
+    #undef H
 }
 
 //Reads header from file.
@@ -226,16 +230,54 @@ btree_node __get_node_rrn_btree(BTREE *this_btree, int rrn)
 
 btree_node __new_node_zeroes_btree()
 {
-  btree_node ret_node;
-  memset(&ret_node, -1, sizeof(btree_node));
-  return ret_node;
+    btree_node ret_node;
+    ret_node.n = 0;
+    ret_node.level = -1;
+    memset(ret_node.descendants, -1, sizeof(int32_t) * BTREE_ORDER);
+    memset(ret_node.keyValues, -1, sizeof(key_values_t) * BTREE_ORDER-1);
+
+    return ret_node;
+}
+
+btr_node_ret_t __insert_key_val_at_node_btree(btree_node *a_node, int key, int value)
+{
+    if(a_node->n == BTREE_ORDER-1) //If node has maximum num of keys.
+	return BTR_NODE_FULL;
+
+    key_values_t temp_key_vals[BTREE_ORDER-1];
+    int i,j = 0;
+    char inserted = false;
+
+    //If node has space, insert in correct order and increase num keys.
+    for(i = 0 ; i < BTREE_ORDER-1 ; i++)
+    {
+	if(!inserted && (key < a_node->keyValues[j].C || a_node->keyValues[j].C == -1))
+	{
+	    temp_key_vals[i].C = key;
+	    temp_key_vals[i].P = value;
+	    inserted = true;
+	    //continue;
+	}
+	else
+	{
+	    temp_key_vals[i] = a_node->keyValues[j++];
+	}
+    }
+
+    a_node->n++;
+    //Replace previous keyValues.
+    memcpy(a_node->keyValues,
+	    temp_key_vals,
+	    (BTREE_ORDER-1)*sizeof(key_values_t));
+
+    return BTR_NODE_OK; 
 }
 
 /*BTREE ALGORITHM FUNCTIONS*/
 
 /*
 //Returns index on file.
-int __scan_node_for_key(btree_node a_node, int key, btr_ret_t *ret_type)
+int __scan_node_for_key(btree_node a_node, int key, btr_node_ret_t *ret_type)
 {
     int i;
 
@@ -260,48 +302,51 @@ int __scan_node_for_key(btree_node a_node, int key, btr_ret_t *ret_type)
 }*/
 
 //Searchs for node containing a given key.
-int __search_node_by_key_btree(BTREE *this_btree, int key, btr_ret_t *ret_type)
+int __search_node_by_key_btree(BTREE* this_btree, int key, btr_node_ret_t *ret_type)
 {
   btree_node temp_search_node;
   int temp_search_node_rrn;
   int prev_search_node_rrn;
   int i;
 
-  //Begin scanning by root node.
-  temp_search_node_rrn = this_btree->header_buffer.root_node;
+    //Begin scanning by root node.
+    temp_search_node_rrn = this_btree->header_buffer.root_node;
+    prev_search_node_rrn = -1;
 
-  while (1)
-  {
-    prev_search_node_rrn = temp_search_node_rrn;
-
-    printf("Searching on rrn %d\n", temp_search_node_rrn);
-
-    temp_search_node =
-        __get_node_rrn_btree(this_btree, temp_search_node_rrn);
-
-    for (i = 0; i < BTREE_ORDER - 1;)
+    while(1)
     {
-      if (key < temp_search_node.keyValues[i].C)
-      {
-        //Then, should go to descentants.
-        temp_search_node_rrn = temp_search_node.descendants[i];
-        break;
-      }
+	if(temp_search_node_rrn == -1)
+	{
+	    *ret_type = BTR_NODE_KEY_NOT_FOUND;
+	    return prev_search_node_rrn;
+	}
 
-      if (key == temp_search_node.keyValues[i].C)
-      {
-        //Found key, stop searching.
-        *ret_type = BTR_KEY_FOUND;
-        return temp_search_node_rrn;
-      }
+	prev_search_node_rrn = temp_search_node_rrn;
+	
+	printf("Searching on rrn %d\n", temp_search_node_rrn);
 
-      temp_search_node_rrn = temp_search_node.descendants[++i];
-    }
 
-    if (temp_search_node_rrn == -1)
-    {
-      *ret_type = BTR_KEY_NOT_FOUND;
-      return prev_search_node_rrn;
+	temp_search_node =
+	    __get_node_rrn_btree(this_btree, temp_search_node_rrn);
+
+	for(i = 0 ; i < BTREE_ORDER-1 ; )
+	{
+	    if(key < temp_search_node.keyValues[i].C)
+	    {
+		//Then, should go to descentants.
+		temp_search_node_rrn = temp_search_node.descendants[i];
+		break;
+	    }
+
+	    if(key == temp_search_node.keyValues[i].C)
+	    {
+		//Found key, stop searching.
+		*ret_type = BTR_NODE_KEY_FOUND;
+		return temp_search_node_rrn;
+	    }
+
+	    temp_search_node_rrn = temp_search_node.descendants[++i];
+	}
     }
   }
 }
@@ -373,111 +418,87 @@ void closeBTree(BTREE *this_btree)
 
 btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
 {
-  void *node;
-  //First we must search...
+    void* node_bin;
+    btree_node temp_node;
+    btr_node_ret_t operation_res;
 
-  //THIS IS JUST A TEST...
-  this_btree->nodes_buffer[0] = __new_node_zeroes_btree();
-  this_btree->nodes_buffer[0].keyValues[0].C = 5;
-  this_btree->nodes_buffer[0].keyValues[0].P = 105;
-  this_btree->nodes_buffer[0].keyValues[1].C = 11;
-  this_btree->nodes_buffer[0].keyValues[1].P = 111;
-  //Setting descendants
-  this_btree->nodes_buffer[0].descendants[0] = 1;
-  this_btree->nodes_buffer[0].descendants[1] = 2;
+    //First we must search...
+    
+    printf("Begin searching...\n");
+    int rrn = __search_node_by_key_btree(this_btree, key, &operation_res);
+    printf("Result type is %d, rrn is %d\n", operation_res, rrn);
 
-  node = __node_to_bin_btree(this_btree->nodes_buffer[0]);
+    if(rrn == -1) //If rrn is -1, btree was empty
+    {
+	//Create a new node and call it root.
+	temp_node = __new_node_zeroes_btree();
+	__insert_key_val_at_node_btree(&temp_node, key, value);
 
-  //Write node at rrn 0
-  fwrite(node, NODE_SIZE, 1, this_btree->btree_file);
-  free(node);
+	fseek(this_btree->btree_file, HEADER_SIZE, SEEK_SET);
 
-  //THIS IS JUST A TEST...
-  this_btree->nodes_buffer[1] = __new_node_zeroes_btree();
-  this_btree->nodes_buffer[1].keyValues[0].C = 0;
-  this_btree->nodes_buffer[1].keyValues[0].P = 100;
-  this_btree->nodes_buffer[1].keyValues[1].C = 1;
-  this_btree->nodes_buffer[1].keyValues[1].P = 101;
-  this_btree->nodes_buffer[1].keyValues[2].C = 2;
-  this_btree->nodes_buffer[1].keyValues[2].P = 102;
-  this_btree->nodes_buffer[1].keyValues[3].C = 3;
-  this_btree->nodes_buffer[1].keyValues[3].P = 103;
-  this_btree->nodes_buffer[1].keyValues[4].C = 4;
-  this_btree->nodes_buffer[1].keyValues[4].P = 104;
+	//Set root node.
+	this_btree->header_buffer.root_node = 0;
 
-  node = __node_to_bin_btree(this_btree->nodes_buffer[1]);
+	//Set number of nodes.
+	this_btree->header_buffer.next_rrn++;
+	this_btree->header_buffer.key_number++;
+	
+	//Write node at rrn 0
+	node_bin = __node_to_bin_btree(temp_node);
+	fwrite(node_bin, NODE_SIZE, 1, this_btree->btree_file);
+	free(node_bin);
 
-  //Write node at rrn 1
-  fwrite(node, NODE_SIZE, 1, this_btree->btree_file);
+	return BTR_OK;
+    }
 
-  free(node);
+    temp_node = __get_node_rrn_btree(this_btree, rrn);
 
-  //THIS IS JUST A TEST...
-  this_btree->nodes_buffer[2] = __new_node_zeroes_btree();
-  this_btree->nodes_buffer[2].keyValues[0].C = 6;
-  this_btree->nodes_buffer[2].keyValues[0].P = 106;
-  this_btree->nodes_buffer[2].keyValues[1].C = 7;
-  this_btree->nodes_buffer[2].keyValues[1].P = 107;
-  this_btree->nodes_buffer[2].keyValues[2].C = 8;
-  this_btree->nodes_buffer[2].keyValues[2].P = 108;
-  this_btree->nodes_buffer[2].keyValues[3].C = 9;
-  this_btree->nodes_buffer[2].keyValues[3].P = 109;
-  this_btree->nodes_buffer[2].keyValues[4].C = 10;
-  this_btree->nodes_buffer[2].keyValues[4].P = 110;
+    //Found suitable node. Lets try to insert.
+    operation_res = __insert_key_val_at_node_btree(&temp_node, key, value);
 
-  node = __node_to_bin_btree(this_btree->nodes_buffer[2]);
+    //In case of overflow...
+    if(operation_res == BTR_NODE_FULL)
+    {
+	printf("Split needed!\n");
+    }
+    else
+    {
+	printf("Split not needed!\n");
+	
+	//Increase counter
+	this_btree->header_buffer.key_number++;
 
-  //Write node at rrn 1
-  fwrite(node, NODE_SIZE, 1, this_btree->btree_file);
+	if(ftell(this_btree->btree_file) != HEADER_SIZE + rrn * NODE_SIZE)
+	    fseek(this_btree->btree_file,
+		    HEADER_SIZE + rrn * NODE_SIZE,
+		    SEEK_SET);
+	
+	node_bin = __node_to_bin_btree(temp_node);
+	fwrite(node_bin, NODE_SIZE, 1, this_btree->btree_file);
+	free(node_bin);
+    }
 
-  free(node);
-
-  return BTR_OK;
+    return BTR_OK;
 }
 
 int getValByKeyBTree(BTREE *this_btree, int key)
 {
-  btree_node temp_node;
-  btr_ret_t search_result;
-
-  //THIS IS JUST A TEST...
-
-  //Reading node rrn 0.
-  temp_node = __get_node_rrn_btree(this_btree, 0);
-
-  printf("Node 0\n");
-
-  for (int i = 0; i < BTREE_ORDER - 1; i++)
-  {
-    printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
-           temp_node.keyValues[i].P);
-  }
-
-  //Reading node rrn 1.
-  temp_node = __get_node_rrn_btree(this_btree, 1);
-
-  printf("Node 1\n");
-
-  for (int i = 0; i < BTREE_ORDER - 1; i++)
-  {
-    printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
-           temp_node.keyValues[i].P);
-  }
+    btree_node temp_node;
+    btr_node_ret_t search_result;
+/*
+    //Reading node rrn 2.
+    temp_node = __get_node_rrn_btree(this_btree, 2);
 
   //Reading node rrn 2.
   temp_node = __get_node_rrn_btree(this_btree, 2);
 
   printf("Node 2\n");
 
-  for (int i = 0; i < BTREE_ORDER - 1; i++)
-  {
-    printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
-           temp_node.keyValues[i].P);
-  }
-
-  printf("Begin searching...\n");
-  int rrn;
-  rrn = __search_node_by_key_btree(this_btree, key, &search_result);
+    }
+*/
+    printf("Begin searching...\n");
+    int rrn;
+    rrn = __search_node_by_key_btree(this_btree, key, &search_result);
 
   printf("Result type is %d, rrn is %d\n", search_result, rrn);
 

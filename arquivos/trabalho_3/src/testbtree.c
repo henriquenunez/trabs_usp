@@ -25,9 +25,14 @@ int main()
     //Time to insert values.
 
     //Pair 0: K=3,V=5
-    an_error = insertKeyValBTree(a_btree, 3, 5);
+    an_error = insertKeyValBTree(a_btree, 3, 13);
+    an_error = insertKeyValBTree(a_btree, 4, 14);
+    an_error = insertKeyValBTree(a_btree, 1, 11);
+    an_error = insertKeyValBTree(a_btree, 2, 12);
+    an_error = insertKeyValBTree(a_btree, 5, 15);
+    an_error = insertKeyValBTree(a_btree, 99, 109);
 
-    getValByKeyBTree(a_btree, 6);
+    //getValByKeyBTree(a_btree, 6);
 
     closeBTree(a_btree);
 }
