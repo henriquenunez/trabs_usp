@@ -33,6 +33,7 @@ typedef struct
 
 struct _btree_node
 {
+    int32_t node_rrn; //Just a helper, is not written.
     int32_t level; //Level to root.
     int32_t n;     //Key number.
     key_values_t keyValues[BTREE_ORDER - 1];
@@ -173,6 +174,13 @@ btree_node __bin_to_node_btree(void *bin_data)
 
 /*HEADER FUNCTIONS*/
 
+btr_node_ret_t __promote_key_write_btree(BTREE*,
+					key_values_t,
+					btree_node,
+					btree_node,
+					int);
+
+
 // Creates new header
 void __init_header_btree(BTREE *this_btree){
     #define H this_btree->header_buffer
@@ -209,6 +217,27 @@ void __write_header_btree(BTREE *this_btree)
 
 /* NODE FUNCTIONS */
 
+int __search_node_by_key_btree(BTREE* this_btree,
+				int key,
+				btr_node_ret_t *ret_type,
+				int *parent_node_rrn);
+//Just a helper one
+void __print_node_vals(btree_node temp_node)
+{
+    printf("Node rrn: %d\n", temp_node.node_rrn);
+    for(int i = 0 ; i < BTREE_ORDER-1 ; i++)
+    {
+	printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
+					    temp_node.keyValues[i].P);
+
+    }
+    for(int i = 0 ; i < BTREE_ORDER ; i++)
+    {
+	printf("des: %d ", temp_node.descendants[i]);
+    }
+    printf("\n");
+}
+
 // Read node at rrn
 btree_node __get_node_rrn_btree(BTREE *this_btree, int rrn)
 {
@@ -225,6 +254,8 @@ btree_node __get_node_rrn_btree(BTREE *this_btree, int rrn)
 
   // Frees buffer and returns node
   free(buffer);
+
+  newNode.node_rrn = rrn;
   return newNode;
 }
 
@@ -270,39 +301,441 @@ btr_node_ret_t __insert_key_val_at_node_btree(btree_node *a_node, int key, int v
 	    temp_key_vals,
 	    (BTREE_ORDER-1)*sizeof(key_values_t));
 
-    return BTR_NODE_OK; 
+    return BTR_NODE_OK;
+}
+
+
+btr_node_ret_t __insert_key_val_at_node_l_r_btree(btree_node *a_node,
+						    int key,
+						    int value,
+						    btree_node l_node,
+						    btree_node r_node)
+{
+    if(a_node->n == BTREE_ORDER-1) //If node has maximum num of keys.
+	return BTR_NODE_FULL;
+
+    key_values_t temp_key_vals[BTREE_ORDER-1];
+    int32_t temp_descendants[BTREE_ORDER];
+    int i,j = 0;
+    char inserted = false;
+    int idx_ins;
+
+    //Find index in which new kvp should be placed.
+    for(i = 0 ; i < BTREE_ORDER-1 ; i++)
+    {
+	if(!inserted && (key < a_node->keyValues[j].C || a_node->keyValues[j].C == -1))
+	{
+	    idx_ins = i;
+	    inserted = true;
+	}
+	else
+	    j++;
+    }
+    printf("Insertion index: %d\n", idx_ins);
+
+    //Now copy values
+    j=0;
+    for(i = 0 ; i < BTREE_ORDER-1; i++)
+    {
+	if(i == idx_ins) continue;
+	temp_key_vals[i] = a_node->keyValues[j];
+	temp_descendants[i] = a_node->descendants[j];
+	temp_descendants[i+1] = a_node->descendants[j+1];
+	j++;
+    }
+
+    //Insert only new key so it overrides prev
+    temp_key_vals[idx_ins].C = key;
+    temp_key_vals[idx_ins].P = value;
+    temp_descendants[idx_ins] = l_node.node_rrn;
+    temp_descendants[idx_ins+1] = r_node.node_rrn;
+
+/*
+if(!inserted && (key < a_node->keyValues[j].C || a_node->keyValues[j].C == -1))
+	{
+	    temp_key_vals[i].C = key;
+	    temp_key_vals[i].P = value;
+	    temp_descendants[i] = l_node.node_rrn;
+	    temp_descendants[i+1] = r_node.node_rrn;
+	    inserted = true;
+	}
+	else
+	{
+	    temp_key_vals[i] = a_node->keyValues[j];
+	    temp_descendants[i] = a_node->descendants[j];
+	    temp_descendants[i+1] = a_node->descendants[j+1];
+	    j++;
+	}*/
+    a_node->n++;
+
+    //Replace previous keyValues.
+    memcpy(a_node->keyValues,
+	    temp_key_vals,
+	    (BTREE_ORDER-1)*sizeof(key_values_t));
+
+    //Replace previous descendants.
+    memcpy(a_node->descendants,
+	    temp_descendants,
+	    BTREE_ORDER * sizeof(int32_t));
+
+    return BTR_NODE_OK;
+}
+
+
+btr_node_ret_t __split_node_l_r_btree(BTREE* this_btree,
+				    btree_node *a_node,
+				    key_values_t kvp, //Key value to insert.
+				    btree_node l_child,
+				    btree_node r_child,
+				    int parent_node_rrn)
+{
+    #define SPLIT_LENGTH ((int)(BTREE_ORDER/2))
+
+    //We already know that the node must be split.
+    key_values_t temp_key_vals[BTREE_ORDER]; //One more for the new element.
+    int32_t temp_descendants[BTREE_ORDER];
+
+    //Order keys, find median.
+    int i,j = 0;
+    char inserted = false;
+    int idx_ins;
+
+    //Find index in which new kvp should be placed.
+    for(i = 0 ; i < BTREE_ORDER ; i++)
+    {
+	if(!inserted && (j >= BTREE_ORDER-1 || kvp.C < a_node->keyValues[j].C))
+	{
+	    idx_ins = i;
+	    inserted = true;
+	}
+	else
+	    j++;
+    }
+
+    //Copying values into temps.
+    j=0;
+    for(i = 0 ; i < BTREE_ORDER; i++)
+    {
+	if(i == idx_ins) continue;
+	temp_key_vals[i] = a_node->keyValues[j];
+	temp_descendants[i] = a_node->descendants[j];
+	temp_descendants[i+1] = a_node->descendants[j+1];
+	j++;
+    }
+
+    //Insert only new key so it overrides prev.
+    temp_key_vals[idx_ins] = kvp;
+    temp_descendants[idx_ins] = l_child.node_rrn;
+    temp_descendants[idx_ins+1] = r_child.node_rrn;
+
+    key_values_t promoted_key = temp_key_vals[SPLIT_LENGTH];
+
+    //Now, copy back into l and r.
+    btree_node l_node;
+    btree_node r_node;
+
+    //Replace previous keyValues.
+    memcpy(l_node.keyValues,
+	    temp_key_vals,
+	    sizeof(key_values_t) * SPLIT_LENGTH);
+
+    //Replace previous descendants.
+    memcpy(l_node.descendants,
+	    temp_descendants,
+	    sizeof(int32_t) * (SPLIT_LENGTH+1) );
+
+    //Replace previous keyValues.
+    memcpy(r_node.keyValues,
+	    temp_key_vals + SPLIT_LENGTH + 1,
+	    sizeof(key_values_t) * (SPLIT_LENGTH - 1) );
+
+    //Replace previous descendants.
+    memcpy(r_node.descendants,
+	    temp_descendants + SPLIT_LENGTH + 1,
+	    sizeof(int32_t) * SPLIT_LENGTH );
+
+/*
+    printf("Sorted keys: ");
+    for(i = 0 ; i < BTREE_ORDER ; i++)
+    {
+	//In case key is the highest one.
+	if(!inserted && (j >= BTREE_ORDER-1 ||  kvp.C < a_node->keyValues[j].C) )
+	{
+	    temp_key_vals[i] = kvp;
+	    inserted = true;
+	}
+	else
+	{
+	    temp_key_vals[i] = a_node->keyValues[j++];
+	}
+	printf("%d:%d ", temp_key_vals[i].C, temp_key_vals[i].P);
+    }
+
+
+    //We already have the promoted key. Time to copy.
+
+    #ifdef DEBUG_BTREE
+    printf("\nMedian: %d:%d\n", temp_key_vals[SPLIT_LENGTH].C,
+				temp_key_vals[SPLIT_LENGTH].P);
+    #endif
+
+    memset(l_key_vals, -1, sizeof(key_values_t)*(BTREE_ORDER-1));
+    memcpy(l_key_vals,
+	    temp_key_vals,
+	    sizeof(key_values_t) * SPLIT_LENGTH);
+
+    memset(r_key_vals, -1, sizeof(key_values_t)*(int)(BTREE_ORDER-1));
+    memcpy(r_key_vals,
+	    temp_key_vals + SPLIT_LENGTH+1,
+	    sizeof(key_values_t) * (SPLIT_LENGTH-1));
+
+    #ifdef DEBUG_BTREE
+    printf("L          R:\n");
+    for(i = 0 ; i < BTREE_ORDER-1 ; i++)
+    {
+	printf("%2d:%2d  %2d:%2d\n", l_key_vals[i].C,l_key_vals[i].P,
+				    r_key_vals[i].C,r_key_vals[i].P);
+    }
+    #endif
+
+    //With values split, assign to 2 different nodes.
+    btree_node l_node = __new_node_zeroes_btree();
+    btree_node r_node = __new_node_zeroes_btree();
+
+    l_node.n = SPLIT_LENGTH; //Key num on l and r node.
+    r_node.n = SPLIT_LENGTH-1;
+
+    //Copying l and r kvps to nodes.
+    memcpy(l_node.keyValues,
+	    l_key_vals,
+	    (BTREE_ORDER-1)*sizeof(key_values_t));
+
+    memcpy(r_node.keyValues,
+	    r_key_vals,
+	    (BTREE_ORDER-1)*sizeof(key_values_t));
+
+    //Now, need to copy l and r descendants...
+    memcpy(l_node.descentants,)
+
+    //Set rrn of left node to the same of the original one.
+    l_node.node_rrn = a_node->node_rrn;
+
+    //Set rrn of the right node to the same of the new one.
+    r_node.node_rrn = this_btree->header_buffer.next_rrn++;
+*/
+    //Promote key to parent node.
+    __promote_key_write_btree(this_btree,
+				promoted_key,
+				l_node,
+				r_node,
+				parent_node_rrn);
+
+    return BTR_NODE_OK;
+}
+
+
+btr_node_ret_t __promote_key_write_btree(BTREE* this_btree,
+					key_values_t promoted,
+					btree_node l_node,
+					btree_node r_node,
+					int parent_node_rrn)
+{
+    btree_node parent_node;
+    btr_node_ret_t op_res;
+    void *node_bin;
+
+    printf("Promoting key...\n");
+
+    if(parent_node_rrn == -1)
+    {
+	printf("New parent node...\n");
+	//Create a new parent node.
+	parent_node = __new_node_zeroes_btree();
+	parent_node.node_rrn = this_btree->header_buffer.next_rrn++;
+
+	//A new parent node always implies in a new root.
+	this_btree->header_buffer.root_node = parent_node.node_rrn;
+    }
+    else
+    {
+	printf("Parent node exists\n");
+	parent_node = __get_node_rrn_btree(this_btree, parent_node_rrn);
+    }
+
+    printf("Parent node rrn: %d\n", parent_node.node_rrn);
+
+    //Try to insert key at parent.
+    op_res = __insert_key_val_at_node_l_r_btree(&parent_node,
+						promoted.C,
+						promoted.P,
+						l_node,
+						r_node);
+    __print_node_vals(parent_node);
+
+    if(op_res == BTR_NODE_FULL) //Then it's chained overflow...
+    {
+	printf("Parent full during promotion!\n");
+/*
+btr_node_ret_t __split_node_l_r_btree(BTREE* this_btree,
+				    btree_node *a_node,
+				    key_values_t kvp, //Key value to insert.
+				    btree_node l_child,
+				    btree_node r_child,
+				    int parent_node_rrn)
+*/
+	int32_t parent_parent_rrn;
+	__search_node_by_key_btree(this_btree,
+				    parent_node.keyValues[0].C,
+				    &op_res,
+				    &parent_parent_rrn);
+	__split_node_l_r_btree(this_btree,
+				&parent_node,
+				promoted,
+				l_node,
+				r_node,
+				parent_parent_rrn);
+    }
+
+    //Flush changes.
+
+    //Writing updated parent.
+    fseek(this_btree->btree_file,
+	    HEADER_SIZE + NODE_SIZE * parent_node.node_rrn,
+	    SEEK_SET);
+    node_bin = __node_to_bin_btree(parent_node);
+    fwrite(node_bin, NODE_SIZE, 1, this_btree->btree_file);
+    free(node_bin);
+
+    //Writing updated l_child.
+    fseek(this_btree->btree_file,
+	    HEADER_SIZE + NODE_SIZE * l_node.node_rrn,
+	    SEEK_SET);
+    node_bin = __node_to_bin_btree(l_node);
+    fwrite(node_bin, NODE_SIZE, 1, this_btree->btree_file);
+    free(node_bin);
+
+    //Writing new r_child.
+    fseek(this_btree->btree_file,
+	    HEADER_SIZE + NODE_SIZE * r_node.node_rrn,
+	    SEEK_SET);
+    node_bin = __node_to_bin_btree(r_node);
+    fwrite(node_bin, NODE_SIZE, 1, this_btree->btree_file);
+    free(node_bin);
+
+    return BTR_NODE_OK;
+}
+
+btr_node_ret_t __split_node_btree(BTREE* this_btree,
+				    btree_node *a_node,
+				    key_values_t kvp, //Key value to insert.
+				    int parent_node_rrn)
+{
+    #define SPLIT_LENGTH ((int)(BTREE_ORDER/2))
+
+    //We already know that the node must be split.
+    key_values_t temp_key_vals[BTREE_ORDER]; //One more for the new element.
+    key_values_t l_key_vals[BTREE_ORDER-1]; //Keys on left node.
+    key_values_t r_key_vals[BTREE_ORDER-1]; //Keys on right node.
+
+    //Order keys, find median.
+    int i,j = 0;
+    char inserted = false;
+
+    printf("Sorted keys: ");
+    for(i = 0 ; i < BTREE_ORDER ; i++)
+    {
+	//In case key is the highest one.
+	if(!inserted && (j >= BTREE_ORDER-1 ||  kvp.C < a_node->keyValues[j].C) )
+	{
+	    temp_key_vals[i] = kvp;
+	    inserted = true;
+	}
+	else
+	{
+	    temp_key_vals[i] = a_node->keyValues[j++];
+	}
+	printf("%d:%d ", temp_key_vals[i].C, temp_key_vals[i].P);
+    }
+
+    #ifdef DEBUG_BTREE
+    printf("\nMedian: %d:%d\n", temp_key_vals[SPLIT_LENGTH].C,
+				temp_key_vals[SPLIT_LENGTH].P);
+    #endif
+
+    memset(l_key_vals, -1, sizeof(key_values_t)*(BTREE_ORDER-1));
+    memcpy(l_key_vals,
+	    temp_key_vals,
+	    sizeof(key_values_t) * SPLIT_LENGTH);
+
+    memset(r_key_vals, -1, sizeof(key_values_t)*(int)(BTREE_ORDER-1));
+    memcpy(r_key_vals,
+	    temp_key_vals + SPLIT_LENGTH+1,
+	    sizeof(key_values_t) * (SPLIT_LENGTH-1));
+
+    #ifdef DEBUG_BTREE
+    printf("L          R:\n");
+    for(i = 0 ; i < BTREE_ORDER-1 ; i++)
+    {
+	printf("%2d:%2d  %2d:%2d\n", l_key_vals[i].C,l_key_vals[i].P,
+				    r_key_vals[i].C,r_key_vals[i].P);
+    }
+    #endif
+
+    //With values split, assign to 2 different nodes.
+    btree_node l_node = __new_node_zeroes_btree();
+    btree_node r_node = __new_node_zeroes_btree();
+
+    l_node.n = SPLIT_LENGTH; //Key num on l and r node.
+    r_node.n = SPLIT_LENGTH-1;
+
+    //Copying l and r kvps to nodes.
+    memcpy(l_node.keyValues,
+	    l_key_vals,
+	    (BTREE_ORDER-1)*sizeof(key_values_t));
+
+    memcpy(r_node.keyValues,
+	    r_key_vals,
+	    (BTREE_ORDER-1)*sizeof(key_values_t));
+
+    //Set rrn of left node to the same of the original one.
+    l_node.node_rrn = a_node->node_rrn;
+
+    //Set rrn of the right node to the same of the new one.
+    r_node.node_rrn = this_btree->header_buffer.next_rrn++;
+
+    //Promote key to parent node.
+    __promote_key_write_btree(this_btree,
+				temp_key_vals[SPLIT_LENGTH],
+				l_node,
+				r_node,
+				parent_node_rrn);
+
+    return BTR_NODE_OK;
 }
 
 /*BTREE ALGORITHM FUNCTIONS*/
 
-/*
-//Returns index on file.
-int __scan_node_for_key(btree_node a_node, int key, btr_node_ret_t *ret_type)
+//Returns value.
+int __value_from_key_node_btree(btree_node a_node, int key)
 {
-    int i;
-
-    //Begin scan on node.
-    for(i = 0 ; i < BTREE_ORDER-1 ; i++)
+    int ret_val = -1;
+    for(int i = 0 ; i < BTREE_ORDER-1 ; i++)
     {
-	if(key == a_node.keyValues[i].C) //Key matches
+	if(a_node.keyValues[i].C == key)
 	{
-	    *ret_type = BTR_INDEX_VALUE; //Return is rrn on indexed file.
-	    return a_node.keyValues[i].P;
-	}
-
-	//If key is of lower val, use i to search on descendants.
-	if(key < a_node.keyValues[i].C)
+	    ret_val = a_node.keyValues[i].P;
 	    break;
+	}
     }
 
-    *ret_type = BTR_NODE_RRN;
-
-    //In case search result is -1, node doesnt exist yet.
-    return a_node->descendants[i];
-}*/
+    return ret_val;
+}
 
 //Searchs for node containing a given key.
-int __search_node_by_key_btree(BTREE* this_btree, int key, btr_node_ret_t *ret_type)
+int __search_node_by_key_btree(BTREE* this_btree,
+				int key,
+				btr_node_ret_t *ret_type,
+				int *parent_node_rrn) //Parent will be returned here.
 {
     btree_node temp_search_node;
     int temp_search_node_rrn;
@@ -321,10 +754,10 @@ int __search_node_by_key_btree(BTREE* this_btree, int key, btr_node_ret_t *ret_t
 	    return prev_search_node_rrn;
 	}
 
+	*parent_node_rrn = prev_search_node_rrn;
 	prev_search_node_rrn = temp_search_node_rrn;
-	
-	printf("Searching on rrn %d\n", temp_search_node_rrn);
 
+	printf("Searching on rrn %d\n", temp_search_node_rrn);
 
 	temp_search_node =
 	    __get_node_rrn_btree(this_btree, temp_search_node_rrn);
@@ -415,13 +848,24 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
 {
     void* node_bin;
     btree_node temp_node;
+    key_values_t key_val_to_insert;
+    int parent_insertion_node_rrn;
     btr_node_ret_t operation_res;
 
+    key_val_to_insert.C = key;
+    key_val_to_insert.P = value;
+
     //First we must search...
-    
+
     printf("Begin searching...\n");
-    int rrn = __search_node_by_key_btree(this_btree, key, &operation_res);
-    printf("Result type is %d, rrn is %d\n", operation_res, rrn);
+    int rrn = __search_node_by_key_btree(this_btree,
+					    key,
+					    &operation_res,
+					    &parent_insertion_node_rrn);
+
+    printf("Result type is %d, rrn is %d, parent %d\n", operation_res,
+							rrn,
+							parent_insertion_node_rrn);
 
     if(rrn == -1) //If rrn is -1, btree was empty
     {
@@ -437,7 +881,7 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
 	//Set number of nodes.
 	this_btree->header_buffer.next_rrn++;
 	this_btree->header_buffer.key_number++;
-	
+
 	//Write node at rrn 0
 	node_bin = __node_to_bin_btree(temp_node);
 	fwrite(node_bin, NODE_SIZE, 1, this_btree->btree_file);
@@ -455,11 +899,15 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
     if(operation_res == BTR_NODE_FULL)
     {
 	printf("Split needed!\n");
+	__split_node_btree(this_btree,
+			    &temp_node,
+			    key_val_to_insert,
+			    parent_insertion_node_rrn);
     }
     else
     {
 	printf("Split not needed!\n");
-	
+
 	//Increase counter
 	this_btree->header_buffer.key_number++;
 
@@ -467,7 +915,7 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
 	    fseek(this_btree->btree_file,
 		    HEADER_SIZE + rrn * NODE_SIZE,
 		    SEEK_SET);
-	
+
 	node_bin = __node_to_bin_btree(temp_node);
 	fwrite(node_bin, NODE_SIZE, 1, this_btree->btree_file);
 	free(node_bin);
@@ -480,25 +928,27 @@ int getValByKeyBTree(BTREE *this_btree, int key)
 {
     btree_node temp_node;
     btr_node_ret_t search_result;
-/*
-    //Reading node rrn 2.
-    temp_node = __get_node_rrn_btree(this_btree, 2);
 
-    printf("Node 2\n");
-
-    for(int i = 0 ; i < BTREE_ORDER-1 ; i++)
-    {
-	printf("%d key: %d val: %d\n", i, temp_node.keyValues[i].C,
-					    temp_node.keyValues[i].P);
-
-    }
-*/
-    printf("Begin searching...\n");
-    int rrn;
-    rrn = __search_node_by_key_btree(this_btree, key, &search_result);
+    printf("Begin searching for value\n");
+    int rrn, parent_rrn;
+    rrn = __search_node_by_key_btree(this_btree, key, &search_result, &parent_rrn);
 
     printf("Result type is %d, rrn is %d\n", search_result, rrn);
 
-    return 0;
+    int ret_val;
+    if(search_result == BTR_NODE_KEY_FOUND)
+    {
+	printf("Key found!\n");
+	//Begin searching node for given key.
+	temp_node = __get_node_rrn_btree(this_btree, rrn);
+	ret_val =__value_from_key_node_btree(temp_node, key);
+	if(ret_val == -1)
+	{
+	    printf("Deu ruim!\n");
+	}
+	printf("Queried key: %d, value is %d\n", key, ret_val);
+    }
+
+    return ret_val;
 }
 

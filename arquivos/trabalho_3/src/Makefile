@@ -29,7 +29,8 @@ build_tests: clean csv.o bin.o newborns.o btreebin.o
 	${CC} ${CFLAGS} testdelete.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testdelete ${LDFLAGS}
 	${CC} ${CFLAGS} testsearch.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testsearch ${LDFLAGS}
 	${CC} ${CFLAGS} testInsert.c ${BIN_DIR}/bin.o -o ${BIN_DIR}/testInsert ${LDFLAGS}
-	${CC} ${CFLAGS} testbtree.c ${BIN_DIR}/btreebin.o -o ${BIN_DIR}/testBTree ${LDFLAGS}
+	rm btr_0.btree || true
+	${CC} ${CFLAGS} testbtree.c -o ${BIN_DIR}/testBTree ${LDFLAGS}
 
 test_csv: build_tests
 	${BIN_DIR}/testcsvreader

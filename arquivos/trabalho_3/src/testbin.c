@@ -29,7 +29,7 @@ void printAcquiredData(void* this_data) {
     char temp_buffer[BUFF_LEN + 10] = {0};
 
     memcpy(temp_buffer, this_data, BUFF_LEN);
-    printf(temp_buffer);
+    printf("%s", temp_buffer);
 }
 
 int main() {
