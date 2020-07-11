@@ -243,7 +243,7 @@ btree_node __get_node_rrn_btree(BTREE *this_btree, int rrn)
 {
 
   // Seek correct position in file
-  fseek(this_btree->btree_file, rrn*NODE_SIZE+HEADER_SIZE, SEEK_SET);
+  fseek(this_btree->btree_file, rrn * NODE_SIZE + HEADER_SIZE, SEEK_SET);
 
   // Read and put in void array
   void *buffer = malloc(NODE_SIZE);
@@ -737,10 +737,10 @@ int __search_node_by_key_btree(BTREE* this_btree,
 				btr_node_ret_t *ret_type,
 				int *parent_node_rrn) //Parent will be returned here.
 {
-    btree_node temp_search_node;
-    int temp_search_node_rrn;
-    int prev_search_node_rrn;
-    int i;
+  btree_node temp_search_node;
+  int temp_search_node_rrn;
+  int prev_search_node_rrn;
+  int i;
 
     //Begin scanning by root node.
     temp_search_node_rrn = this_btree->header_buffer.root_node;
@@ -781,58 +781,63 @@ int __search_node_by_key_btree(BTREE* this_btree,
 	    temp_search_node_rrn = temp_search_node.descendants[++i];
 	}
     }
+  }
 }
 
 /*EXPOSED FUNCTIONS*/
 
 BTREE *openBTree(const char *filename, btree_err_t *err)
 {
-    *err = BTR_OK;
+  *err = BTR_OK;
 
-    // Allocate struct
-    BTREE *ret_btree = (BTREE*) malloc(sizeof(BTREE));
+  // Allocate struct
+  BTREE *ret_btree = (BTREE *)malloc(sizeof(BTREE));
 
-    // Open file
-    ret_btree->btree_file = fopen(filename, "r+b");
+  // Open file
+  ret_btree->btree_file = fopen(filename, "r+b");
 
-    // File does not exist, create file
-    if(ret_btree->btree_file == NULL){
+  // File does not exist, create file
+  if (ret_btree->btree_file == NULL)
+  {
 
-	ret_btree->btree_file = fopen(filename, "w+bx");
-	__init_header_btree(ret_btree);
-	*err = BTR_NEW_FILE;
+    ret_btree->btree_file = fopen(filename, "w+bx");
+    __init_header_btree(ret_btree);
+    *err = BTR_NEW_FILE;
+  }
+  else
+  { // File exists
 
-    }else{ // File exists
+    // Read header from file
+    __read_header_btree(ret_btree);
 
-	// Read header from file
-	__read_header_btree(ret_btree);
-
-	// Check file consistency
-    if (ret_btree->header_buffer.status != '1'){
-	// Inconsistent, clear memory and return null
-	fclose(ret_btree->btree_file);
-	free(ret_btree);
-	*err = BTR_CORRUPTED;
-	return NULL;
+    // Check file consistency
+    if (ret_btree->header_buffer.status != '1')
+    {
+      // Inconsistent, clear memory and return null
+      fclose(ret_btree->btree_file);
+      free(ret_btree);
+      *err = BTR_CORRUPTED;
+      return NULL;
     }
 
     // Loads root node
     ret_btree->nodes_buffer[0] = __get_node_rrn_btree(ret_btree,
-					    ret_btree->header_buffer.root_node);
-    }
+                                                      ret_btree->header_buffer.root_node);
+  }
 
-    // Failed to create file
-    if(ret_btree->btree_file == NULL){
-	closeBTree(ret_btree);
-	*err = BTR_ERROR;
-	return NULL;
-    }
+  // Failed to create file
+  if (ret_btree->btree_file == NULL)
+  {
+    closeBTree(ret_btree);
+    *err = BTR_ERROR;
+    return NULL;
+  }
 
-    //After all error checking, set status to '0' and update on file.
-    ret_btree->header_buffer.status = '0';
-    __write_header_btree(ret_btree);
+  //After all error checking, set status to '0' and update on file.
+  ret_btree->header_buffer.status = '0';
+  __write_header_btree(ret_btree);
 
-    return ret_btree;
+  return ret_btree;
 }
 
 void closeBTree(BTREE *this_btree)
@@ -951,4 +956,3 @@ int getValByKeyBTree(BTREE *this_btree, int key)
 
     return ret_val;
 }
-

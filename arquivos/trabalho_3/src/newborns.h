@@ -42,5 +42,8 @@ nb_err_t NBRemoveMatchingFields(NEWBORNS*, STRING_PAIR_VECTOR);
 
 //nb_err_t NBRemoveByRegisterNumber(NEWBORNS*, int reg_number); NOT NEEDED
 
+int NBgetNumRegistersBinFile(NEWBORNS* these_babies);
+int NBGetIDByRegisterNumber(NEWBORNS* these_babies, int rrn);
+
 #endif
 
