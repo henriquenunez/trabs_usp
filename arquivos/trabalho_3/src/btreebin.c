@@ -384,15 +384,15 @@ if(!inserted && (key < a_node->keyValues[j].C || a_node->keyValues[j].C == -1))
 
 btr_node_ret_t __split_node_l_r_btree(BTREE* this_btree,
 				    btree_node *a_node,
-				    key_values_t kvp, //Key value to insert.
-				    btree_node l_child,
-				    btree_node r_child,
+				    key_values_t kvp, //Key:value to insert.
+				    btree_node l_child, //Children of
+				    btree_node r_child, //overflower key.
 				    int parent_node_rrn)
 {
     #define SPLIT_LENGTH ((int)(BTREE_ORDER/2))
 
     //We already know that the node must be split.
-    key_values_t temp_key_vals[BTREE_ORDER]; //One more for the new element.
+    key_values_t temp_key_vals[BTREE_ORDER]; //One more for the new key.
     int32_t temp_descendants[BTREE_ORDER];
 
     //Order keys, find median.
@@ -428,11 +428,21 @@ btr_node_ret_t __split_node_l_r_btree(BTREE* this_btree,
     temp_descendants[idx_ins] = l_child.node_rrn;
     temp_descendants[idx_ins+1] = r_child.node_rrn;
 
+    //The promoted key is always at this index.
     key_values_t promoted_key = temp_key_vals[SPLIT_LENGTH];
 
-    //Now, copy back into l and r.
-    btree_node l_node;
-    btree_node r_node;
+    //With values split, assign to 2 different nodes.
+    btree_node l_node = __new_node_zeroes_btree(); //Same as original node.
+    btree_node r_node = __new_node_zeroes_btree(); //Newly created node.
+
+    l_node.n = SPLIT_LENGTH; //Key num on l and r node.
+    r_node.n = SPLIT_LENGTH-1;
+
+    //Set rrn of left node to the same of the original one.
+    l_node.node_rrn = a_node->node_rrn;
+
+    //Set rrn of the right node to the same of the new one.
+    r_node.node_rrn = this_btree->header_buffer.next_rrn++;
 
     //Replace previous keyValues.
     memcpy(l_node.keyValues,
@@ -641,7 +651,9 @@ btr_node_ret_t __split_node_btree(BTREE* this_btree,
     int i,j = 0;
     char inserted = false;
 
+    #ifdef DEBUG_BTREE
     printf("Sorted keys: ");
+    #endif
     for(i = 0 ; i < BTREE_ORDER ; i++)
     {
 	//In case key is the highest one.
@@ -654,7 +666,9 @@ btr_node_ret_t __split_node_btree(BTREE* this_btree,
 	{
 	    temp_key_vals[i] = a_node->keyValues[j++];
 	}
+	#ifdef DEBUG_BTREE
 	printf("%d:%d ", temp_key_vals[i].C, temp_key_vals[i].P);
+	#endif
     }
 
     #ifdef DEBUG_BTREE
@@ -737,10 +751,10 @@ int __search_node_by_key_btree(BTREE* this_btree,
 				btr_node_ret_t *ret_type,
 				int *parent_node_rrn) //Parent will be returned here.
 {
-  btree_node temp_search_node;
-  int temp_search_node_rrn;
-  int prev_search_node_rrn;
-  int i;
+    btree_node temp_search_node;
+    int temp_search_node_rrn;
+    int prev_search_node_rrn;
+    int i;
 
     //Begin scanning by root node.
     temp_search_node_rrn = this_btree->header_buffer.root_node;
@@ -757,31 +771,42 @@ int __search_node_by_key_btree(BTREE* this_btree,
 	*parent_node_rrn = prev_search_node_rrn;
 	prev_search_node_rrn = temp_search_node_rrn;
 
-	printf("Searching on rrn %d\n", temp_search_node_rrn);
+	#ifdef DEBUG_BTREE
+	printf(">>>Searching on rrn %d\n", temp_search_node_rrn);
+	#endif
 
 	temp_search_node =
 	    __get_node_rrn_btree(this_btree, temp_search_node_rrn);
 
 	for(i = 0 ; i < BTREE_ORDER-1 ; )
 	{
-	    if(key < temp_search_node.keyValues[i].C)
-	    {
-		//Then, should go to descentants.
-		temp_search_node_rrn = temp_search_node.descendants[i];
-		break;
-	    }
+	    #ifdef DEBUG_BTREE
+	    printf(">>>>>Comparing %d with %d\n", key, temp_search_node.keyValues[i].C);
+	    #endif
 
 	    if(key == temp_search_node.keyValues[i].C)
 	    {
 		//Found key, stop searching.
 		*ret_type = BTR_NODE_KEY_FOUND;
-		return temp_search_node_rrn;
+		return temp_search_node.node_rrn;
 	    }
 
+	    if(key < temp_search_node.keyValues[i].C)
+	    {
+		//Then, should go to descendants.
+		temp_search_node_rrn = temp_search_node.descendants[i];
+		break;
+	    }
+
+	    //In case we have reached end of node.
+	    if(temp_search_node.keyValues[i].C == -1)
+	    {
+		temp_search_node_rrn = temp_search_node.descendants[i];
+		break;
+	    }
 	    temp_search_node_rrn = temp_search_node.descendants[++i];
 	}
     }
-  }
 }
 
 /*EXPOSED FUNCTIONS*/
@@ -862,15 +887,20 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
 
     //First we must search...
 
+    #ifdef DEBUG_BTREE
     printf("Begin searching...\n");
+    #endif
+
     int rrn = __search_node_by_key_btree(this_btree,
 					    key,
 					    &operation_res,
 					    &parent_insertion_node_rrn);
 
+    #ifdef DEBUG_BTREE
     printf("Result type is %d, rrn is %d, parent %d\n", operation_res,
 							rrn,
 							parent_insertion_node_rrn);
+    #endif
 
     if(rrn == -1) //If rrn is -1, btree was empty
     {
@@ -903,7 +933,9 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
     //In case of overflow...
     if(operation_res == BTR_NODE_FULL)
     {
+	#ifdef DEBUG_BTREE
 	printf("Split needed!\n");
+	#endif
 	__split_node_btree(this_btree,
 			    &temp_node,
 			    key_val_to_insert,
@@ -911,7 +943,9 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
     }
     else
     {
+	#ifdef DEBUG_BTREE
 	printf("Split not needed!\n");
+	#endif
 
 	//Increase counter
 	this_btree->header_buffer.key_number++;
@@ -934,24 +968,37 @@ int getValByKeyBTree(BTREE *this_btree, int key)
     btree_node temp_node;
     btr_node_ret_t search_result;
 
+    #ifdef DEBUG_BTREE
     printf("Begin searching for value\n");
+    #endif
     int rrn, parent_rrn;
     rrn = __search_node_by_key_btree(this_btree, key, &search_result, &parent_rrn);
 
+    #ifdef DEBUG_BTREE
     printf("Result type is %d, rrn is %d\n", search_result, rrn);
+    #endif
 
     int ret_val;
     if(search_result == BTR_NODE_KEY_FOUND)
     {
+	#ifdef DEBUG_BTREE
 	printf("Key found!\n");
+	#endif
 	//Begin searching node for given key.
 	temp_node = __get_node_rrn_btree(this_btree, rrn);
-	ret_val =__value_from_key_node_btree(temp_node, key);
+	#ifdef DEBUG_BTREE
+	printf(">>printing node!\n");
+	#endif
+	__print_node_vals(temp_node);
+	ret_val = __value_from_key_node_btree(temp_node, key);
+
 	if(ret_val == -1)
 	{
 	    printf("Deu ruim!\n");
 	}
+	//#ifdef DEBUG_BTREE
 	printf("Queried key: %d, value is %d\n", key, ret_val);
+	//#endif
     }
 
     return ret_val;
