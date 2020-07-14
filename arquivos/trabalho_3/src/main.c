@@ -423,7 +423,7 @@ int main(void)
     // Abre arquivo da árvore B
     btree_err_t stat;
     bt = openBTree(arq_csv, &stat);
-    printf("%d\n", stat);
+    //printf("%d\n", stat);
     if(stat != BTR_OK && stat != BTR_NEW_FILE){
       printf("Falha no processamento do arquivo. bt\n");
       free(arq_bin);

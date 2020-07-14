@@ -264,7 +264,7 @@ btree_node __new_node_zeroes_btree()
 {
     btree_node ret_node;
     ret_node.n = 0;
-    ret_node.level = -1;
+    ret_node.level = 1;
     memset(ret_node.descendants, -1, sizeof(int32_t) * BTREE_ORDER);
     memset(ret_node.keyValues, -1, sizeof(key_values_t) * BTREE_ORDER-1);
 
@@ -332,7 +332,10 @@ btr_node_ret_t __insert_key_val_at_node_l_r_btree(btree_node *a_node,
 	else
 	    j++;
     }
+
+    #ifdef DEBUG_BTREE
     printf("Insertion index: %d\n", idx_ins);
+    #endif
 
     //Now copy values
     j=0;
@@ -394,7 +397,7 @@ btr_node_ret_t __split_node_l_r_btree(BTREE* this_btree,
 
     //We already know that the node must be split.
     key_values_t temp_key_vals[BTREE_ORDER]; //One more for the new key.
-    int32_t temp_descendants[BTREE_ORDER];
+    int32_t temp_descendants[BTREE_ORDER+1];
 
     //Order keys, find median.
     int i,j = 0;
@@ -556,25 +559,36 @@ btr_node_ret_t __promote_key_write_btree(BTREE* this_btree,
     void *node_bin;
     int counter;
 
+    #ifdef DEBUG_BTREE
     printf("Promoting key...\n");
+    #endif
 
     if(parent_node_rrn == -1)
     {
+	#ifdef DEBUG_BTREE
 	printf("New parent node...\n");
-	//Create a new parent node.
+	#endif
+	//Create a new parent node. This means we need to increase the level.
 	parent_node = __new_node_zeroes_btree();
 	parent_node.node_rrn = this_btree->header_buffer.next_rrn++;
+	parent_node.level = l_node.level+1;
 
 	//A new parent node always implies in a new root.
 	this_btree->header_buffer.root_node = parent_node.node_rrn;
+
+	this_btree->header_buffer.level_number++;
     }
     else
     {
+	#ifdef DEBUG_BTREE
 	printf("Parent node exists\n");
+	#endif
 	parent_node = __get_node_rrn_btree(this_btree, parent_node_rrn);
     }
 
+	    #ifdef DEBUG_BTREE
     printf("Parent node rrn: %d\n", parent_node.node_rrn);
+	#endif
 
     //Try to insert key at parent.
     op_res = __insert_key_val_at_node_l_r_btree(&parent_node,
@@ -582,11 +596,15 @@ btr_node_ret_t __promote_key_write_btree(BTREE* this_btree,
 						promoted.P,
 						l_node,
 						r_node);
+    #ifdef DEBUG_BTREE
     __print_node_vals(parent_node);
+    #endif
 
     if(op_res == BTR_NODE_FULL) //Then it's chained overflow...
     {
+	#ifdef DEBUG_BTREE
 	printf("Parent full during promotion!\n");
+	#endif
 /*
 btr_node_ret_t __split_node_l_r_btree(BTREE* this_btree,
 				    btree_node *a_node,
@@ -876,6 +894,13 @@ void closeBTree(BTREE *this_btree)
   this_btree->header_buffer.status = '1';
   __write_header_btree(this_btree);
   fclose(this_btree->btree_file);
+
+    #ifdef DEBUG_BTREE
+    printf("\n>>> Num of keys: %d, Num of levels: %d\n",
+    this_btree->header_buffer.key_number,
+    this_btree->header_buffer.level_number);
+    #endif
+
   free(this_btree);
 }
 
@@ -954,9 +979,6 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
 	printf("Split not needed!\n");
 	#endif
 
-	//Increase counter
-	this_btree->header_buffer.key_number++;
-
 	if(ftell(this_btree->btree_file) != HEADER_SIZE + rrn * NODE_SIZE)
 	    fseek(this_btree->btree_file,
 		    HEADER_SIZE + rrn * NODE_SIZE,
@@ -966,6 +988,9 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
 	fwrite(node_bin, NODE_SIZE, 1, this_btree->btree_file);
 	free(node_bin);
     }
+
+    //Increase counter
+    this_btree->header_buffer.key_number++;
 
     return BTR_OK;
 }
@@ -988,24 +1013,28 @@ int* getValByKeyBTree(BTREE *this_btree, int key)
     int *ret_val = (int*) malloc(2*sizeof(int));
     if(search_result == BTR_NODE_KEY_FOUND)
     {
+	temp_node = __get_node_rrn_btree(this_btree, rrn);
+
 	#ifdef DEBUG_BTREE
 	printf("Key found!\n");
-	#endif
 	//Begin searching node for given key.
-	temp_node = __get_node_rrn_btree(this_btree, rrn);
-	#ifdef DEBUG_BTREE
 	printf(">>printing node!\n");
-	#endif
 	__print_node_vals(temp_node);
+	#endif
 	ret_val[0] = __value_from_key_node_btree(temp_node, key);
 
+	//ret_val = __value_from_key_node_btree(temp_node, key);
+
+	#ifdef DEBUG_BTREE
 	if(ret_val[0] == -1)
 	{
 	    printf("Deu ruim!\n");
 	}
-	//#ifdef DEBUG_BTREE
 	printf("Queried key: %d, value is %d\n", key, ret_val[0]);
-	//#endif
+	#endif
+	/*#ifdef DEBUG_BTREE
+	printf("Queried key: %d, value is %d\n", key, ret_val);
+	#endif*/
     }
 
     ret_val[1] = i;
