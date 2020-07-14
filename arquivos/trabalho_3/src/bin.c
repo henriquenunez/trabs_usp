@@ -148,12 +148,13 @@ BIN_FILE* openBinFile(const char* filename, size_t register_size) {
     //In case of file existing, try to open on read/update
     if(ret_file->fp == NULL) {
 	ret_file->fp = fopen(filename, "w+bx");
-	//printf("File did not exist!\n");
+	// printf("File did not exist!\n");
 	 __init_header_bin(ret_file);
     }
 
     //In case of error, deallocate resources and leave
     if(ret_file->fp == NULL) {
+      // printf("Error\n");
 	closeBinFile(ret_file);
 	return NULL;
     }
