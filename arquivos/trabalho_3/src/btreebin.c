@@ -220,7 +220,8 @@ void __write_header_btree(BTREE *this_btree)
 int __search_node_by_key_btree(BTREE* this_btree,
 				int key,
 				btr_node_ret_t *ret_type,
-				int *parent_node_rrn);
+				int *parent_node_rrn,
+        int *counter);
 //Just a helper one
 void __print_node_vals(btree_node temp_node)
 {
@@ -553,6 +554,7 @@ btr_node_ret_t __promote_key_write_btree(BTREE* this_btree,
     btree_node parent_node;
     btr_node_ret_t op_res;
     void *node_bin;
+    int counter;
 
     printf("Promoting key...\n");
 
@@ -597,7 +599,8 @@ btr_node_ret_t __split_node_l_r_btree(BTREE* this_btree,
 	__search_node_by_key_btree(this_btree,
 				    parent_node.keyValues[0].C,
 				    &op_res,
-				    &parent_parent_rrn);
+				    &parent_parent_rrn,
+            &counter);
 	__split_node_l_r_btree(this_btree,
 				&parent_node,
 				promoted,
@@ -749,7 +752,8 @@ int __value_from_key_node_btree(btree_node a_node, int key)
 int __search_node_by_key_btree(BTREE* this_btree,
 				int key,
 				btr_node_ret_t *ret_type,
-				int *parent_node_rrn) //Parent will be returned here.
+				int *parent_node_rrn,
+        int *counter) //Parent will be returned here.
 {
     btree_node temp_search_node;
     int temp_search_node_rrn;
@@ -762,6 +766,7 @@ int __search_node_by_key_btree(BTREE* this_btree,
 
     while(1)
     {
+      (*counter)++;
 	if(temp_search_node_rrn == -1)
 	{
 	    *ret_type = BTR_NODE_KEY_NOT_FOUND;
@@ -881,6 +886,7 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
     key_values_t key_val_to_insert;
     int parent_insertion_node_rrn;
     btr_node_ret_t operation_res;
+    int counter = 0;
 
     key_val_to_insert.C = key;
     key_val_to_insert.P = value;
@@ -894,7 +900,8 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
     int rrn = __search_node_by_key_btree(this_btree,
 					    key,
 					    &operation_res,
-					    &parent_insertion_node_rrn);
+					    &parent_insertion_node_rrn,
+              &counter);
 
     #ifdef DEBUG_BTREE
     printf("Result type is %d, rrn is %d, parent %d\n", operation_res,
@@ -963,7 +970,7 @@ btree_err_t insertKeyValBTree(BTREE *this_btree, int key, int value)
     return BTR_OK;
 }
 
-int getValByKeyBTree(BTREE *this_btree, int key)
+int* getValByKeyBTree(BTREE *this_btree, int key)
 {
     btree_node temp_node;
     btr_node_ret_t search_result;
@@ -971,14 +978,14 @@ int getValByKeyBTree(BTREE *this_btree, int key)
     #ifdef DEBUG_BTREE
     printf("Begin searching for value\n");
     #endif
-    int rrn, parent_rrn;
-    rrn = __search_node_by_key_btree(this_btree, key, &search_result, &parent_rrn);
+    int rrn, parent_rrn, i = 0;
+    rrn = __search_node_by_key_btree(this_btree, key, &search_result, &parent_rrn, &i);
 
     #ifdef DEBUG_BTREE
     printf("Result type is %d, rrn is %d\n", search_result, rrn);
     #endif
 
-    int ret_val;
+    int *ret_val = (int*) malloc(2*sizeof(int));
     if(search_result == BTR_NODE_KEY_FOUND)
     {
 	#ifdef DEBUG_BTREE
@@ -990,16 +997,18 @@ int getValByKeyBTree(BTREE *this_btree, int key)
 	printf(">>printing node!\n");
 	#endif
 	__print_node_vals(temp_node);
-	ret_val = __value_from_key_node_btree(temp_node, key);
+	ret_val[0] = __value_from_key_node_btree(temp_node, key);
 
-	if(ret_val == -1)
+	if(ret_val[0] == -1)
 	{
 	    printf("Deu ruim!\n");
 	}
 	//#ifdef DEBUG_BTREE
-	printf("Queried key: %d, value is %d\n", key, ret_val);
+	printf("Queried key: %d, value is %d\n", key, ret_val[0]);
 	//#endif
     }
+
+    ret_val[1] = i;
 
     return ret_val;
 }

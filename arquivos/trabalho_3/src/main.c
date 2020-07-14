@@ -505,13 +505,14 @@ int main(void)
     scanf("%d", &searchKey);
 
     // Busca e imprime o resultado da busca
-    int respRRN = getValByKeyBTree(bt, searchKey);
-    printf("%d\n", respRRN);
-    NBSearchByRegisterNumber(bb, respRRN);
+    int *respRRN = getValByKeyBTree(bt, searchKey);
+    NBSearchByRegisterNumber(bb, respRRN[0]);
+    printf("Quantidadede paginas da arvore-B acessadas: %d\n", respRRN[1]);
 
     // Limpa a memória
     free(arq_bin);
     free(arq_csv);
+    free(respRRN);
     NBDeleteInstance(bb);
     closeBTree(bt);
     break;
