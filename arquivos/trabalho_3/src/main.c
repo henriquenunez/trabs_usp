@@ -235,7 +235,6 @@ int main(void)
 		scanf(" %ms", &arq_bin);
 
 		// Verifica se existe arquivo
-    printf("bin/");
 		fp = fopen(arq_bin, "rb");
 		if(fp == NULL){
 			printf("Falha no processamento do arquivo.\n");
@@ -246,9 +245,10 @@ int main(void)
 
 		// Abre arquivo binário
 		bb = NBCreateInstance(arq_bin);
-    printf("bb/");
 		if(bb == NULL){
 			printf("Falha no processamento do arquivo.\n");
+      free(arq_bin);
+      NBDeleteInstance(bb);
 			break;
 		}
 
@@ -257,24 +257,25 @@ int main(void)
       scanf("%ms", &arq_csv);
 
       // Verifica se existe arquivo
-      printf("btree/");
       fp = fopen(arq_csv, "rb");
       if(fp == NULL){
         printf("Falha no processamento do arquivo.\n");
         free(arq_bin);
         free(arq_csv);
+        NBDeleteInstance(bb);
         break;
       }
       fclose(fp);
 
       // Abre arquivo da árvore B
-      btree_err_t *stat;
-      bt = openBTree(arq_csv, stat);
-      printf("bt/");
-      if(*stat != BTR_OK || *stat != BTR_NEW_FILE){
+      btree_err_t stat;
+      bt = openBTree(arq_csv, &stat);
+      if(stat != BTR_OK && stat != BTR_NEW_FILE){
         printf("Falha no processamento do arquivo.\n");
         free(arq_bin);
         free(arq_csv);
+        NBDeleteInstance(bb);
+        closeBTree(bt);
         break;
       }
     }
