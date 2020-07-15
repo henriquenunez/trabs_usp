@@ -425,7 +425,7 @@ int main(void)
     bt = openBTree(arq_csv, &stat);
     //printf("%d\n", stat);
     if(stat != BTR_OK && stat != BTR_NEW_FILE){
-      printf("Falha no processamento do arquivo. bt\n");
+      printf("Falha no processamento do arquivo. \n");
       free(arq_bin);
       free(arq_csv);
       NBDeleteInstance(bb);
@@ -438,8 +438,8 @@ int main(void)
     for(int i = 0 ; i < times ; i++){
       int newID = NBGetIDByRegisterNumber(bb, i);
       if(newID == -1){
-        printf("Falha no processamento do arquivo. id\n");
-        break;
+        i--;
+        continue;
       }
       insertKeyValBTree(bt, newID, i);
     }
