@@ -248,7 +248,6 @@ int main(void)
 		if(bb == NULL){
 			printf("Falha no processamento do arquivo.\n");
       free(arq_bin);
-      NBDeleteInstance(bb);
 			break;
 		}
 
@@ -318,12 +317,14 @@ int main(void)
 
 		}
     if(func == 10){
-      free(arq_csv);
       closeBTree(bt);
+      binarioNaTela(arq_csv);
+      free(arq_csv);
+    }else{
+      binarioNaTela(arq_bin);
     }
 		fflush(0);
 		NBDeleteInstance(bb);
-    binarioNaTela(arq_bin);
 		free(arq_bin);
 		break;
 
