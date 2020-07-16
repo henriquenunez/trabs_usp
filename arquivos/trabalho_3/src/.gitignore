@@ -1,0 +1,7 @@
+*.o
+programaTrab
+*.bin
+bin/
+*.out
+sla
+casos/
