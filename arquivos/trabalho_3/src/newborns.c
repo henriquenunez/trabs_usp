@@ -959,8 +959,8 @@ void* __update_bin_data_nb(void *n_data, void *curr_data) {
 }
 
 nb_err_t NBUpdateByRegisterNumber(NEWBORNS* these_babies,
-				    int rrn,
-				    STRING_PAIR_VECTOR args) {
+	int rrn,
+	STRING_PAIR_VECTOR args) {
     nascimento *update_fields_baby;
     void* current_baby_bin = NULL;
     //First, we build data from args.
@@ -970,29 +970,31 @@ nb_err_t NBUpdateByRegisterNumber(NEWBORNS* these_babies,
     //Retrieve binary data.
 
     updateRegisterBinFile(these_babies->bf,
-			    &__update_bin_data_nb,
-			    update_fields_baby,
-			    rrn);
+	    &__update_bin_data_nb,
+	    update_fields_baby,
+	    rrn);
     free(update_fields_baby);
 }
 
 int NBgetNumRegistersBinFile(NEWBORNS* these_babies){
-  return getNumRegistersBinFile(these_babies->bf);
+    return getNumRegistersBinFile(these_babies->bf);
 }
 
 int NBGetIDByRegisterNumber(NEWBORNS* these_babies, int rrn){
-  void* ptr = NULL;
-  nascimento* this_baby;
+    void* ptr = NULL;
+    nascimento* this_baby;
+    int ret_val;
 
-  if (searchRegisterBinFile(these_babies->bf, rrn, &ptr) != OK) {
-      return -1;
-  }
+    if (searchRegisterBinFile(these_babies->bf, rrn, &ptr) != OK) {
+	return -1;
+    }
 
-  this_baby = __parse_bin_data_nb(ptr); //Parse acquired data.
+    this_baby = __parse_bin_data_nb(ptr); //Parse acquired data.
 
-  return this_baby->id;
+    ret_val = this_baby->id;
+    free(this_baby);
+    free(ptr);
+
+    return ret_val;
 }
 
-/* TO DO
-- NBgetNumRegistersBinFile
-- NBGetIDByRegisterNumber */

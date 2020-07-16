@@ -19,7 +19,7 @@ BTREE* openBTree(const char* filename, btree_err_t* err);
 void closeBTree(BTREE*);
 
 btree_err_t insertKeyValBTree(BTREE*, int key, int value);
-int *getValByKeyBTree(BTREE*, int key);
+int getValByKeyBTree(BTREE*, int key, int* num_iter);
 
 #endif
 

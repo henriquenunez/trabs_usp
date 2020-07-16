@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc#clang
 CFLAGS = -g
 LDFLAGS = #-fsanitize=address
 BIN_DIR = ./bin
