@@ -438,7 +438,8 @@ int main(void)
     for(int i = 0 ; i < times ; i++){
       int newID = NBGetIDByRegisterNumber(bb, i);
       if(newID == -1){
-        i--;
+        times++;
+	//printf("Removed!\n");
         continue;
       }
       insertKeyValBTree(bt, newID, i);
@@ -505,17 +506,24 @@ int main(void)
     scanf("%d", &searchKey);
 
     // Busca e imprime o resultado da busca
-    int *respRRN = getValByKeyBTree(bt, searchKey);
-    NBSearchByRegisterNumber(bb, respRRN[0]);
-    printf("Quantidadede paginas da arvore-B acessadas: %d\n", respRRN[1]);
+    int access_counter;
+    int respRRN = getValByKeyBTree(bt, searchKey, &access_counter);
+    if(respRRN != -1)
+    {
+	NBSearchByRegisterNumber(bb, respRRN);
+	printf("Quantidade de paginas da arvore-B acessadas: %d\n", access_counter);
+    }
+    else
+    {
+	printf("Registro inexistente.");
+    }
 
     // Limpa a memória
     free(arq_bin);
     free(arq_csv);
-    free(respRRN);
     NBDeleteInstance(bb);
     closeBTree(bt);
     break;
 
-	}
+    }
 }
