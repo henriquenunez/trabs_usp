@@ -35,7 +35,7 @@ void centrifugues(int c, int s)
 
     std::vector<int>::iterator it_end = specimen_masses.end();
 
-    average = (double)std::accumulate(it_begin, it_end, 0)/(double)s;
+    average = (double)std::accumulate(it_begin, it_end, 0)/(double)c;
 
     //std::cout << average << std::endl;
     for(int j = 0 ; j < c ; j++) //Form pairs;
