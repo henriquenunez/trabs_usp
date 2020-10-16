@@ -2,7 +2,10 @@
 
 - 2020.2
 
-### Languages:
+## Languages:
 - C++
-- Haskell
+- Haskell (Work In Progress)
 
+## Highlights:
+
+[eight puzzle](henriquenunez/trabs_usp/blob/master/aaa/eight_puzzle)

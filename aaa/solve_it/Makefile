@@ -1,7 +1,7 @@
 CXX=g++
-CXXFLAGS=-std=c++11
-LDFLAGS=
-PROGNAME=cd_tracks
+CXXFLAGS=-O3 -std=c++11 -Wall
+LDFLAGS=#-fsanitize=address
+PROGNAME=solve_it
 
 all:
 	${CXX} ${CXXFLAGS} ${PROGNAME}.cpp -o ${PROGNAME} ${LDFLAGS}
@@ -17,4 +17,6 @@ run:
 
 zip:
 	zip ../${PROGNAME}.zip *
+clean:
+	rm ${PROGNAME} || true
 
