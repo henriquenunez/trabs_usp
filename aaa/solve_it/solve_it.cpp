@@ -20,7 +20,7 @@ double compute_equation(double x,
     double sol = 0;
 
     sol += p * exp(x * (-1));
-    sol += q * sin(x); 
+    sol += q * sin(x);
     sol += r * cos(x);
     sol += s * tan(x);
     sol += t * x * x;
@@ -91,8 +91,6 @@ double binary_search(double p, double q, double r, double s, double t, double u)
 int main()
 {
     double p, q, r, s, t, u;
-
-    
 
     while(true)
     {
