@@ -22,6 +22,8 @@ void sieve_of_eratosthenes(int *PRIMES, std::vector<int> &primes_vec)
     for (i = 2; i <= MAX_N; i++)
     {
         if (!PRIMES[i]) continue;
+        primes_vec.push_back(i);
+
         int j = i*2;
 
         while (j < MAX_N)
@@ -35,9 +37,12 @@ void sieve_of_eratosthenes(int *PRIMES, std::vector<int> &primes_vec)
 /* How many times a prime p
  * occurs in n!
  * */
-int prime_factors_on_factorial(int n)
+int prime_factors_on_factorial(int n, int p)
 {
     int ret = 0;
+
+    for (int power = p ; power <= n ; power *= p)
+        ret += n/power;
 
     return ret;
 }
@@ -45,13 +50,15 @@ int prime_factors_on_factorial(int n)
 void prime_factors(long int val, std::vector<int> &primes_vec, std::unordered_map<int, int> &factors)
 {
     std::vector<int> factor_amount;
-    std::vector<int>::iterator curr_prime, curr_prime_amount;
-    int prime_n = 1;
+    std::vector<int>::iterator curr_prime;
+    //std::unordered_map<int, int>::iterator curr_prime_amount;
+
+    //int prime_n = 1;
 
     factor_amount.resize(primes_vec.size(), 0);
 
     curr_prime = primes_vec.begin();
-    curr_prime_amount = factor_amount.begin();
+    //curr_prime_amount = factor_amount.begin();
 
     //Now, decomposing it.
     while(val != 1 && curr_prime != primes_vec.end())
@@ -63,40 +70,44 @@ void prime_factors(long int val, std::vector<int> &primes_vec, std::unordered_ma
 
             // Check if prime exists in map
             // and add to it.
-            if (curr_prime in map)
+            if (factors.find(*curr_prime) != factors.end())
             {
-                factors[curr_prime]++;
+                factors[*curr_prime]++;
             }
             else
             {
-                factors[curr_prime] = 1;
+                factors[*curr_prime] = 1;
             }
-
-            (*curr_prime_amount)++;
         }
         else
         {
             curr_prime++;
-            curr_prime_amount++;
-            prime_n++;
+            //curr_prime_amount++;
+            //prime_n++;
         }
     }
 
+    if (val > 1) //Could not be factored.
+    {
+        factors[val] = 1;
+    }
+
+    /*
     if (curr_prime == primes_vec.end())
         return std::make_pair(factor_amount, 0);
 
     return std::make_pair(factor_amount, prime_n);
+    */
 }
 
 // m divides n! ??
 bool check_divides(long int n, long int m, std::vector<int> &primes_vec)
 {
-    if (m <= n) return true;
     if (m == 0) return false;
+    if (m <= n) return true;
 
     //Maps a value.
-    // Let's find the factorial of the divisor first.
-    
+    // Let's find the factorial of the divisor first. 
     std::unordered_map<int, int> m_factors;
     prime_factors(m, primes_vec, m_factors);
 
@@ -107,14 +118,15 @@ bool check_divides(long int n, long int m, std::vector<int> &primes_vec)
     printf("\n");
     */
 
-    // Now, to check if divides, lets first check if
-    // there is no larger prime on n than in m.
-    if (asw_m.second > asw_n.second || asw_m.second == 0) return false;
-
-    for (int i = 0 ; i < asw_m.second ; i++)
+    // Now, to check if divides, for each prime in m's
+    // factoration, check if the amount is lower than of
+    // n!'s factoration.
+    for (auto prime_factor : m_factors)
     {
         //printf("Trying %d!\n", i);
-        if (asw_n.first[i] < asw_m.first[i])
+        // First represents the key, or the actual prime number
+        // Second represents the prime number amount in the factoration.
+        if (prime_factors_on_factorial(n, prime_factor.first) < prime_factor.second)
             return false;
     }
 
@@ -124,10 +136,11 @@ bool check_divides(long int n, long int m, std::vector<int> &primes_vec)
 int main()
 {
     std::vector<int> primes_vec;
+    int *PRIMES = (int*) malloc((MAX_N+1) * sizeof(int));
 
     //Initialize primes.
-    sieve_of_eratosthenes();
-
+    sieve_of_eratosthenes(PRIMES, primes_vec);
+/*
     for (int i = 2 ; i <= MAX_N ; i++)
     {
         if (PRIMES[i])
@@ -136,7 +149,7 @@ int main()
             //printf("%d ", i);
         }
     }
-
+*/
     long int n, m;
 
     size_t line_len = 0;
@@ -144,12 +157,13 @@ int main()
 
     while(getline(&line, &line_len, stdin) > 0)
     {        
-        printf("Input was {%s}\n", line);
+        //printf("Input was {%s}\n", line);
         sscanf(line, "%ld %ld", &n, &m);
         printf("%ld %s %ld!\n", m, check_divides(n, m, primes_vec) ? "divides" : "does not divide", n);
     }
 
     free(line);
+    free(PRIMES);
 
     return 0;
 }
