@@ -3,8 +3,7 @@
 - 2020.2
 
 ## Languages:
-- C++
-- Haskell (Work In Progress)
+- C/C++
 
 ## Highlights:
 
