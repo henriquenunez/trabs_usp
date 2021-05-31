@@ -94,38 +94,6 @@ namespace CRC32Checker {
       }
     }
 
-    /*
-    //if (i < bits.size())
-    //{
-    //printf("Putting %d\n", bit ? 0x1 : 0x0);
-    crc |= bit ? 0x1 : 0x0; //bits[i] ? 0x1 : 0x0; //Putting stream value into "register"
-    //}
-    //printf("CRC hex: 0x%x\n", crc);
-    
-    if (crc & 0x80000000) //If MSB is set.
-    {
-      crc <<= 1; //Pop MSB
-      crc ^= CRC_POLY;
-    }
-    else
-    {
-      crc <<= 1;
-    }*/
-
-    /*
-    for (int i = 0; i < 32; ++i) //Adding 32b sequel
-    {
-      if (crc & 0x80000000) 
-      {
-        crc <<= 1; //Pop MSB
-        crc ^= CRC_POLY;
-      }
-      else
-      {
-        crc <<= 1;
-      } 
-    }*/
-
     return crc;
   }
 
