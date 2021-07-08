@@ -1,0 +1,160 @@
+# Laboratório 2 - Redes de computadores
+
+## Parte 1
+
+Observação: As respostas consideram que o gateway é uma das máquinas listadas em
+cada departamento, nas questões 1, 2 e 3.
+
+### Questão 1
+
+Rede: 10.33.44.0/24
+
+a) Utilizando o método de otimização de redes, fazemos em ordem decrescente de
+quantidade de máquinas.
+
+- Engenharia: 58 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /26. IP da subrede: 10.33.44.0.
+
+- Montagem: 32 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /26. IP da subrede: 10.33.44.64.
+
+- Administração: 30 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /27. IP da subrede: 10.33.44.96.
+
+- Gerência: 9 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /28. IP da subrede: 10.33.44.112.
+
+- Diretoria: 4 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /29. IP da subrede: 10.33.44.128.
+
+b) Atribuindo os próximos endereços disponíveis às próximas redes, temos:
+
+Depto           IP Rede        _Broadcast_  _Gateway_
+--------------- ------------- ------------- ------------
+Engenharia:     10.33.44.0    10.33.44.63   10.33.44.1
+Montagem:	10.33.44.64   10.33.44.127  10.33.44.65
+Administração:  10.33.44.128  10.33.44.159  10.33.44.129
+Gerência:	10.33.44.160  10.33.44.175  10.33.44.161
+Diretoria:      10.33.44.176  10.33.44.183  10.33.44.177
+
+c) Faixa de endereçamento válida:
+
+- Engenharia: 		10.33.44.1   a 10.33.44.62
+- Montagem: 		10.33.44.65  a 10.33.44.126
+- Administração:	10.33.44.129 a 10.33.44.158
+- Gerência: 		10.33.44.161 a 10.33.44.174
+- Diretoria: 		10.33.44.177 a 10.33.44.182
+
+### Questão 2
+
+Rede: 192.100.50.0/24
+
+a) Utilizando o método de otimização de redes, fazemos em ordem decrescente de
+quantidade de máquinas.
+
+- Engenharia é o setor com mais máquinas, tendo 64. São necessários 66 endereços
+  IP para a rede, portanto uma subrede /25 deve ser atribuída. O endereço do
+  intervalo de rede atribuído é 192.100.50.0/25.
+
+- Montagem possui 16 máquinas, e precisa de 18 endereços, ou seja, uma rede /27.
+  O endereço IP da subrede é 192.100.50.128/27.
+
+- Administração possui 8 máquinas, e é necessário uma rede /28. O endereço IP do
+  intervalo de rede que deve ser atribuído é 192.100.50.160/28.
+
+- Gerência possui 4 computadores, e é necessário uma rede /29. O endereço IP o
+  intervalo de rede que deve ser atribuído é 192.168.50.176/29.
+
+- A Diretoria possui 2 computadores, e é precisa de uma rede /30. O endereço IP o
+  intervalo de rede que deve ser atribuído é 192.168.50.184/30.
+
+b)
+
+Depto           IP Rede        _Broadcast_    _Gateway_
+--------------- -------------- -------------- --------------
+Engenharia:     192.100.50.0   192.100.50.127 192.100.50.1
+Montagem:	192.100.50.128 192.100.50.159 192.100.50.129
+Administração:  192.100.50.160 192.100.50.175 192.100.50.161
+Gerência:	192.100.50.176 192.100.50.183 192.100.50.177
+Diretoria:      192.100.50.184 192.100.50.187 192.100.50.185
+
+c) Faixa de endereçamento válida:
+
+- Engenharia: 		192.100.50.1   a 192.100.50.126
+- Montagem: 		192.100.50.129 a 192.100.50.158
+- Administração:	192.100.50.161 a 192.100.50.175
+- Gerência: 		192.100.50.177 a 192.100.50.182
+- Diretoria: 		192.100.50.185 a 192.100.50.186
+
+### Questão 3
+
+Rede: 125.23.34.0/24
+
+a)
+
+- Engenharia: 41 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /26. IP da subrede: 125.23.34.0.
+
+- Montagem: 27 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /27. IP da subrede: 125.23.34.64.
+
+- Administração: 12 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /28. IP da subrede: 125.23.34.96.
+
+- Gerência: 7 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /28. IP da subrede: 125.23.34.112.
+
+- Diretoria: 8 endereços (sem contar com rede e broadcast), faixa de
+  endereçamento /28. IP da subrede: 125.23.34.128.
+
+b)
+
+Depto           IP Rede        _Broadcast_  _Gateway_
+--------------- ------------- ------------- -------------
+Engenharia:     125.23.34.0   125.23.34.63  125.23.34.1
+Montagem:	125.23.34.64  125.23.34.95  125.23.34.65
+Administração:  125.23.34.96  125.23.34.111 125.23.34.97
+Gerência:	125.23.34.112 125.23.34.127 125.23.34.113
+Diretoria:      125.23.34.128 125.23.34.143 125.23.34.129
+
+c) Faixa de endereçamento válida:
+
+- Engenharia: 		125.23.34.1   a 125.23.34.62
+- Montagem: 		125.23.34.65  a 125.23.34.94
+- Administração:	125.23.34.97  a 125.23.34.110
+- Gerência: 		125.23.34.113 a 125.23.34.126
+- Diretoria: 		125.23.34.129 a 125.23.34.142
+
+### Questão 4
+
+Dividir a seguinte rede: 193.100.50.0/255.255.255.0
+
+a) Para obter 64 sub-redes serão necessários 6 bits, pois 2^6 = 64.
+
+b) Com essa divisão, 2 hosts estarão disponíveis em cada sub-rede, pois sobram 2
+bits para o endereçamento em cada sub-rede, e um endereço é reservado para a
+rede e outro para o broadcast. A nova máscara de subrede é 255.255.255.252
+(0b11111100 = 252).
+
+c)
+
+### Questão 5
+
+a) Para obter 16 sub-redes serão necessários 4 bits, pois 2^4 = 16.
+
+b) Com essa divisão, 2 hosts estarão disponíveis em cada sub-rede, pois sobram 2
+bits para o endereçamento em cada sub-rede, e um endereço é reservado para a
+rede e outro para o broadcast. A nova máscara de subrede é 255.255.255.252
+(0b11111100 = 252).
+
+### Questão 6
+
+a) Para obter 32 sub-redes serão necessários 5 bits, pois 2^5 = 32.
+
+b) Com essa divisão, 2 hosts estarão disponíveis em cada sub-rede, pois sobram 2
+bits para o endereçamento em cada sub-rede, e um endereço é reservado para a
+rede e outro para o broadcast. A nova máscara de subrede é 255.255.255.252
+(0b11111100 = 252).
+
+
+
