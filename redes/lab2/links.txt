@@ -1,0 +1,7 @@
+RouterEngenharia-RouterDiretoria 10.33.44.188/30 10.33.44.189 10.33.44.190 10.33.44.191
+
+RouterDiretoria-RouterGerência 10.33.44.192/30 10.33.44.193 10.33.44.194 10.33.44.195
+
+RouterEngenharia-RouterMontagem 10.33.44.196/30 10.33.44.197 10.33.44.198 10.33.44.199
+
+RouterMontagem-RouterAdministração 10.33.44.200/30 10.33.44.201 10.33.44.202 10.33.44.203

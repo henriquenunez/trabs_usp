@@ -31,11 +31,11 @@ b) Atribuindo os próximos endereços disponíveis às próximas redes, temos:
 
 Depto           IP Rede        _Broadcast_  _Gateway_
 --------------- ------------- ------------- ------------
-Engenharia:     10.33.44.0    10.33.44.63   10.33.44.1
-Montagem:	10.33.44.64   10.33.44.127  10.33.44.65
-Administração:  10.33.44.128  10.33.44.159  10.33.44.129
-Gerência:	10.33.44.160  10.33.44.175  10.33.44.161
-Diretoria:      10.33.44.176  10.33.44.183  10.33.44.177
+Engenharia       10.33.44.0    10.33.44.63   10.33.44.1
+Montagem         10.33.44.64   10.33.44.127  10.33.44.65
+Administração    10.33.44.128  10.33.44.159  10.33.44.129
+Gerência         10.33.44.160  10.33.44.175  10.33.44.161
+Diretoria        10.33.44.176  10.33.44.183  10.33.44.177
 
 c) Faixa de endereçamento válida:
 
@@ -70,13 +70,13 @@ quantidade de máquinas.
 
 b)
 
-Depto           IP Rede        _Broadcast_    _Gateway_
---------------- -------------- -------------- --------------
-Engenharia:     192.100.50.0   192.100.50.127 192.100.50.1
-Montagem:	192.100.50.128 192.100.50.159 192.100.50.129
-Administração:  192.100.50.160 192.100.50.175 192.100.50.161
-Gerência:	192.100.50.176 192.100.50.183 192.100.50.177
-Diretoria:      192.100.50.184 192.100.50.187 192.100.50.185
+ Depto             IP Rede         _Broadcast_       _Gateway_
+---------------- ---------------- --------------- ---------------
+Engenharia        192.100.50.0    192.100.50.127   192.100.50.1
+Montagem          192.100.50.128  192.100.50.159   192.100.50.129
+Administração     192.100.50.160  192.100.50.175   192.100.50.161
+Gerência          192.100.50.176  192.100.50.183   192.100.50.177
+Diretoria         192.100.50.184  192.100.50.187   192.100.50.185
 
 c) Faixa de endereçamento válida:
 
@@ -109,13 +109,13 @@ a)
 
 b)
 
-Depto           IP Rede        _Broadcast_   _Gateway_
---------------- ------------- ------------- -------------
-Engenharia:     125.23.34.0   125.23.34.63  125.23.34.1
-Montagem:	125.23.34.64  125.23.34.95  125.23.34.65
-Administração:  125.23.34.96  125.23.34.111 125.23.34.97
-Gerência:	125.23.34.112 125.23.34.127 125.23.34.113
-Diretoria:      125.23.34.128 125.23.34.143 125.23.34.129
+ Depto             IP Rede         _Broadcast_       _Gateway_
+---------------- ---------------- --------------- ---------------
+ Engenharia       125.23.34.0     125.23.34.63    125.23.34.1
+ Montagem         125.23.34.64    125.23.34.95    125.23.34.65
+ Administração    125.23.34.96    125.23.34.111   125.23.34.97
+ Gerência         125.23.34.112   125.23.34.127   125.23.34.113
+ Diretoria        125.23.34.128   125.23.34.143   125.23.34.129
 
 c) Faixa de endereçamento válida:
 
@@ -283,4 +283,50 @@ Sub-rede       Faixa de endereços              _Broadcast_   _Gateway_     Serv
 129.12.232.0   129.12.232.1 a 129.12.239.254 129.12.239.255  129.12.232.1   129.12.232.2   129.12.232.3   
 129.12.240.0   129.12.240.1 a 129.12.247.254 129.12.247.255  129.12.240.1   129.12.240.2   129.12.240.3   
 129.12.248.0   129.12.248.1 a 129.12.255.254 129.12.255.255  129.12.248.1   129.12.248.2   129.12.248.3   
+
+\newpage
+
+## Parte 2
+
+Como forma de complementar o arquivo do _Packet Trace_, algumas informações
+foram registradas nesta seção.
+
+O exercício escolhido foi o 1.
+
+### Redes adicionais
+
+Para o funcionamento do sistema de roteamento, foram criadas redes adicionais
+para os enlaces entre os roteadores, dispostas na seguinte tabela:
+
+Roteadores contemplados na rede         Endereço da rede    Faixa de endereçamento        _Broadcast_
+-------------------------------------  ------------------- ---------------------------  ---------------
+RouterEngenharia-RouterDiretoria        10.33.44.188/30     10.33.44.189-10.33.44.190     10.33.44.191
+RouterDiretoria-RouterGerência          10.33.44.192/30     10.33.44.193-10.33.44.194     10.33.44.195
+RouterEngenharia-RouterMontagem         10.33.44.196/30     10.33.44.197-10.33.44.198     10.33.44.199
+RouterMontagem-RouterAdministração      10.33.44.200/30     10.33.44.201-10.33.44.202     10.33.44.203
+
+### Topologia
+
+De uma perspectiva abrangente, e não incluindo todos os dispositivos da rede,
+para demonstrar minimamente o funcionamento, foi possível criar a seguinte
+topologia:
+
+![](lab2_1.jpg)
+
+### Funcionamento
+
+A seguinte figura indica o funcionamento do envio de pacotes entre as diferentes
+subredes, demonstrando o funcionamento correto do roteamento
+
+![](lab2_0.jpg)
+
+## Roteamento
+
+Tabelas de roteamento de dois roteadores da rede, demonstrando como foi
+implementada. É análoga para os outros roteadores.
+
+![](lab2_2.jpg)
+
+
+![](lab2_3.jpg)
 
