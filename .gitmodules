@@ -1,0 +1,6 @@
+[submodule "db/blablatravel"]
+	path = db/blablatravel
+	url = https://github.com/henriquenunez/blablatravel
+[submodule "imgproc/songtron"]
+	path = imgproc/songtron
+	url = https://github.com/henriquenunez/songtron
