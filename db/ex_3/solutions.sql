@@ -1,3 +1,6 @@
+-- Exercício 3 - SCC0240 Bases de Dados
+-- Aluno: Henrique Hiram Libutti Núñez, NUSP: 11275300
+
 -- Q1 (Q1: Selecionar nome  e  estado  dos  times  que  possuem  uniforme  titular  mas  a  cor  principal  não  foi cadastrada.)
 
 -- Primeira solução.
