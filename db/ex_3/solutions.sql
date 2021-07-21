@@ -42,20 +42,32 @@ SELECT JOGA.CLASSICO, COUNT(*)
 
 SELECT EXTRACT(MONTH FROM P.DATA), COUNT(*)
     FROM PARTIDA P
+    JOIN JOGA J
+        ON J.CLASSICO = 'S' AND J.TIME1 = P.TIME1 AND J.TIME2 = P.TIME2 -- Verifica se é clássico.
     WHERE EXTRACT(YEAR FROM P.DATA) = 2018
     GROUP BY EXTRACT(MONTH FROM P.DATA)
     ORDER BY COUNT(*) DESC;
 
 -- Q5: Para cada time, selecionar: nome, estado, saldo de gols, e a quantidade de jogos clássicos que jogou por ano.
-
-SELECT T.NOME, T.ESTADO, T.SALDO_GOLS, COUNT(CASE WHEN J.CLASSICO = 'S' THEN 1 END) AS CA, EXTRACT(YEAR FROM P.DATA) AS ANO
+-- Para manter os 0 no retorno da quantidade de jogos clássicos, a solução aplicou left join
+SELECT T.NOME, T.ESTADO, T.SALDO_GOLS, COUNT(J.classico) AS CA, EXTRACT(YEAR FROM P.DATA) AS ANO
 FROM TIME T
-JOIN JOGA J -- Para extrair se é classico ou não
-    ON (T.NOME= J.TIME1 OR T.NOME = J.TIME2)
 JOIN PARTIDA P
-    ON P.TIME1 = J.TIME1 AND P.TIME2 = J.TIME2
+    ON T.NOME= P.TIME1 OR T.NOME = P.TIME2
+LEFT JOIN JOGA J -- Para extrair se é classico ou não, ja elimina tuplas
+    ON J.CLASSICO = 'S' AND (P.TIME1 = J.TIME1 AND P.TIME2 = J.TIME2)
 GROUP BY T.NOME, T.ESTADO, T.SALDO_GOLS, EXTRACT(YEAR FROM P.DATA)
 ORDER BY T.NOME, EXTRACT(YEAR FROM P.DATA);
+
+-- Solução alternativa talvez um pouco menos eficiente (ou não por causa do left join na solução acima).
+-- SELECT T.NOME, T.ESTADO, T.SALDO_GOLS, COUNT(CASE WHEN J.CLASSICO = 'S' THEN 1 END) AS CA, EXTRACT(YEAR FROM P.DATA) AS ANO
+-- FROM TIME T
+-- JOIN JOGA J -- Para extrair se é classico ou não
+--     ON (T.NOME= J.TIME1 OR T.NOME = J.TIME2)
+-- JOIN PARTIDA P
+--     ON P.TIME1 = J.TIME1 AND P.TIME2 = J.TIME2
+-- GROUP BY T.NOME, T.ESTADO, T.SALDO_GOLS, EXTRACT(YEAR FROM P.DATA)
+-- ORDER BY T.NOME, EXTRACT(YEAR FROM P.DATA);
 
 -- Q6: Selecionar nomes dos times profissionais que jogaram clássicos e não marcaram gols em pelo menos 2 jogos.
 
@@ -74,7 +86,7 @@ FROM (
          WHERE T.TIPO = 'PROFISSIONAL'
          GROUP BY T.NOME
      ) S
-WHERE S.C1 > 1 OR S.C2 > 2;
+WHERE (S.C1 + S.C2) > 1;
 
 -- Q7: Selecionar a quantidade de times e a média do saldo de gols dos times por estado, por tipo de time. Ordenar o resultado por estado e depois por tipo de time.
 
@@ -90,6 +102,7 @@ SELECT J.TIME1, J.TIME2, COUNT(*)
     FROM JOGA J
     JOIN PARTIDA P -- Podemos fazer assim ja que a ordem de joga é sempre a mesma da partida.
         ON P.TIME1 = J.TIME1 AND P.TIME2 = J.TIME2
+    WHERE J.CLASSICO = 'S'
     GROUP BY J.TIME1, J.TIME2;
 
 -- Q9:Selecionar os times do estado de SP que jogaram em todos os locais em que o “Santos” jogou.
@@ -115,7 +128,8 @@ WHERE NOT EXISTS -- Se "sobrou" algum lugar que Santos jogou,
         WHERE P.TIME1 = T.NOME
            OR P.TIME2 = T.NOME
     )
-);
+)
+AND T.ESTADO = 'SP';
 
 -- Q10: Selecionar os times com o menor saldo de gols em cada estado. Apresentar nome do time, estado e saldo de gols.
 
