@@ -1,0 +1,10 @@
+* { margin:0; padding:0; font-size:100%; }
+
+.text-box { border: solid black; margin: 10%; padding: 10px; background-color:rgba(255, 255, 255, 0.7); box-shadow: 2px 2px 4px pink; border-radius: 20px 30px; }
+.common-text { overflow: hidden; max-width: 10%; max-height: 1em;}
+.common-text:hover { max-width: 100%; max-height:100%; font-size: 2em; background-color: rgb(255, 36, 0); transition: all 2s linear 1s;}
+
+p { margin:1%; font-family: Glory; font-size: 1em; }
+h1 { color:blue; font-size: 77px; }
+
+.targetsss { background: url(atlantic.jpg) center center/100% 100% no-repeat }

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset = "utf-8" />
+      <title> About Me </title>
+    </head>
+    <body id="main_content">
+
+      <script>
+        // Changing font
+        document.getElementById("main_content").setAttribute("style", "font-family: \"Times New Roman\";");
+
+        // Inserting img
+        document.getElementById("main_content").innerHTML += "<img width=\"300\" src=\"https://i.imgur.com/nv4KR7u.jpeg\"/>"
+
+        //document.getElementById("nickname").innerHTML = "Hiram";
+        //document.getElementById("favorites").innerHTML = "Arcade Fire and Coding";
+        //document.getElementById("hometown").innerHTML = "Santos-SP";
+      </script>
+
+      <h1> About Me </h1>
+      <ul>
+        <li> Nickname: <span id = "nickname"> </span>
+        <li> Favorites: <span id = "favorites"> </span>
+        <li> Hometown: <span id = "hometown"> </span>
+      </ul>
+    </body>
+  </html>

@@ -1,0 +1,23 @@
+*{box-sizing: border-box; font-size: 100%; }
+
+.main-text { color:red; text-align:center; }
+.main-bg { background-color: cyan; }
+
+#content { background-color: #000; padding: 20px; color: green; width:80%; height: 10%; max-width:500px; min-width: 100px; }
+
+#example {background-color: purple; color: #fff; width: 500px; padding: 10px 5px 10px 5px; height: 30px; }
+
+#example2 {background-color: purple; color: #fff; width: 500px; padding: 10px 5px 10px 50px; margin: 5px 5px 5px 5px; }
+
+#example3 {color: cyan; text-align:justify; text-indent:50px; direction: rtl; letter-spacing: 5px; word-spacing: -1px; text-transform: capitalize; }
+h1 {text-align: right; text-decoration: underline; text-shadow: 3px 3px 4px gray;}
+h2 {text-align: left; text-decoration: overline; }
+h3 {text-align: center; text-decoration: line-through; }
+
+.boxy { background-color: purple; width: 200px; height: 200px; padding: 20px; box-shadow: 3px 5px 10px #f0f; }
+
+#example4 { background-color: gray; height: 100px; overflow: auto; opacity: 0.7; }
+
+.rounded-box { border-radius: 10px 20px; overflow: hidden; }
+
+.fonty {font-family: IBM Plex Mono, Hack, monospace; font-size: 1.5em; }

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>JS Exercise</title>
+    <style>
+        div {
+          width: 50px;
+          height: 50px;
+          display: inline-block;
+        }
+        .brown{
+          background-color: brown;
+        }
+        .green{
+          background-color: green;
+        }
+        .blue{
+          background-color: blue;
+        }
+        .purple{
+          background-color: purple;
+        }
+        .yellow{
+          background-color: yellow;
+        }
+        .random{
+
+        }
+    </style>
+
+    <script type="text/javascript">
+
+      function addEventListeners() {
+
+        // get section
+        let sec = document.getElementById("sectionId");
+
+        // Our funny closure
+        function colorEventListener(colorName) {
+          return function() {
+            console.log(colorName);
+            document.getElementsByClassName('selected')[0].innerHTML = colorName;
+          }
+        };
+
+        for (child of sec.children) {
+          child.addEventListener("mouseover", colorEventListener(child.className));
+
+          console.log(child.className);
+        }
+
+        sec.addEventListener("mouseout", () => {
+          document.getElementsByClassName('selected')[0].innerHTML = "None!";
+        });
+      }
+
+      // Closure here
+      function randomColor() {
+
+        let randomBlock = document.getElementsByClassName('random')[0];
+
+        let index = 0;
+        let colors = ['brown', 'blue', 'purple', 'yellow', 'blue'];
+
+        return function randomColorClosure() {
+
+          let new_color = colors[index];
+
+          index++;
+          index = index % (colors.length - 1);
+
+          randomBlock.style.backgroundColor = new_color;
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', (event) => {
+          console.log('DOM fully loaded and parsed');
+
+          addEventListeners();
+          setInterval(randomColor(), 500);
+      });
+
+    </script>
+</head>
+<body>
+    <h1 id="change_heading">Colors!</h1>
+    SELECTED COLOR <span class="selected">None!</span>
+    <section id="sectionId">
+        <div class="brown"></div>
+        <div class="green"></div>
+        <div class="blue"></div>
+        <div class="yellow"></div>
+    </section>
+    <div class="random"></div>
+</body>
+</html>

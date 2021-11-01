@@ -1,0 +1,17 @@
+* {font-family: Montserrat, font-awesome; color: gray; font-size:100%; }
+
+body { background: url(img/bg.jpg) center center/100% 100% no-repeat fixed}
+h1 { font-size: 2em; text-align: center; }
+h2 { font-size: 1.5em; text-align: center; }
+
+.card { padding: 1em; margin: 2% 30% 0% 30%; background-color: rgba(255,255,255,0.7); transition: all 0.5s ease; }
+.card:hover { padding: 1em; margin: 1% 20% 0% 20%; background-color: #fff; box-shadow: 10px 10px 40px #000; transition: all 0.5s ease; }
+.text-center { text-align:center; }
+.list-inline li { display: inline-block; margin: 1em; }
+.button { background-color: rgba(250, 36, 0, 0.5); padding: 1em; margin: 10em; color: white; border-radius: 8px; }
+.button:hover { background-color: rgb(250, 36, 0); padding: 1em; margin: 10em; color: white; border-radius: 8px; }
+td { margin: 5em; padding: 10px; }
+a {color: gray; }
+
+#movies img { width: 150px; }
+

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>MadTalk</title>
+</head>
+<body>
+ 
+<h1>Mad Talk</h1>
+ 
+<ul>
+     <li>Noun: <input type="text" id="noun">
+     <li>Adjective: <input type="text" id="adjective">
+     <li>Someone's Name: <input type="text" id="person">
+</ul>
+ 
+<button id="lib-button">Mad!</button>
+  
+<div id="story"></div>
+
+<script type="text/javascript">
+function makeMadTalk() {
+
+    talks = [" is crazy for ", " really likes ", " is interested in "];
+
+    talk = "";
+    
+    talk += document.getElementById("person").value;
+    let idx = Math.floor(Math.random() * 100);
+    idx = idx % 3;
+    talk += talks[idx];
+    talk += document.getElementById("adjective").value + " ";
+    talk += document.getElementById("noun").value;
+
+    document.getElementById("story").innerHTML = talk;
+}
+
+document.getElementById("lib-button").addEventListener("click", makeMadTalk);
+</script>
+
+</body>
+</html>

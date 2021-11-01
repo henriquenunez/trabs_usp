@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+  <head>
+    <title> Página 1</title>
+    <meta charset="utf-8">
+  </head>
+
+  <body>
+    <h1>Forms</h1>
+    <form action="cadastro.php" method="POST">
+      <fieldset>
+        <legend>Login</legend>
+        Nome:<br>
+        <input type="text" name="nome" required autofocus maxlength="8"><br>
+        Senha:<br>
+        <input type="password" name="senha" required disabled><br>
+        Email:<br>
+        <input type="email" name="email" required autocomplete placeholder="email@email.com"><br>
+        Foto perfil:<br>
+        <input type="file" name="imagem"><br>
+        URL:<br>
+        <input type="url" name="website"><br> 
+        Phone:<br>
+        <input type="tel" name="phone"><br>
+        Date:<br>
+        <input type="date" min="2000-1-1" max="2021-9-1"><br>
+        Time:<br>
+        <input type="time" name="time-input"><br>
+        Month:<br>
+        <input type="month" name="month-input"><br>
+        Week:<br>
+        <input type="week" name="semana"><br>
+        Datetime local:<br>
+        <input type="datetime-local" name="data-hora"><br>
+
+        Esatdo:<br>
+        <input type="radio" name="estado" value="sp" required checked> SP<br>
+        <input type="radio" name="estado" value="sp" required> MG<br>
+        <input type="radio" name="estado" value="sp" required> RJ<br>
+        <input type="radio" name="estado" value="sp" required> ES<br>
+        Criptomoeda:<br>
+        <input type="checkbox" name="cripto" value="doge"> Dogecoin<br>
+        <input type="checkbox" name="cripto" value="eth"> Ethereum<br>
+        <input type="checkbox" name="cripto" value="btc"> Bitcoin<br>
+
+        Quantidade:<br>
+        <input type="number" name="cripto-amount" min="0" max="1000" step="10"><br>
+        <input type="range" name="critpo-amount"><br>
+        <input type="color" name="critpo-color"><br>
+
+        Mensagem:<br>
+        <textarea name="mensagem" rows="5" spellcheck="true"></textarea><br>
+        <button type"button">Click</button><br>
+
+        Vechicles:<br>
+        <select name="vehicle">
+          <optgroup label="cars">
+          <option value="f150l">F150 Lightning</option>
+          <option value="teslaS">Tesla S</option>
+          <option value="prius">Prius</option>
+          </optgroup>
+          <optgroup label="aeroplanes">
+          <option value="b737">Boeing 737</option>
+          <option value="a300">Airbus A300</option>
+          <option value="e195" selected>Embraer 195</option>
+          </optgroup>
+        </select><br><br>
+
+        Courses:<br>
+        <input name="cursos" list="lista-cursos">
+          <datalist id="lista-cursos">
+            <option value="HTML/CSS/JS">
+            <option value="Go">
+            <option value="Rust">
+          </datalist>
+
+
+        <input type="submit" name="btn-enviar" value="Send">
+      </fieldset>
+  </body>
+
+</html>

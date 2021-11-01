@@ -1,0 +1,20 @@
+* {font-size: 100%; }
+
+@font-face {
+	font-family: ArtTimes;
+	src: url(ArtTimes.woff);
+}
+
+p { font-family: ArtTimes; }
+
+.glory { font-family: Glory, sans-serif; font-size:2em; }
+
+.mfg { height: 50px; padding: 15px; color:#fff; background: linear-gradient(89deg, red, orange, yellow, green, blue, indigo, purple); }
+
+.msg { background: radial-gradient(rgb(200, 20, 100), black); color: #fff; }
+
+.base { background-color: green; height: 200px; width: 200px; overflow: hidden; }
+.direita { background-color: blue; float: right; height: 50px; width: 50px; overflow: hidden; }
+.esquerda { background-color: red; float: left; height: 50px; width: 50px; overflow: hidden; }
+
+.fixed_stuff {position: fixed; right: 10%; top: 50%; width: 300px; }
