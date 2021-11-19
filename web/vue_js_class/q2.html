@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vue.js Search</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  </head>
+  <body>
+    <div id="app" class="container-fluid">
+      <h1>Vue.js Search</h1>
+      
+      <div class="form-group">
+        <input v-model="filterParam" type="text" class="form-control"
+               placeholder="Search term">
+      </div>
+      
+      <div class="result-container">
+        <h2>Results<span></span></h2>
+        <ul class="list-group">
+          <li v-for="item in selectedItems" class="list-group-item">
+            {{ item.name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <script type="text/javascript">
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          filterParam: '',
+          availableItems: [
+            { name: "Lewis del Mar" },
+            { name: "Twenty One Pilots" },
+            { name: "The Strokes" },
+            { name: "Lady Gaga" },
+            { name: "The Beatles" },
+            { name: "Simon and Garfunkel" },
+            { name: "First Aid Kit" },
+            { name: "Iron Maiden" },
+            { name: "Antilopen Gang" },
+            { name: "Fatoni" },
+            { name: "Tame Impala" },
+          ],
+          selectedItems: [],
+        },
+        watch: {
+          filterParam: function(val, oldVal) {
+            this.selectedItems = this.availableItems.filter((item) => {
+              return item.name.toLowerCase().includes(this.filterParam.toLowerCase());
+            });
+          }
+        }
+      })
+
+      app.selectedItems = app.availableItems;
+    </script>
+  </body>
+</html>

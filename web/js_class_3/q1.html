@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ajax</title>
+    <style type="text/css">
+      body {
+        color: #FFFFFF;
+      }
+      .wrapper {
+        background-color: #000000;
+        padding: 2em;
+        margin: 10% 20% 20% 20%;
+      }
+      .color-show {
+        height: 100px;
+      }
+      .input-and-btn {
+        display: flex;
+        justify-content: space-between;
+      }
+      input {
+        border-radius: 3px;
+      }
+      button {
+        border-radius: 3px;
+        background-color: orange;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div id="color-name">
+        Color: 
+      </div>
+      <div id="color-block" class="color-show">
+        The color will appear here
+      </div>
+      <div class="input-and-btn">
+        <input type="text" id="color-number">
+        <button id="getter-btn">
+          Change color
+        </button>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+
+      document.getElementById("getter-btn").addEventListener("click", () => {
+          let colorBar = document.getElementById("color-block")
+          let url = 'https://reqres.in/api/unknown/' + document.getElementById("color-number").value
+          fetch(url)
+            .then(response => response.json())
+            .then(data => {
+              colorBar.style.backgroundColor = data.data.color
+              console.log(data.data.color)
+              document.getElementById("color-name").innerHTML = "<p>Color: " + data.data.color + "</p><p>" + data.data.name + "</p>"
+            })
+            .catch(() => {console.log("Something happened")})
+      });
+    </script>
+  </body>
+</html>

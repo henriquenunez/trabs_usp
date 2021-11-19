@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+      body {
+        color: #FFFFFF;
+      }
+      .wrapper {
+        background-color: #404040;
+        padding: 2em;
+        margin: 10% 20% 20% 20%;
+        border-radius: 5px;
+      }
+      .color-show {
+        height: 100px;
+      }
+      .input-and-btn {
+        display: flex;
+        justify-content: space-between;
+      }
+      input {
+        border-radius: 3px;
+      }
+      button {
+        border-radius: 3px;
+        background-color: orange;
+      }
+      .type-selector {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="input-and-btn">
+        <div>
+          Threshold:
+        </div>
+        <input type="text" id="happy-thresh">
+        <button id="joe-happy-btn">
+          Is Joe happy?
+        </button>
+        <div class="type-selector">
+          Function type:
+          <select id="func-type">
+            <option value="callback">Callback</option>
+            <option value="promise">Promises</option>
+            <option value="async">Async/Await</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin 10px;" id="happy-info">
+        
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      function isJoeHappy(happy, callback) {
+          setTimeout(() => {
+            const happyness = Math.random()
+            if (happyness > happy) {
+              callback(happyness);
+            } else {
+              callback(new Error("Joe is sad!"));
+            }
+          }, 2000);
+      }
+
+      function isJoeHappyPromise(happy) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+              const happyness = Math.random()
+              if (happyness > happy) {
+                resolve(happyness);
+              } else {
+                reject(new Error("Joe is sad!"));
+              }
+            }, 2000);
+        })
+      }
+
+      async function isJoeHappyAsync(happy) {
+        try {
+          console.log(happy)
+          const happyness = await isJoeHappyPromise(happy);
+          setOK(happyness);
+        } catch (e) {
+          console.log(e)
+          setError(e);
+        }
+      }
+
+      function setError(happyness) {
+        document.getElementById("happy-info").innerHTML = "No! " + happyness.message
+        document.getElementById("happy-info").style.color = "red";
+      }
+
+      function setOK(happyness) {
+        document.getElementById("happy-info").innerHTML = "Yes! By " + Math.floor(happyness * 100) + " %"
+        document.getElementById("happy-info").style.color = "white";
+      }
+
+      document.getElementById("joe-happy-btn").addEventListener("click", () => {
+        let thresh = parseFloat(document.getElementById("happy-thresh").value)
+
+        // Swtiching based on the combobox
+        if (document.getElementById("func-type").value == "callback") {
+          isJoeHappy(thresh, (happyness) => {
+            if (happyness instanceof Error) {
+              return setError(happyness)
+            }
+            setOK(happyness)
+          })
+        } else if (document.getElementById("func-type").value == "promise") {
+          isJoeHappyPromise(thresh)
+            .then(happyness => setOK(happyness))
+            .catch(happyness => setError(happyness))
+        } else if (document.getElementById("func-type").value == "async") {
+          isJoeHappyAsync(thresh);
+        }
+      });
+    </script>
+  </body>
+</html>

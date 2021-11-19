@@ -1,0 +1,5 @@
+1. What are Two-Way Bindings and how to create them in Vue.js?
+
+Two way bindings are a functionality provided by the Vue.js framework that either updates the DOM based on a chance in a bound
+javascript variable, or a javascript variable based on a DOM change, such as a change on an input that updates a variable or
+triggers a method. Two way bindings make it simple to write logic that relies on user input for updating client side information, for example changing available options on a form.
