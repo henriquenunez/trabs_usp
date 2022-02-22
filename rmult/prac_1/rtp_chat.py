@@ -11,9 +11,6 @@ import time
 import struct
 import random
 
-IP_ADDRESS = '127.0.0.1'
-PORT = '42069'
-
 address = ''
 
 seq_number = 0
@@ -41,7 +38,6 @@ def make_rtp_packet(text):
     global seq_number 
 
     b = []
-    #timestamp = int(time.time() * 10)
     timestamp = my_time
     my_time += random.randint(0, 9) 
 
@@ -66,26 +62,23 @@ def unpack_rtp(data):
 def receive_message():
 
     while True:
-        # TODO error checking
         data, addr = r_sck.recvfrom(2048)
-        #print(data)
         rtp = unpack_rtp(data)
-        #print(rtp)
         print('Sequence number: {} Timestamp: {} Message: {}.'.format(rtp[0], rtp[1], rtp[2]))
 
         r_sck.sendto(b"OK", addr)
-        #print('Insert message: ')
+        print(f"Puerto UDP de recepcion: {PORTRCV}")
+        print('Insert message: ')
 
 def send_message():
 
     while True:
-        # TODO error checking
         text = input("Insert message: ")
 
         tsend = time.time()
 
         data = make_rtp_packet(text)
-        s_sck.sendto(data, (IP_ADDRESS, s_port))
+        s_sck.sendto(data, (IPDST, PORTDST))
 
         # Confirm arrival
         data, addr = s_sck.recvfrom(2048)
@@ -103,25 +96,27 @@ def connect(send_port, rec_port):
 
     r_sck = socket.socket(socket.AF_INET,
                           socket.SOCK_DGRAM)
-    r_sck.bind((IP_ADDRESS, rec_port))
+    r_sck.bind((IPDST, rec_port))
 
     s_sck = socket.socket(socket.AF_INET,
                           socket.SOCK_DGRAM)
-    #s_sck.bind((IP_ADDRESS, send_port))
 
 def main():
-    global s_port
-    global r_port
+    global IPDST
+    global PORTDST
+    global PORTRCV
 
-    if len(sys.argv) < 3:
-        print('Not enough args!')
+    if len(sys.argv) != 4:
+        print('Wrong number of args!')
+        print(f"Uso: {sys.argv[0]} \n IPdest\n Pdest\n Prec\n")
         return
 
-    r_port = int(sys.argv[1])
-    s_port = int(sys.argv[2])
+    IPDST = sys.argv[1]
+    PORTDST = int(sys.argv[2])
+    PORTRCV = int(sys.argv[3])
 
     print('Connecting to port ' + sys.argv[2])
-    connect(s_port, r_port)
+    connect(PORTDST, PORTRCV)
     threading.Thread(target=send_message).start()
     threading.Thread(target=receive_message).start()
 
