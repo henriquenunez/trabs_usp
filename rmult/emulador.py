@@ -1,7 +1,4 @@
-# Echo end to end application
-# Command line arguments: p1 p2
-# p1 is the port where the application will listen
-# p2 is the port where the application will send messages to
+# Proxy application 
 
 import socket
 import argparse
@@ -15,111 +12,120 @@ address = ''
 
 seq_number = 0
 
-"""
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |V=2|P|X|  CC   |M|     PT      |       sequence number         |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                           timestamp                           |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |           synchronization source (SSRC) identifier            |
-   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
-   |            contributing source (CSRC) identifiers             |
-   |                             ....                              |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-"""
-
 my_time = 0
 ssrc = 0
 
-def make_rtp_packet(text):
-    global my_time
-    global seq_number 
-
-    b = []
-    timestamp = my_time
-    my_time += random.randint(0, 9) 
-
-    first_octet = 0b1000000000000000
-    b[0:2] = struct.pack('!H', first_octet)
-    b[2:4] = struct.pack('!H', seq_number)
-    b[4:8] = struct.pack('!I', timestamp)
-    b[8:12] = struct.pack('!I', ssrc)
-
-    seq_number += 1
-
-    return bytearray(b) + text.encode('utf-8')
-
-# Extract RTP info
-def unpack_rtp(data):
-    rec_seq_number = struct.unpack('!H', data[2:4])[0]
-    rec_timestamp = struct.unpack('!I', data[4:8])[0]
-    text = str(data[12:])
-
-    return (rec_seq_number, rec_timestamp, text)
-
-def receive_message():
+def receive_messages(send_message):
 
     while True:
         data, addr = r_sck.recvfrom(2048)
-        rtp = unpack_rtp(data)
-        print('Sequence number: {} Timestamp: {} Message: {}.'.format(rtp[0], rtp[1], rtp[2]))
+        print('Received messages from {}'.format(addr))
+        
+        send_message(data, (ipdst, portdst))
+        #threading.Thread(send_message, data).start()
+        #rtp = unpack_rtp(data)
+        #print('Sequence number: {} Timestamp: {} Message: {}.'.format(rtp[0], rtp[1], rtp[2]))
 
-        r_sck.sendto(b"OK", addr)
-        print(f"Puerto UDP de recepcion: {PORTRCV}")
-        print('Insert message: ')
+        #r_sck.sendto(b"OK", addr)
+        #print(f"Puerto UDP de recepcion: {PORTRCV}")
+        #print('Insert message: ')
 
-def send_message():
+def message_sender_factory(should_thread, normal_dist):
 
-    while True:
-        text = input("Insert message: ")
+    print('Message sender factory')
 
-        tsend = time.time()
+    def message_sender(data, addr):
 
-        data = make_rtp_packet(text)
-        s_sck.sendto(data, (IPDST, PORTDST))
+        #tsend = time.time()
+        #data = make_rtp_packet(text)
+     
+        #if should_thread:
+            #threading.Thread(s_sck.sendto, (data, addr)) 
+        def send_message():
 
-        # Confirm arrival
-        data, addr = s_sck.recvfrom(2048)
-        treceive = time.time() - tsend
+            if random.random() < loss_ratio:
+                print('Packet lost!')
+                return
 
-        print('RTT: %f      ' % treceive, end = '')
-        if data == b"OK":
-            print('Se ha recibido')
+            if normal_dist:
+                mu = (min_delay + max_delay) / 2
+                sigma = (mu - min_delay) / 3
 
-        #time.sleep(2)
+                sleep_time = random.normalvariate(mu, sigma) / 1000
+            else:
+                sleep_time = random.uniform(min_delay / 1000, max_delay / 1000)
+            print('Sleeping for {}s'.format(sleep_time))
+            time.sleep(sleep_time)
+            print('Sending message to {}'.format(addr)) 
+            s_sck.sendto(data, addr)
+    
+            # Confirm arrival
+            #data, addr = s_sck.recvfrom(2048)
+            #treceive = time.time() - tsend
+    
+            #print('RTT: %f      ' % treceive, end = '')
+            #if data == b"OK":
+            #    print('Se ha recibido')
+    
+            #time.sleep(2)
 
-def connect(send_port, rec_port):
+        if should_thread:
+            threading.Thread(target=send_message).start()
+        else:
+            send_message()
+
+    return message_sender
+
+def connect(rec_port):
     global r_sck
     global s_sck
 
+    print('Creaing receive socket on port %d' % rec_port)
     r_sck = socket.socket(socket.AF_INET,
                           socket.SOCK_DGRAM)
-    r_sck.bind((IPDST, rec_port))
+    r_sck.bind(('127.0.0.1', rec_port))
 
+    print('Creating send socket')
     s_sck = socket.socket(socket.AF_INET,
                           socket.SOCK_DGRAM)
 
 def main():
-    global IPDST
-    global PORTDST
-    global PORTRCV
+    global ipdst 
+    global portdst
+    global portrcv
+    global loss_ratio
+    global max_delay
+    global min_delay
 
-    if len(sys.argv) != 4:
-        print('Wrong number of args!')
-        print(f"Uso: {sys.argv[0]} \n IPdest\n Pdest\n Prec\n")
-        return
+    parser = argparse.ArgumentParser(description='Proxy that slows down your network.')
+    parser.add_argument('--thread', action='store_true',
+                        help='Whether to use threading or not')
+    parser.add_argument('--normal', action='store_true',
+                        help='Whether to use uniform or gaussian packet delay.')
+    parser.add_argument('ipdst', metavar='IP',
+                        help='IP Address the program will proxy to')
+    parser.add_argument('portdst', type=int,
+                        help='Port to which the program will proxy to')
+    parser.add_argument('portrcv', type=int,
+                        help='Port in which the program will listen')
+    parser.add_argument('loss_ratio', type=float,
+                        help='Ratio of packet loss between 0 and 1')
+    parser.add_argument('min_delay', type=int,
+                        help='Minimum delay imposed by proxy (ms).') # When --normal will be forced to 0.
+    parser.add_argument('max_delay', type=int,
+                        help='Maximum delay imposed by proxy (ms)')
 
-    IPDST = sys.argv[1]
-    PORTDST = int(sys.argv[2])
-    PORTRCV = int(sys.argv[3])
+    args = parser.parse_args()
 
-    print('Connecting to port ' + sys.argv[2])
-    connect(PORTDST, PORTRCV)
-    threading.Thread(target=send_message).start()
-    threading.Thread(target=receive_message).start()
+    ipdst = args.ipdst
+    portdst = args.portdst
+    max_delay = args.max_delay
+    min_delay = args.min_delay
+    loss_ratio = args.loss_ratio
 
+    connect(args.portrcv)
+    receive_messages(message_sender_factory(args.thread, args.normal))
 
 if __name__ == '__main__':
     main()
+
