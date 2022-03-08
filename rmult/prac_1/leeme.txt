@@ -1,0 +1,3 @@
+LAS 3 IMPLEMENTACIONES DE EMULADOR ESTAN EN EMULADOR.PY
+Para la segunda implementación se ha de añadir --thread después de los parámetros
+Para la tercera implementación se ha de añadir --normal después de los parámetros
