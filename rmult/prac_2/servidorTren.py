@@ -8,6 +8,7 @@ import sys
 import socket
 import struct
 import time
+from urllib.request import DataHandler
 
 MAX_ETHERNET_DATA=1500
 MIN_ETHERNET_DATA=46
@@ -62,6 +63,7 @@ if __name__ == "__main__":
 		#ATENCIÓN: El tiempo de recepción está en formato: segundos.microsegundos
 		#Usar este tiempo para calcular los anchos de banda
 		reception_time=packet[1]
+		#print(reception_time)
 		npackets+=1
 		#Truncamos el tiempo de recepción a centésimas de milisegundos 
 		#(o decenas de microsegundos, segun se quiera ver) y 32 bits
@@ -78,6 +80,13 @@ if __name__ == "__main__":
 		#         (o decenas de microsegundos, segun se quiera ver)                     #
 		# a la hora de calcular retardos se debe tener en cuenta                        #
 		#################################################################################
+
+	first_time = packet_list[0][1]
+	last_time = packet_list[-1][1]
+	print('first time = ' + str(first_time))
+	print('last time = ' + str(last_time))
+	train_time = last_time - first_time
+	#train_tam = 
 
 
 	###########################PRÁCTICA##############################################
