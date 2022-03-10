@@ -56,6 +56,7 @@ if __name__ == "__main__":
 	npackets=0
 	inst_bandwidth_list = []
 	inst_delays = []
+	seq_numbers = []
 	for idx, packet in enumerate(packet_list):
 		#Para cada paquete recibido extraemos de la cabecera
 		#cada uno de los campos necesarios para hacer los cálculos
@@ -63,6 +64,7 @@ if __name__ == "__main__":
 		data=packet[0]
 		header=struct.unpack('!HHII',data[0:12])
 		seq_number=header[1]
+		seq_numbers.append(seq_number)
 		send_time_trunc=header[2]
 		trainLength=header[3]
 		#ATENCIÓN: El tiempo de recepción está en formato: segundos.microsegundos
@@ -100,15 +102,18 @@ if __name__ == "__main__":
 	first_time = packet_list[0][1]
 	last_time = packet_list[-1][1]
 	train_time = last_time - first_time
+
 	if ipListen == "127.0.0.1":
 		train_tam = (len(data) + IP_HDR_SIZE + UDP_HDR_SIZE) * (len(packet_list)-1)
 	else:
 		train_tam = (len(data) + IP_HDR_SIZE + UDP_HDR_SIZE+ ETH_HDR_SIZE) * (len(packet_list)-1)
+
 	print('Tiempo entre primer y último paquete: ' + str(train_time))
 	print('Tamaño del tren de paquetes: ' + str(train_tam) + ' Bytes')
+
 	med_bandwidth = (train_tam * 8 / train_time) / 10e06
-	print('Ancho de Banda medio: ' + str(round(med_bandwidth,2)) + ' Mbps')
-	print(inst_bandwidth_list)
+	
+	print('Ancho de Banda medio: ' + str(round(med_bandwidth,2)) + ' Mbps')	
 	print('Ancho de Banda MAX: ' + str(round(max(inst_bandwidth_list),2)) + ' Mbps')
 	print('Ancho de Banda MIN: ' + str(round(min(inst_bandwidth_list),2)) + ' Mbps')
 
@@ -122,6 +127,20 @@ if __name__ == "__main__":
 	# Añadir cálculos necesarios para obtener pérdida de paquetes y variación del   #
 	# retardo                                                                       #
 	#################################################################################
+
+	n_packets = header[3]
+
+	print(len(seq_numbers))
+
+	if n_packets == len(seq_numbers):
+		print("No hay perdida de paquetes")
+	else:
+		for i in range(0, len(seq_numbers)):
+			if i != seq_numbers[i]:
+				print('Falta paquete numero' + str(i))
+
+
+
 	packetLoss=0
 	print('Perdida de paquetes: ',packetLoss)
 	jitter=0 
