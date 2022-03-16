@@ -132,12 +132,21 @@ if __name__ == "__main__":
 
 	print(len(seq_numbers))
 
+	last_seq_num = seq_numbers[-1]
+	lost_packets = last_seq_num - len(seq_numbers)
+	
+	print('Porcentaje de perdida de paquetes: ' + str(lost_packets/(last_seq_num + 1)))
+
+	"""
 	if n_packets == len(seq_numbers):
 		print("No hay perdida de paquetes")
 	else:
-		for i in range(0, len(seq_numbers)):
-			if i != seq_numbers[i]:
-				print('Falta paquete numero' + str(i))
+		for idx, seq in enumerate(seq_numbers):
+			print("{} {}".format(idx, seq))
+"""
+#		for i in range(0, len(seq_numbers)):
+#			if i != seq_numbers[i]:
+#				print('Falta paquete numero' + str(i))
 
 
 
