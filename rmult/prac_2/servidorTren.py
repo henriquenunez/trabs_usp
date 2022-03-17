@@ -4,6 +4,7 @@
 ######################
 
 
+import statistics
 import sys
 import socket
 import struct
@@ -18,7 +19,7 @@ IP_HDR_SIZE=20
 UDP_HDR_SIZE=8
 RTP_HDR_SIZE=12
 
-MAX_WAIT_TIME=8
+MAX_WAIT_TIME=4
 MAX_BUFFER=100000000
 
 packet_list=[]
@@ -74,8 +75,8 @@ if __name__ == "__main__":
 		if idx > 0:
 			interarrival=packet_list[idx][1] - packet_list[idx-1][1]
 			tam_packet = (len(data) + UDP_HDR_SIZE + IP_HDR_SIZE)
-			inst_bandwidth = (tam_packet * 8 / interarrival) / 10e06
-			print('Ancho de banda instantaneo: ' + str(round(inst_bandwidth,2)) + ' Mbps' )
+			inst_bandwidth = (tam_packet * 8 / interarrival) / 1000
+			print('Ancho de banda instantaneo: ' + str(round(inst_bandwidth,2)) + ' Kbps' )
 			inst_bandwidth_list.append(inst_bandwidth)
 		npackets+=1
 		#Truncamos el tiempo de recepción a centésimas de milisegundos 
@@ -83,8 +84,8 @@ if __name__ == "__main__":
 		#para poder calcular el OWD en la misma base en que está el tiempo
 		#de envío del paquete
 		reception_time_trunc=int(reception_time*DECENASMICROSECS)&B_MASK
-		inst_delay = (reception_time_trunc-send_time_trunc)/DECENASMICROSECS
-		print('Retardo instantaneo en un sentido (s): ',inst_delay)
+		inst_delay = (reception_time_trunc-send_time_trunc)/100
+		print('Retardo instantaneo en un sentido (ms): ',inst_delay)
 		inst_delays.append(inst_delay)
 
 
@@ -108,18 +109,18 @@ if __name__ == "__main__":
 	else:
 		train_tam = (len(data) + IP_HDR_SIZE + UDP_HDR_SIZE+ ETH_HDR_SIZE) * (len(packet_list)-1)
 
-	print('Tiempo entre primer y último paquete: ' + str(train_time))
-	print('Tamaño del tren de paquetes: ' + str(train_tam) + ' Bytes')
+	#print('Tiempo entre primer y último paquete: ' + str(train_time))
+	#print('Tamaño del tren de paquetes: ' + str(train_tam) + ' Bytes')
 
-	med_bandwidth = (train_tam * 8 / train_time) / 10e06
+	med_bandwidth = (train_tam * 8 / train_time) / 1000
 	
-	print('Ancho de Banda medio: ' + str(round(med_bandwidth,2)) + ' Mbps')	
-	print('Ancho de Banda MAX: ' + str(round(max(inst_bandwidth_list),2)) + ' Mbps')
-	print('Ancho de Banda MIN: ' + str(round(min(inst_bandwidth_list),2)) + ' Mbps')
+	print('Ancho de Banda medio: ' + str(round(med_bandwidth,2)) + ' Kbps')	
+	print('Ancho de Banda MAX: ' + str(round(max(inst_bandwidth_list),2)) + ' Kbps')
+	print('Ancho de Banda MIN: ' + str(round(min(inst_bandwidth_list),2)) + ' Kbps')
 
-	print('Retardo medio: ' + str(mean(inst_delays)) + ' s')
-	print('Retardo MAX: ' + str(max(inst_delays)) + ' s')
-	print('Retardo MIN: ' + str(min(inst_delays)) + ' s')
+	print('Retardo medio: ' + str(round(mean(inst_delays),3)) + ' ms')
+	print('Retardo MAX: ' + str(round(max(inst_delays),3)) + ' ms')
+	print('Retardo MIN: ' + str(round(min(inst_delays),3)) + ' ms')
 
 
 	###########################PRÁCTICA##############################################
@@ -130,30 +131,11 @@ if __name__ == "__main__":
 
 	n_packets = header[3]
 
-	print(len(seq_numbers))
+	packetLoss = ((n_packets - len(seq_numbers)) / n_packets) * 100
+	print('Perdida de paquetes: ' + str(round(packetLoss,3)) + ' %')
 
-	last_seq_num = seq_numbers[-1]
-	lost_packets = last_seq_num - len(seq_numbers)
-	
-	print('Porcentaje de perdida de paquetes: ' + str(lost_packets/(last_seq_num + 1)))
-
-	"""
-	if n_packets == len(seq_numbers):
-		print("No hay perdida de paquetes")
-	else:
-		for idx, seq in enumerate(seq_numbers):
-			print("{} {}".format(idx, seq))
-"""
-#		for i in range(0, len(seq_numbers)):
-#			if i != seq_numbers[i]:
-#				print('Falta paquete numero' + str(i))
-
-
-
-	packetLoss=0
-	print('Perdida de paquetes: ',packetLoss)
-	jitter=0 
-	print('Variación del retardo: ',jitter)
+	jitter = statistics.stdev(inst_delays)
+	print('Variación del retardo: ', round(jitter,3))
 	#################################################################################
 
 

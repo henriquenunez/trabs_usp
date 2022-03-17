@@ -20,8 +20,8 @@ B_MASK=0xFFFFFFFF
 DECENASMICROSECS=100000
 
 if __name__ == "__main__":
-	if len(sys.argv)!=5:
-		print ('Error en los argumentos:\npython3 clienteTren.py ip_destino puerto_destino longitud_tren longitud_datos\n')
+	if len(sys.argv)<5:
+		print ('Error en los argumentos:\npython3 clienteTren.py ip_destino puerto_destino longitud_tren longitud_datos tasa_maxima(Kb)\n')
 		exit(-1)
 
 	dstIP=sys.argv[1]
@@ -29,6 +29,17 @@ if __name__ == "__main__":
 	addr=(dstIP,dstPort)
 	trainLength=int(sys.argv[3])
 	dataLength=int(sys.argv[4])
+
+	if dstIP != '127.0.0.1':
+		tam_packet = dataLength + UDP_HDR_SIZE + RTP_HDR_SIZE + IP_HDR_SIZE + ETH_HDR_SIZE
+	else:
+		tam_packet = dataLength + UDP_HDR_SIZE + RTP_HDR_SIZE + IP_HDR_SIZE
+
+	if len(sys.argv) == 6:
+		tasaMax=int(sys.argv[5]) * 1000
+		wait_time = tam_packet * 8 / tasaMax
+	else:
+		wait_time = 0.0
 
 	if dataLength+IP_HDR_SIZE+UDP_HDR_SIZE+RTP_HDR_SIZE>MAX_ETHERNET_DATA or dataLength+IP_HDR_SIZE+UDP_HDR_SIZE+RTP_HDR_SIZE<MIN_ETHERNET_DATA :
 		# Se controla si la trama sería inferior al tamaño minimo, o bien tan grande que habría que fragmentarla, estropeando la medida
@@ -40,11 +51,13 @@ if __name__ == "__main__":
 	data=('0'*(dataLength)).encode()
 	seq_number=0
 
+	# print(wait_time)
 	for i in range(0,trainLength):
 		#usamos la longitud del tren como identificador de fuente. De esta manera en destino podemos saber la
 		#longitud original del tren. En el campo timestamp (32bits) sólo podemos enviar segundos y 
 		#centésimas de milisegundos (o decenas de microsegundos, segun se quiera ver) truncados a 32bits
 		message=struct.pack('!HHII',0x8014,seq_number, int(time.time()*DECENASMICROSECS)&B_MASK,trainLength)+data
 		sock_send.sendto(message,addr)
+		time.sleep(wait_time)
 		seq_number+=1
 
