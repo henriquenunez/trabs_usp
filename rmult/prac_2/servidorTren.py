@@ -75,7 +75,7 @@ if __name__ == "__main__":
 		if idx > 0:
 			interarrival=packet_list[idx][1] - packet_list[idx-1][1]
 			tam_packet = (len(data) + UDP_HDR_SIZE + IP_HDR_SIZE)
-			inst_bandwidth = (tam_packet * 8 / interarrival) / 1000
+			inst_bandwidth = ((tam_packet * 8) / interarrival) / 1000
 			print('Ancho de banda instantaneo: ' + str(round(inst_bandwidth,2)) + ' Kbps' )
 			inst_bandwidth_list.append(inst_bandwidth)
 		npackets+=1
@@ -112,7 +112,7 @@ if __name__ == "__main__":
 	#print('Tiempo entre primer y último paquete: ' + str(train_time))
 	#print('Tamaño del tren de paquetes: ' + str(train_tam) + ' Bytes')
 
-	med_bandwidth = (train_tam * 8 / train_time) / 1000
+	med_bandwidth = ((train_tam * 8) / train_time) / 1000
 	
 	print('Ancho de Banda medio: ' + str(round(med_bandwidth,2)) + ' Kbps')	
 	print('Ancho de Banda MAX: ' + str(round(max(inst_bandwidth_list),2)) + ' Kbps')

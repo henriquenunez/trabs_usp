@@ -37,15 +37,16 @@ if __name__ == "__main__":
 
 	if len(sys.argv) == 6:
 		tasaMax=int(sys.argv[5]) * 1000
-		wait_time = tam_packet * 8 / tasaMax
+		wait_time = (tam_packet * 8) / tasaMax
 	else:
 		wait_time = 0.0
 
-	if dataLength+IP_HDR_SIZE+UDP_HDR_SIZE+RTP_HDR_SIZE>MAX_ETHERNET_DATA or dataLength+IP_HDR_SIZE+UDP_HDR_SIZE+RTP_HDR_SIZE<MIN_ETHERNET_DATA :
-		# Se controla si la trama sería inferior al tamaño minimo, o bien tan grande que habría que fragmentarla, estropeando la medida
-		#PRACTICA : Añadir los controles de tamaño necesarios para el caso de localhost
-		print('Tamaño de datos incorrecto')
-		exit(0)
+	if dstIP != '127.0.0.1':
+		if dataLength + IP_HDR_SIZE + UDP_HDR_SIZE + RTP_HDR_SIZE > MAX_ETHERNET_DATA or dataLength + IP_HDR_SIZE + UDP_HDR_SIZE + RTP_HDR_SIZE < MIN_ETHERNET_DATA:
+			# Se controla si la trama sería inferior al tamaño minimo, o bien tan grande que habría que fragmentarla, estropeando la medida
+			print('Tamaño de datos incorrecto')
+			exit(0)
+
 	sock_send= socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
 	#generar un array de datos de longitud dataLength con el caracter 0 
 	data=('0'*(dataLength)).encode()
