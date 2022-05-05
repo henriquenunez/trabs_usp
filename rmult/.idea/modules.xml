@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/rmult.iml" filepath="$PROJECT_DIR$/.idea/rmult.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../scipion-em-emclarity/.idea/scipion-em-emclarity.iml" filepath="$PROJECT_DIR$/../../scipion-em-emclarity/.idea/scipion-em-emclarity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../scipion/plugins/scipion-em-imod/.idea/scipion-em-imod.iml" filepath="$PROJECT_DIR$/../../scipion/plugins/scipion-em-imod/.idea/scipion-em-imod.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../scipion/plugins/scipion-em-tomo/.idea/scipion-em-tomo.iml" filepath="$PROJECT_DIR$/../../scipion/plugins/scipion-em-tomo/.idea/scipion-em-tomo.iml" />
+    </modules>
+  </component>
+</project>
